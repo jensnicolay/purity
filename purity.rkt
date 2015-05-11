@@ -1,0 +1,587 @@
+#lang racket
+
+(random-seed 111) ; deterministic random
+(define TIMELIMIT (make-parameter 2)) ; timeout in minutes
+(define STATELIMIT (make-parameter 999999)) ; state limit (NOT YET IMPLEMENTED)
+(define THROW (make-parameter #t)) ; let exceptions bubble up (#t) during benchmarking, or catch and log them (#f)
+(define GRAPH (make-parameter #f)) ; generate graph
+
+(define %random (lambda (n) (if (zero? n) 0 (random n))))
+
+(include "general.rkt")
+(include "ast.rkt")
+
+(define (index v x)
+  (let ((i (vector-member x v)))
+    (if i
+        i
+        (let ((i (add1 (vector-ref v 0))))
+          (vector-set! v 0 i)
+          (vector-set! v i x)
+          i))))
+;(define frameis (make-vector 1000))
+;(define (frame->framei frame) (index frameis frame))
+(define ctxis (make-vector 1000))
+(define (ctx->ctxi ctx) (index ctxis ctx))
+;(define stateis (make-vector 1000))
+;(define (state->statei q) (index stateis q))
+;(define storeis (make-vector 1000))
+;(define (store->storei σ) (index storeis σ))
+
+;; domain helpers
+(define (env-lookup ρ x)
+  (hash-ref ρ x))
+(define (env-addresses ρ)
+  (list->set (hash-values ρ)))
+(define (store-lookup σ a)
+  (hash-ref σ a))
+(define (store-⊒ σ1 σ2 ⊒)
+  (if (eq? σ1 σ2)
+      #t
+      (if (< (hash-count σ1) (hash-count σ2))
+          #f
+          (for/and (((k v) σ1))
+            (and (hash-has-key? σ2)
+                 (⊒ v (hash-ref σ2 k)))))))
+(define (stack-lookup Ξ τ)
+  (hash-ref Ξ τ))
+;;
+
+;; machine
+(struct ev (e ρ σ ι κ) #:transparent
+  #:property prop:custom-write (lambda (v p w?)
+                                 (fprintf p "EV ~a\nρ ~a\nσ ~a\nι ~a\nκ ~a" (ev-e v) (ev-ρ v) (ev-σ v) (ev-ι v) (ev-κ v))))
+(struct ko (ι κ v σ) #:transparent
+  #:property prop:custom-write (lambda (v p w?)
+                                 (fprintf p "KO ι ~a\nκ ~a\nv ~a\nσ ~a" (ko-ι v) (ko-κ v) (ko-v v) (ko-σ v))))
+(struct ctx (e clo vs σ A) #:transparent)
+(struct letk (x e ρ) #:transparent)
+(struct letreck (a e ρ) #:transparent)
+(struct haltk () #:transparent)
+(struct clo (λ ρ) #:transparent
+  #:property prop:custom-write (lambda (v p w?)
+                                 (fprintf p "<clo ~a>" («lam»-l (clo-λ v)))))
+(struct prim (name proc) #:methods gen:equal+hash ((define equal-proc (lambda (s1 s2 requal?)
+                                                                        (equal? (prim-name s1) (prim-name s2))))
+                                                   (define hash-proc (lambda (s rhash) (equal-hash-code (prim-name s))))
+                                                   (define hash2-proc (lambda (s rhash) (equal-secondary-hash-code (prim-name s))))))
+(struct prim2 (name proc) #:methods gen:equal+hash ((define equal-proc (lambda (s1 s2 requal?)
+                                                                         (equal? (prim2-name s1) (prim2-name s2))))
+                                                    (define hash-proc (lambda (s rhash) (equal-hash-code (prim2-name s))))
+                                                    (define hash2-proc (lambda (s rhash) (equal-secondary-hash-code (prim2-name s))))))
+(struct addr (a) #:transparent)
+(struct system (states duration graph memo-table read-table memo-edges ⊥ ⊔ answer? exit msg) #:transparent
+  #:property prop:custom-write (lambda (v p w?)
+                                 (fprintf p "<sys #~a ~a ~a>" (vector-length (system-states v)) (system-exit v) (~a (system-msg v) #:max-width 70))))
+
+(define (touches d)
+  (if (set? d)
+      (for/fold ((as (set))) ((v d)) (set-union as (touches v)))
+      (match d
+        ((clo _ ρ) (env-addresses ρ))
+        ((letk _ _ ρ) (env-addresses ρ))
+        ((letreck _ _ ρ) (env-addresses ρ))
+        ((addr a) (set a))
+        ((cons x y) (set-union (touches x) (touches y)))
+        (_ (set)))))
+(define (reachable A σ γ)
+  (let loop ((A A) (R (set)))
+    (if (set-empty? A)
+        R
+        (let ((a (set-first A)))
+          (if (set-member? R a)
+              (loop (set-rest A) R)
+              (let* ((v (γ (store-lookup σ a)))
+                     (T (touches v)))
+                (loop (set-union (set-rest A) T) (set-add R a))))))))
+(define (gc q Ξ γ)
+  (match q
+    ((ev e ρ σ ι κ)
+     (let* ((ρ* (↓ ρ (free e)))
+            (R (reachable (set-union (env-addresses ρ*) (stack-addresses ι κ)) σ γ))
+            (σ* (↓ σ R)))
+       (ev e ρ* σ* ι κ)))
+    ((ko ι κ v σ)
+     (let* ((R (reachable (set-union (touches v) (stack-addresses ι κ)) σ γ))
+            (σ* (↓ σ R)))
+       (ko ι κ v σ*)))))
+(define (stack-frames ι κ Ξ)
+  (let loop ((todo (set (cons ι κ))) (result (set)) (seen (set)))
+    (if (set-empty? todo)
+        result
+        (match-let (((cons ι κ) (set-first todo)))
+          (let* ((result* (set-union result (list->set ι))))
+            (if (or (not κ) (set-member? seen κ))
+                (loop (set-rest todo) result* seen)
+                (let ((ικs (stack-lookup Ξ κ)))
+                  (loop (set-union (set-rest todo) ικs) result* (set-add seen κ)))))))))
+(define (stack-pop ι κ Ξ G)
+  (if (null? ι)
+      (if (set-member? G κ)
+          (set)
+          (let ((ικs (stack-lookup Ξ κ)))
+            (apply set-union (set-map ικs (lambda (ικ) (stack-pop (car ικ) (cdr ικ) Ξ (set-add G κ)))))))
+      (set (list ι κ G)))) 
+(define (stack-contexts κ Ξ)
+  (delay
+    (let loop ((todo (set (cons #f κ))) (seen (set)))
+      (if (set-empty? todo)
+          seen
+          (let ((κ (cdr (set-first todo))))
+            (if (or (not κ) (set-member? seen κ))
+                (loop (set-rest todo) seen)
+                (loop (set-union (set-rest todo) (stack-lookup Ξ κ)) (set-add seen κ))))))))
+(define (stack-addresses ι κ)
+  (set-union (if (null? ι) (set) (apply set-union (map touches ι))) (if κ (ctx-A κ) (set))))
+
+(define (make-machine global α γ ⊥ ⊔ alloc store-update true? false? α-eq? memo)
+  
+  (define (explore e)
+    (define Ξ (make-hash))
+    (define Ξi 0)
+    (define M (make-hash))
+    (define Mr (make-hash))
+    (define Mu (make-hash))
+    (define sa-memo? (eq? memo 'sa))
+    (define summ-memo? (eq? memo 'summ))
+    (define memo-edges (mutable-set))
+    
+    (include "primitives.rkt")
+    
+    (define (inject e)
+      (let ((global* (append global
+                           `(("eq?" . ,(α (prim "eq?" prim-eq?)))
+                             ("~a" . ,(α (prim "~a" prim-to-string)))
+                             ("error" . ,(α (prim "error" prim-error)))
+                             ("pair?" . ,(α (prim "pair?" prim-pair)))
+                             ("cons" . ,(α (prim "cons" prim-cons)))
+                             ("car" . ,(α (prim "car" prim-car)))
+                             ("set-car!" . ,(α (prim "set-car!" prim-set-car!)))
+                             ("cdr" . ,(α (prim "cdr" prim-cdr)))
+                             ("set-cdr!" . ,(α (prim "set-cdr!" prim-set-cdr!))))))
+          (compiled-e (compile e)))
+        (set! conc-alloc-counter 0)
+        (let loop ((global global*) (ρ (hash)) (σ (hash)))
+          (match global
+            ('()
+             (gc (ev compiled-e (↓ ρ (free compiled-e)) σ `(,(haltk)) #f) (hash) γ))
+            ((cons (cons x v) r)
+             (let ((a (conc-alloc x 0)))
+               (loop r (hash-set ρ x a) (hash-set σ a v))))))))
+    
+    ;(define (stack-to-string stack)
+    ;  (cons (map frame->framei (car stack)) (ctx->ctxi (cdr stack))))
+
+    (define (env-bind ρ x a)
+      (hash-set ρ x a))
+    
+    (define (store-alloc σ a v)
+      (let ((current (hash-ref σ a ⊥)))
+        ;(when (and sa-memo? (not (equal? v current)))
+        ;  (alloc-effect! a))
+        (hash-set σ a (⊔ current v))))
+    
+    (define (stack-alloc! τ stack)
+      ;(printf "allocing ctx ~a stack ~a " (ctx->ctxi τ) (stack-to-string stack))
+      (let ((stacks (hash-ref Ξ τ #f)))
+        (if stacks
+            (unless (set-member? stacks stack)
+              ;(printf "ADDING to ~a\n" (set-map stacks stack-to-string))
+              (hash-set! Ξ τ (set-add stacks stack))
+              (set! Ξi (add1 Ξi)))
+            (begin
+              ;(printf "NEW CTX\n")
+              (hash-set! Ξ τ (set stack))
+              (set! Ξi (add1 Ξi))))))
+    
+    (define (alloc-literal e σ)
+      (if (pair? e)
+          (match-let (((cons car-v car-σ) (alloc-literal (car e) σ)))
+            (match-let (((cons cdr-v cdr-σ) (alloc-literal (cdr e) car-σ)))
+              (let ((a (alloc "%$lit" e)))
+                (cons (α (addr a)) (store-alloc cdr-σ a (α (cons car-v cdr-v)))))))
+          (cons (α e) σ)))
+    
+    (define (read-effect! a ctxs)
+      (for ((τ (force ctxs)))
+        (let ((clo (ctx-clo τ))
+              (Aσ (hash-keys (ctx-σ τ))))
+          (when (member a Aσ)
+            (let ((inv (cons clo (ctx-vs τ))))
+              (hash-set! Mr inv (set-add (hash-ref Mr inv (set)) a)))))))
+    
+    (define (write-effect! a G)
+      (let ((invs (mutable-set)))
+        (for ((τ (force G)))
+          (let* ((σm (ctx-σ τ))
+                 (Aσ (hash-keys σm)))
+            (when (member a Aσ)
+              (let* ((clo (ctx-clo τ))
+                     (vs (ctx-vs τ))
+                     (inv (cons clo vs))
+                     (cached (hash-ref M inv ⊥)))
+                (hash-set! M inv "IMPURE")
+                (when (not (eq? cached "IMPURE"))
+                  (set-add! invs inv))))))
+        invs))
+    
+    (define (eval-atom ae ρ σ ctxs)
+      (match ae
+        ((«lit» _ v)
+         (α v))
+        ((«id» _ x)
+         (let ((a (env-lookup ρ x)))
+           (when sa-memo?
+             (read-effect! a ctxs))
+           (store-lookup σ a)))
+        ((«lam» _ x e)
+         (let ((cl (clo ae ρ)))
+           ;(when sa-memo?
+           ;  (if (hash-has-key? M cl)
+           ;      (hash-set! M cl "POLY")
+           ;      (hash-set! M cl (hash))))
+           (α cl)))
+        ((«quo» _ atom) (α atom))
+        (_ (error "cannot handle ae" ae))))
+    
+    (define (apply-let-kont x e ρ ι κ v σ)
+      (let* ((a (alloc x (and κ (ctx-e κ))))
+             (ρ* (env-bind ρ («id»-x x) a))
+             (σ* (store-alloc σ a v)))
+        (ev e ρ* σ* ι κ)))
+    (define (apply-letrec-kont a e ρ ι κ v σ)
+      (let ((σ* (store-update σ a v)))
+        (ev e ρ σ* ι κ)))
+    (define (apply-local-kont ι κ v σ)
+      (match ι
+        ((cons (letk x e ρ) ι)
+         (apply-let-kont x e ρ ι κ v σ))
+        ((cons (letreck a e ρ) ι)
+         (apply-letrec-kont a e ρ ι κ v σ))
+        (_ (ko ι κ v σ))))
+    
+    ;(define (print-state q)
+    ;  (match q
+    ;   ((ev e ρ σ ι κ m) (printf "EV ~a\nρ ~a σ ~a\nι ~a κ ~a frames ~a\n" (~a e #:max-width 40) ρ (store->storei σ) (map frame->framei ι) (ctx->ctxi κ) (set-map (stack-frames ι κ Ξ) frame->framei)))
+    ;    ((ko ι κ v σ m) (printf "KO ~a σ ~a\nι ~a κ ~a frames ~a\n" v (store->storei σ) (map frame->framei ι) (ctx->ctxi κ) (set-map (stack-frames ι κ Ξ) frame->framei)))))
+    
+    (define (step q)
+      ;(check-safety q Ξ)
+      (match q
+        ((ev (? ae? ae) ρ σ ι κ)
+         (let ((v (eval-atom ae ρ σ (stack-contexts κ Ξ))))
+           (cons (set (ko ι κ v σ)) (set))))
+        ((ev («if» _ ae e1 e2) ρ σ ι κ)
+         (cons
+          (let ((v (eval-atom ae ρ σ (stack-contexts κ Ξ))))
+            (set-union (if (true? v)
+                           (if (ae? e1)
+                               (let ((v (eval-atom e1 ρ σ (stack-contexts κ Ξ))))
+                                 (set (ko ι κ v σ)))
+                               (set (ev e1 ρ σ ι κ)))
+                           (set))
+                       (if (false? v)
+                           (if (ae? e2)
+                               (let ((v (eval-atom e2 ρ σ (stack-contexts κ Ξ))))
+                                 (set (ko ι κ v σ)))
+                               (set (ev e2 ρ σ ι κ)))
+                           (set))))
+          (set)))
+        ((ev («let» _ x e0 e1) ρ σ ι κ)
+         (cons 
+          (if (ae? e0)
+              (let ((v (eval-atom e0 ρ σ (stack-contexts κ Ξ))))
+                (set (apply-let-kont x e1 ρ ι κ v σ)))
+              (set (ev e0 ρ σ (cons (letk x e1 ρ) ι) κ)))
+          (set)))
+        ((ev («letrec» _ x e0 e1) ρ σ ι κ)
+         (cons
+          (let* ((a (alloc x (and κ (ctx-e κ))))
+                 (ρ* (env-bind ρ («id»-x x) a))
+                 (σ* (store-alloc σ a ⊥)))
+            (if (ae? e0)
+                (let ((v (eval-atom e0 ρ* σ* (stack-contexts κ Ξ))))
+                  (set (apply-letrec-kont a e1 ρ* ι κ v σ*)))
+                (set (ev e0 ρ* σ* (cons (letreck a e1 ρ*) ι) κ))))
+          (set)))
+        ((ev («set!» _ x ae) ρ σ ι κ)
+         (let* ((ctxs (stack-contexts κ Ξ))
+                (v (eval-atom ae ρ σ ctxs))
+                (a (env-lookup ρ («id»-x x)))
+                (σ* (store-update σ a v)))
+           (cons (set (ko ι κ v σ*))
+                 (if sa-memo?
+                     (write-effect! a ctxs)
+                     (set)))))
+        ((ev («quo» _ e) ρ σ ι κ)
+         (match-let (((cons v σ) (alloc-literal e σ)))
+           (cons (set (ko ι κ v σ)) (set))))
+        ((ev (and («app» _ rator rands) e) ρ σ ι κ)
+         (cons
+          (let* ((ctxs (stack-contexts κ Ξ))
+                 (v (eval-atom rator ρ σ ctxs)))
+            (let rands-loop ((rands rands) (rvs '()))
+              (if (null? rands)
+                  (for/fold ((states (set))) ((w (γ v)))
+                    (match w
+                      ((clo («lam» _ x e0) ρ**)
+                       (let* ((A (stack-addresses ι κ))
+                              (τ (ctx e w rvs σ A)))
+                         
+                         (define (bind-loop x vs ρ* σ*)
+                           (match x
+                             ('()
+                              (stack-alloc! τ (cons ι κ))
+                              (set-union states (set (ev e0 ρ* σ* '() τ))))
+                             ((cons x xs)
+                              (if (null? vs)
+                                  (set)
+                                  (let ((a (alloc x e)))
+                                    (bind-loop xs (cdr vs) (env-bind ρ* («id»-x x) a) (store-alloc σ* a (car vs))))))))
+                         
+                         (if sa-memo?
+                             (let* ((inv (cons w rvs))
+                                    (cached (hash-ref M inv (hash))))
+                               (if (eq? cached "IMPURE")
+                                   (bind-loop x (reverse rvs) ρ** σ)
+                                   (let* ((Aclo (hash-ref Mr inv (set)))
+                                          (σm (↓ σ Aclo))
+                                          (v-cached (hash-ref cached σm ⊥)))
+                                     (if (eq? v-cached ⊥)
+                                         (bind-loop x (reverse rvs) ρ** σ)
+                                         (let ((q* (ko ι κ v-cached σ)))
+                                           (hash-set! Mu inv (set-add (hash-ref Mu inv (set)) q))
+                                           (set-add! memo-edges (cons q q*))
+                                           (set-add states q*))))))
+                             (bind-loop x (reverse rvs) ρ** σ))))
+                      ((prim _ proc)
+                       (set-union states (list->set (set-map (proc e (reverse rvs) σ ι κ Ξ ctxs) (lambda (vσ) (ko ι κ (car vσ) (cdr vσ)))))))
+                      ((prim2 _ proc)
+                       (set-union states (set (ko ι κ (apply proc (reverse rvs)) σ))))
+                      (_ (set))))
+                  (let ((v (eval-atom (car rands) ρ σ ctxs)))
+                    (rands-loop (cdr rands) (cons v rvs))))))
+          (set)))
+        ((ko (cons (haltk) _) #f v _)
+         (cons (set) (set)))
+        ((ko ι κ v σ)
+         (let* ((ικGs (stack-pop ι κ Ξ (set)))
+                (no-refs? (set-empty? (touches v))) ; don't leak any addresses, since no GC integration and global tables
+                (states (mutable-set))
+                (invs (mutable-set)))
+           (for ((ικG ικGs))
+             (set-add! states (apply-local-kont (car ικG) (cadr ικG) v σ))
+             (when sa-memo?
+               (for ((τ (caddr ικG)))
+                 (let* ((clo (ctx-clo τ))
+                        (vs (ctx-vs τ))
+                        (inv (cons clo vs))
+                        (cached (hash-ref M inv (hash))))
+                   (unless (eq? cached "IMPURE")
+                     (if no-refs?
+                         (let* ((Aclo (hash-ref Mr inv (set)))
+                                (σm (↓ (ctx-σ τ) Aclo))
+                                (v-cached (hash-ref cached σm ⊥))
+                                (v-new (⊔ v-cached v)))
+                           (hash-set! M inv (hash-set cached σm v-new))
+                           (unless (equal? v-cached ⊥)
+                             (unless (equal? v-cached v-new)
+                               (set-add! invs inv))))
+                         (begin
+                           (hash-set! M inv "IMPURE")
+                           (set-add! invs inv))))))))
+           (cons states invs)))
+        )) ; end step
+    
+    (define gen-graph (GRAPH))
+    (define visited (mutable-set))
+    (define graph (make-hash))
+    (define states (mutable-set))
+    (define (make-system duration exit msg)
+      (system (list->vector (set->list states)) duration graph M Mr memo-edges ⊥ ⊔ answer? exit msg))
+    
+    ;(define state-limit (STATELIMIT))
+    (define time-limit (+ (current-milliseconds) (* (TIMELIMIT) 60000)))
+    
+    (let ((start (current-milliseconds)))
+      (with-handlers ((exn:fail? (lambda (exc) (make-system (- (current-milliseconds) start) 'error exc)))) 
+        (let loop ((todo (set (inject e))))
+          (if (and (zero? (remainder (set-count states) 1000))
+                   (> (current-milliseconds) time-limit))
+              (make-system (- (current-milliseconds) start) 'user "time out")
+              (if (set-empty? todo)
+                  (make-system (- (current-milliseconds) start) 'ok "")
+                  (let* ((q (set-first todo)))
+                    (if (set-member? visited q)
+                        (loop (set-rest todo))
+                        (let ((old-Ξi Ξi))
+                          ;(printf "q ~a " (state->statei q))
+                          (set-add! visited q)
+                          (match-let (((cons new-states2 invs) (step q)))
+                            (let ((new-states-gc 
+                                   (list->set (set-map new-states2 (lambda (q)
+                                                                     (gc q Ξ γ))))))
+                              ;(printf "-> ~a\n" (set-map new-states-gc state->statei))
+                              (set-add! states q)
+                              (when gen-graph
+                                (let* ((existing (hash-ref graph q (set)))
+                                       (updated (set-union existing new-states-gc)))
+                                  (hash-set! graph q updated)))
+                              (when (> Ξi old-Ξi)
+                                (set-clear! visited))
+                              (if (set-empty? invs)
+                                  (loop (set-union new-states-gc (set-rest todo)))                                
+                                  (let ((qus (for/fold ((states (set))) ((inv invs))
+                                               (set-union states (hash-ref Mu inv (set))))))
+                                    (set-subtract! visited qus)
+                                    (loop (set-union qus (set-union new-states-gc (set-rest todo))))))))))))))))) ; end explore  
+  (define (answer? s)
+    (match s
+      ((ko (cons (haltk) _) _ v _) #t)
+      (_ #f)))
+  
+  explore)
+
+(define (explore e mach)
+  (mach e))
+
+(define (answer-set sys)
+  (let ((answer? (system-answer? sys)))
+    (for/fold ((v (set))) ((s (system-states sys)))
+      (if (answer? s)
+          (set-add v s)
+          v))))
+
+(define (answer-value sys)
+  (let* ((⊥ (system-⊥ sys))
+         (⊔ (system-⊔ sys)))
+    (for/fold ((v ⊥)) ((s (answer-set sys)))
+      (⊔ (ko-v s) v))))
+;;
+
+;; allocators
+(define conc-alloc-counter 0)
+(define conc-alloc
+  (lambda (_ __)
+    (set! conc-alloc-counter (add1 conc-alloc-counter))
+    conc-alloc-counter))
+
+(define (mono-alloc x _)
+  x)
+
+(define (poly-alloc x ctx)
+  (cons x ctx))
+;  (cons x (if ctx
+;              (clo-λ (ctx-clo ctx))
+;              ctx)))
+;;
+
+;; Store updates
+(define (weak-update σ a v)
+  (hash-set σ a (type-⊔ (hash-ref σ a) v)))
+
+(define (strong-update σ a v)
+  (hash-set σ a v))
+
+(include "lattice.rkt")
+(include "test.rkt")
+
+;; machines and evaluators
+(define (do-eval e mach)
+  (let ((sys (explore e mach)))
+    (if (eq? (system-exit sys) 'ok)
+        (answer-value sys)
+        (raise (system-msg sys)))))
+
+(define conc-mach (make-machine conc-global conc-α conc-γ conc-⊥ conc-⊔ conc-alloc strong-update conc-true? conc-false? conc-eq? #f))
+(define conc-mach-summ (make-machine conc-global conc-α conc-γ conc-⊥ conc-⊔ conc-alloc strong-update conc-true? conc-false? conc-eq? 'summ))
+(define conc-mach-sa (make-machine conc-global conc-α conc-γ conc-⊥ conc-⊔ conc-alloc strong-update conc-true? conc-false? conc-eq? 'sa))
+(define type-mach-0 (make-machine type-global type-α type-γ type-⊥ type-⊔ mono-alloc weak-update type-true? type-false? type-eq? #f))
+(define type-mach-1 (make-machine type-global type-α type-γ type-⊥ type-⊔ poly-alloc weak-update type-true? type-false? type-eq? #f))
+(define type-mach-0-summ (make-machine type-global type-α type-γ type-⊥ type-⊔ mono-alloc weak-update type-true? type-false? type-eq? 'summ))
+(define type-mach-1-summ (make-machine type-global type-α type-γ type-⊥ type-⊔ poly-alloc weak-update type-true? type-false? type-eq? 'summ))
+(define type-mach-0-sa (make-machine type-global type-α type-γ type-⊥ type-⊔ mono-alloc weak-update type-true? type-false? type-eq? 'sa))
+(define type-mach-1-sa (make-machine type-global type-α type-γ type-⊥ type-⊔ poly-alloc weak-update type-true? type-false? type-eq? 'sa))
+
+(define (conc-eval e)
+  (do-eval e conc-mach))
+(define (conc-eval-summ e)
+  (do-eval e conc-mach-summ))
+(define (conc-eval-sa e)
+  (do-eval e conc-mach-sa))
+(define (type-eval-0 e)
+  (do-eval e type-mach-0))
+(define (type-eval-1 e)
+  (do-eval e type-mach-1))
+(define (type-eval-0-summ e)
+  (do-eval e type-mach-0-summ))
+(define (type-eval-1-summ e)
+  (do-eval e type-mach-1-summ))
+(define (type-eval-0-sa e)
+  (do-eval e type-mach-0-sa))
+(define (type-eval-1-sa e)
+  (do-eval e type-mach-1-sa))
+;;
+
+(define (conc-test . ens)
+  (when (null? ens)
+    (set! ens '(p1 p2 p3 p4 p5 p6 p7 p8 p9 p10 safeloopy1 sq hellomemo helloset!
+                   fac fib fib-mut blur eta mj09 gcipd kcfa2 kcfa3 rotate loop2
+                   sat collatz rsa primtest #|factor|# regex nqueens mceval boyer
+                   cpstak
+                   )))
+  (define (assert expected actual)
+    (unless (equal? expected actual)
+      (error (~a expected) (~a actual))))
+  (parameterize ((TIMELIMIT 10))
+    (for ((en ens))
+      (let ((e (eval en)))
+        (printf "~a\n" en)
+        (assert (do-eval e conc-mach) (eval e))
+        ))))
+
+(define (memo-test . ens)
+  
+  (when (null? ens)
+    (set! ens '(hellomemo helloset! hellomemoset!   ; sanity checks
+                          fac fib fib-mut blur eta mj09 gcipd kcfa2 kcfa3 rotate loop2 ; 'small' benchies
+                          sat collatz rsa primtest factor))) ; > 1000 ms
+  
+  
+  (printf "Warmup...\n\n")
+  (explore (file->value "test/fac.scm") type-mach-0)
+  (explore (file->value "test/eta.scm") type-mach-0)
+  (explore (file->value "test/rotate.scm") type-mach-0)
+  (explore (file->value "test/mj09.scm") type-mach-0)
+  (explore (file->value "test/loop2.scm") type-mach-1)
+  (explore (file->value "test/kcfa2.scm") type-mach-1)
+  (explore (file->value "test/fib.scm") type-mach-1)
+  (explore (file->value "test/kcfa3.scm") type-mach-1)
+  
+  (printf "Benchmarks: ~a\n" ens)
+  (for/list ((en ens))
+    (for/list ((mach (list type-mach-0 type-mach-0-sa type-mach-1 type-mach-1-sa)))
+;    (for/list ((mach (list conc-mach conc-mach-summ conc-mach-sa)))
+      (let ((e (eval en)))
+        (perform-benchmark en e mach)))))
+
+(define server-results #f)
+(define size-results #f)
+(define time-results #f)
+(define (server-test)
+  (parameterize ((TIMELIMIT 30) (THROW #f) (GRAPH #f))
+    (let ((results (apply memo-test '(fac fib fib-mut blur eta mj09 gcipd kcfa2 kcfa3 rotate loop2
+                                          sat collatz rsa primtest factor regex nqueens mceval boyer dderiv))))
+      (set! server-results results)
+      (set! size-results results)
+      (set! time-results (filter (lambda (bench) (member (benchmark-name bench) '(sat collatz rsa primtest factor regex nqueens dderiv mceval boyer))) results))
+      (printf "All results in server-results\nSize benchmarks in size-results\nTime benchmarks in time-results\n"))))
+
+(define (sound-test)
+  (for ((e (list sound2 sound3 sound4 sound5 sound6 sound7)))
+    (printf "~a ~a ~a\n" (eval e) (type-eval-0 e) (type-eval-0-sa e))))
+
+(include "output.rkt")
+    
+    
+      

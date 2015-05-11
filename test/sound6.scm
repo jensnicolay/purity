@@ -1,0 +1,6 @@
+(let ((f (lambda (x)
+           (lambda () x))))
+  (let ((f1 (f "abc")))
+    (let ((f2 (f 123)))
+      (let ((u (f1)))
+        (f2)))))
