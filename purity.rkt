@@ -4,7 +4,6 @@
 (define TIMELIMIT (make-parameter 2)) ; timeout in minutes
 (define STATELIMIT (make-parameter 999999)) ; state limit (NOT YET IMPLEMENTED)
 (define THROW (make-parameter #t)) ; let exceptions bubble up (#t) during benchmarking, or catch and log them (#f)
-(define GRAPH (make-parameter #f)) ; generate graph
 
 (define %random (lambda (n) (if (zero? n) 0 (random n))))
 
@@ -35,14 +34,6 @@
   (list->set (hash-values ρ)))
 (define (store-lookup σ a)
   (hash-ref σ a))
-(define (store-⊒ σ1 σ2 ⊒)
-  (if (eq? σ1 σ2)
-      #t
-      (if (< (hash-count σ1) (hash-count σ2))
-          #f
-          (for/and (((k v) σ1))
-            (and (hash-has-key? σ2)
-                 (⊒ v (hash-ref σ2 k)))))))
 (define (stack-lookup Ξ τ)
   (hash-ref Ξ τ))
 ;;
@@ -142,24 +133,23 @@
     (define M (make-hash))
     (define Mr (make-hash))
     (define Mu (make-hash))
-    (define sa-memo? (eq? memo 'sa))
-    (define summ-memo? (eq? memo 'summ))
+    (define rt-memo? (eq? memo 'rt))
     (define memo-edges (mutable-set))
     
     (include "primitives.rkt")
     
     (define (inject e)
       (let ((global* (append global
-                           `(("eq?" . ,(α (prim "eq?" prim-eq?)))
-                             ("~a" . ,(α (prim "~a" prim-to-string)))
-                             ("error" . ,(α (prim "error" prim-error)))
-                             ("pair?" . ,(α (prim "pair?" prim-pair)))
-                             ("cons" . ,(α (prim "cons" prim-cons)))
-                             ("car" . ,(α (prim "car" prim-car)))
-                             ("set-car!" . ,(α (prim "set-car!" prim-set-car!)))
-                             ("cdr" . ,(α (prim "cdr" prim-cdr)))
-                             ("set-cdr!" . ,(α (prim "set-cdr!" prim-set-cdr!))))))
-          (compiled-e (compile e)))
+                             `(("eq?" . ,(α (prim "eq?" prim-eq?)))
+                               ("~a" . ,(α (prim "~a" prim-to-string)))
+                               ("error" . ,(α (prim "error" prim-error)))
+                               ("pair?" . ,(α (prim "pair?" prim-pair)))
+                               ("cons" . ,(α (prim "cons" prim-cons)))
+                               ("car" . ,(α (prim "car" prim-car)))
+                               ("set-car!" . ,(α (prim "set-car!" prim-set-car!)))
+                               ("cdr" . ,(α (prim "cdr" prim-cdr)))
+                               ("set-cdr!" . ,(α (prim "set-cdr!" prim-set-cdr!))))))
+            (compiled-e (compile e)))
         (set! conc-alloc-counter 0)
         (let loop ((global global*) (ρ (hash)) (σ (hash)))
           (match global
@@ -171,14 +161,12 @@
     
     ;(define (stack-to-string stack)
     ;  (cons (map frame->framei (car stack)) (ctx->ctxi (cdr stack))))
-
+    
     (define (env-bind ρ x a)
       (hash-set ρ x a))
     
     (define (store-alloc σ a v)
       (let ((current (hash-ref σ a ⊥)))
-        ;(when (and sa-memo? (not (equal? v current)))
-        ;  (alloc-effect! a))
         (hash-set σ a (⊔ current v))))
     
     (define (stack-alloc! τ stack)
@@ -213,8 +201,8 @@
     (define (write-effect! a G)
       (let ((invs (mutable-set)))
         (for ((τ (force G)))
-          (let* ((σm (ctx-σ τ))
-                 (Aσ (hash-keys σm)))
+          (let* ((στ (ctx-σ τ))
+                 (Aσ (hash-keys στ)))
             (when (member a Aσ)
               (let* ((clo (ctx-clo τ))
                      (vs (ctx-vs τ))
@@ -225,21 +213,63 @@
                   (set-add! invs inv))))))
         invs))
     
-    (define (eval-atom ae ρ σ ctxs)
+    (define (memo-clean cached σm*)
+      (let loop2 ((cached-pos (hash-iterate-first cached)) (clean-cached (hash)) (d ⊥))
+        (if cached-pos
+            (let* ((σm (hash-iterate-key cached cached-pos))
+                   (A (list->set (hash-keys σm)))
+                   (σm** (↓ σm* A))
+                   (value (hash-iterate-value cached cached-pos)))
+              (if (equal? σm σm**)
+                  (loop2 (hash-iterate-next cached cached-pos) clean-cached (⊔ d value))
+                  (loop2 (hash-iterate-next cached cached-pos) (hash-set clean-cached σm value) d)))
+            (cons d clean-cached))))
+    
+    (define (memo-cache d G)
+      (let ((no-refs? (set-empty? (touches d)))) ; don't leak any addresses, since no GC integration and global tables
+        (let loop ((G G) (invs (set)))
+          (if (set-empty? G)
+              invs
+              (let* ((τ (set-first G))
+                     (clo (ctx-clo τ))
+                     (vs (ctx-vs τ))
+                     (inv (cons clo vs))
+                     (cached (hash-ref M inv ⊥)))
+                (if (hash? cached)
+                    (if no-refs?
+                        (let* ((Ainv (hash-ref Mr inv (set)))
+                               (σm (↓ (ctx-σ τ) Ainv))
+                               (d-cached (hash-ref cached σm ⊥)))
+                          (if (equal? d d-cached) ;can do this: Mr grows monotonically
+                              (loop (set-rest G) invs)
+                              (match-let (((cons d-clean cached-clean) (memo-clean cached σm)))
+                                (let* ((d* (⊔ d d-clean))
+                                       (cached* (hash-set cached-clean σm d*)))
+                                  (hash-set! M inv cached*)
+                                  (loop (set-rest G) (set-add invs inv))))))
+                        (begin 
+                          (hash-set! M inv "IMPURE")
+                          (loop (set-rest G) (set-add invs inv))))
+                    (if (eq? cached "IMPURE")
+                        (loop (set-rest G) invs)
+                        (if no-refs? ;new entry
+                            (let* ((Ainv (hash-ref Mr inv (set)))
+                                   (σm (↓ (ctx-σ τ) Ainv)))
+                              (hash-set! M inv (hash σm d))
+                              (loop (set-rest G) invs))
+                            (begin
+                              (hash-set! M inv "IMPURE")
+                              (loop (set-rest G) invs))))))))))
+    
+    (define (eval-atom ae ρ σ Ω)
       (match ae
         ((«lit» _ v)
          (α v))
         ((«id» _ x)
          (let ((a (env-lookup ρ x)))
-           (when sa-memo?
-             (read-effect! a ctxs))
            (store-lookup σ a)))
         ((«lam» _ x e)
          (let ((cl (clo ae ρ)))
-           ;(when sa-memo?
-           ;  (if (hash-has-key? M cl)
-           ;      (hash-set! M cl "POLY")
-           ;      (hash-set! M cl (hash))))
            (α cl)))
         ((«quo» _ atom) (α atom))
         (_ (error "cannot handle ae" ae))))
@@ -310,7 +340,7 @@
                 (a (env-lookup ρ («id»-x x)))
                 (σ* (store-update σ a v)))
            (cons (set (ko ι κ v σ*))
-                 (if sa-memo?
+                 (if rt-memo?
                      (write-effect! a ctxs)
                      (set)))))
         ((ev («quo» _ e) ρ σ ι κ)
@@ -339,20 +369,20 @@
                                   (let ((a (alloc x e)))
                                     (bind-loop xs (cdr vs) (env-bind ρ* («id»-x x) a) (store-alloc σ* a (car vs))))))))
                          
-                         (if sa-memo?
+                         (if rt-memo?
                              (let* ((inv (cons w rvs))
-                                    (cached (hash-ref M inv (hash))))
-                               (if (eq? cached "IMPURE")
-                                   (bind-loop x (reverse rvs) ρ** σ)
-                                   (let* ((Aclo (hash-ref Mr inv (set)))
-                                          (σm (↓ σ Aclo))
+                                    (cached (hash-ref M inv #f)))
+                               (if (hash? cached)
+                                   (let* ((Ainv (hash-ref Mr inv (set)))
+                                          (σm (↓ σ Ainv))
                                           (v-cached (hash-ref cached σm ⊥)))
                                      (if (eq? v-cached ⊥)
                                          (bind-loop x (reverse rvs) ρ** σ)
                                          (let ((q* (ko ι κ v-cached σ)))
                                            (hash-set! Mu inv (set-add (hash-ref Mu inv (set)) q))
                                            (set-add! memo-edges (cons q q*))
-                                           (set-add states q*))))))
+                                           (set-add states q*))))
+                                   (bind-loop x (reverse rvs) ρ** σ)))
                              (bind-loop x (reverse rvs) ρ** σ))))
                       ((prim _ proc)
                        (set-union states (list->set (set-map (proc e (reverse rvs) σ ι κ Ξ ctxs) (lambda (vσ) (ko ι κ (car vσ) (cdr vσ)))))))
@@ -365,35 +395,22 @@
         ((ko (cons (haltk) _) #f v _)
          (cons (set) (set)))
         ((ko ι κ v σ)
-         (let* ((ικGs (stack-pop ι κ Ξ (set)))
-                (no-refs? (set-empty? (touches v))) ; don't leak any addresses, since no GC integration and global tables
-                (states (mutable-set))
-                (invs (mutable-set)))
-           (for ((ικG ικGs))
-             (set-add! states (apply-local-kont (car ικG) (cadr ικG) v σ))
-             (when sa-memo?
-               (for ((τ (caddr ικG)))
-                 (let* ((clo (ctx-clo τ))
-                        (vs (ctx-vs τ))
-                        (inv (cons clo vs))
-                        (cached (hash-ref M inv (hash))))
-                   (unless (eq? cached "IMPURE")
-                     (if no-refs?
-                         (let* ((Aclo (hash-ref Mr inv (set)))
-                                (σm (↓ (ctx-σ τ) Aclo))
-                                (v-cached (hash-ref cached σm ⊥))
-                                (v-new (⊔ v-cached v)))
-                           (hash-set! M inv (hash-set cached σm v-new))
-                           (unless (equal? v-cached ⊥)
-                             (unless (equal? v-cached v-new)
-                               (set-add! invs inv))))
-                         (begin
-                           (hash-set! M inv "IMPURE")
-                           (set-add! invs inv))))))))
-           (cons states invs)))
+         (let* ((ικGs (stack-pop ι κ Ξ (set))))
+           (let loop ((ικGs ικGs) (states (set)) (invs (set)))
+             (if (set-empty? ικGs)
+                 (cons states invs)
+                 (let* ((ικG (set-first ικGs))
+                        (ι (car ικG))
+                        (κ (cadr ικG))
+                        (s (apply-local-kont ι κ v σ)))
+                   (loop (set-rest ικGs)
+                         (set-add states s)
+                         (if rt-memo?
+                             (let ((G (caddr ικG)))
+                               (set-union invs (memo-cache v G)))
+                             invs)))))))
         )) ; end step
     
-    (define gen-graph (GRAPH))
     (define visited (mutable-set))
     (define graph (make-hash))
     (define states (mutable-set))
@@ -415,18 +432,17 @@
                     (if (set-member? visited q)
                         (loop (set-rest todo))
                         (let ((old-Ξi Ξi))
-                          ;(printf "q ~a " (state->statei q))
+                          ;(printf "q ~a\n" (state->statei q))
                           (set-add! visited q)
                           (match-let (((cons new-states2 invs) (step q)))
-                            (let ((new-states-gc 
+                            (let* ((new-states-gc 
                                    (list->set (set-map new-states2 (lambda (q)
-                                                                     (gc q Ξ γ))))))
+                                                                     (gc q Ξ γ)))))
+                                   (existing-edges (hash-ref graph q (set)))
+                                   (updated-edges (set-union existing-edges new-states-gc)))
                               ;(printf "-> ~a\n" (set-map new-states-gc state->statei))
                               (set-add! states q)
-                              (when gen-graph
-                                (let* ((existing (hash-ref graph q (set)))
-                                       (updated (set-union existing new-states-gc)))
-                                  (hash-set! graph q updated)))
+                              (hash-set! graph q updated-edges)
                               (when (> Ξi old-Ξi)
                                 (set-clear! visited))
                               (if (set-empty? invs)
@@ -434,7 +450,7 @@
                                   (let ((qus (for/fold ((states (set))) ((inv invs))
                                                (set-union states (hash-ref Mu inv (set))))))
                                     (set-subtract! visited qus)
-                                    (loop (set-union qus (set-union new-states-gc (set-rest todo))))))))))))))))) ; end explore  
+                                    (loop (set-union new-states-gc qus (set-rest todo)))))))))))))))) ; end explore  
   (define (answer? s)
     (match s
       ((ko (cons (haltk) _) _ v _) #t)
@@ -494,33 +510,24 @@
         (raise (system-msg sys)))))
 
 (define conc-mach (make-machine conc-global conc-α conc-γ conc-⊥ conc-⊔ conc-alloc strong-update conc-true? conc-false? conc-eq? #f))
-(define conc-mach-summ (make-machine conc-global conc-α conc-γ conc-⊥ conc-⊔ conc-alloc strong-update conc-true? conc-false? conc-eq? 'summ))
-(define conc-mach-sa (make-machine conc-global conc-α conc-γ conc-⊥ conc-⊔ conc-alloc strong-update conc-true? conc-false? conc-eq? 'sa))
+(define conc-mach-rt (make-machine conc-global conc-α conc-γ conc-⊥ conc-⊔ conc-alloc strong-update conc-true? conc-false? conc-eq? 'rt))
 (define type-mach-0 (make-machine type-global type-α type-γ type-⊥ type-⊔ mono-alloc weak-update type-true? type-false? type-eq? #f))
 (define type-mach-1 (make-machine type-global type-α type-γ type-⊥ type-⊔ poly-alloc weak-update type-true? type-false? type-eq? #f))
-(define type-mach-0-summ (make-machine type-global type-α type-γ type-⊥ type-⊔ mono-alloc weak-update type-true? type-false? type-eq? 'summ))
-(define type-mach-1-summ (make-machine type-global type-α type-γ type-⊥ type-⊔ poly-alloc weak-update type-true? type-false? type-eq? 'summ))
-(define type-mach-0-sa (make-machine type-global type-α type-γ type-⊥ type-⊔ mono-alloc weak-update type-true? type-false? type-eq? 'sa))
-(define type-mach-1-sa (make-machine type-global type-α type-γ type-⊥ type-⊔ poly-alloc weak-update type-true? type-false? type-eq? 'sa))
+(define type-mach-0-rt (make-machine type-global type-α type-γ type-⊥ type-⊔ mono-alloc weak-update type-true? type-false? type-eq? 'rt))
+(define type-mach-1-rt (make-machine type-global type-α type-γ type-⊥ type-⊔ poly-alloc weak-update type-true? type-false? type-eq? 'rt))
 
 (define (conc-eval e)
   (do-eval e conc-mach))
-(define (conc-eval-summ e)
-  (do-eval e conc-mach-summ))
-(define (conc-eval-sa e)
-  (do-eval e conc-mach-sa))
+(define (conc-eval-rt e)
+  (do-eval e conc-mach-rt))
 (define (type-eval-0 e)
   (do-eval e type-mach-0))
 (define (type-eval-1 e)
   (do-eval e type-mach-1))
-(define (type-eval-0-summ e)
-  (do-eval e type-mach-0-summ))
-(define (type-eval-1-summ e)
-  (do-eval e type-mach-1-summ))
-(define (type-eval-0-sa e)
-  (do-eval e type-mach-0-sa))
-(define (type-eval-1-sa e)
-  (do-eval e type-mach-1-sa))
+(define (type-eval-0-rt e)
+  (do-eval e type-mach-0-rt))
+(define (type-eval-1-rt e)
+  (do-eval e type-mach-1-rt))
 ;;
 
 (define (conc-test . ens)
@@ -560,8 +567,8 @@
   
   (printf "Benchmarks: ~a\n" ens)
   (for/list ((en ens))
-    (for/list ((mach (list type-mach-0 type-mach-0-sa type-mach-1 type-mach-1-sa)))
-;    (for/list ((mach (list conc-mach conc-mach-summ conc-mach-sa)))
+    (for/list ((mach (list type-mach-0 type-mach-0-rt type-mach-1 type-mach-1-rt)))
+      ;    (for/list ((mach (list conc-mach conc-mach-summ conc-mach-rt)))
       (let ((e (eval en)))
         (perform-benchmark en e mach)))))
 
@@ -569,7 +576,7 @@
 (define size-results #f)
 (define time-results #f)
 (define (server-test)
-  (parameterize ((TIMELIMIT 30) (THROW #f) (GRAPH #f))
+  (parameterize ((TIMELIMIT 30) (THROW #f))
     (let ((results (apply memo-test '(fac fib fib-mut blur eta mj09 gcipd kcfa2 kcfa3 rotate loop2
                                           sat collatz rsa primtest factor regex nqueens mceval boyer dderiv))))
       (set! server-results results)
@@ -578,10 +585,10 @@
       (printf "All results in server-results\nSize benchmarks in size-results\nTime benchmarks in time-results\n"))))
 
 (define (sound-test)
-  (for ((e (list sound2 sound3 sound4 sound5 sound6 sound7)))
-    (printf "~a ~a ~a\n" (eval e) (type-eval-0 e) (type-eval-0-sa e))))
+  (for ((e (list sound2 sound3 sound4 sound5 sound6 sound7 sound8)))
+    (printf "~a ~a      ~a ~a\n" (eval e) (conc-eval e) (type-eval-0 e) (type-eval-0-rt e))))
 
 (include "output.rkt")
-    
-    
-      
+
+
+

@@ -217,6 +217,6 @@ Program      & $m$  & \\textbf{poly} & \\textbf{impure}  \\\\\\hline\\hline\n")
   sys)
 
 (define (graph e mach name)
-  (parameterize ((GRAPH #t) (TIMELIMIT 1))
+  (parameterize ((TIMELIMIT 1))
     (generate-dot e (explore e mach) name)))
 

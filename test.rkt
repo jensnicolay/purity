@@ -142,3 +142,4 @@
 (define sound5 (file->value "test/sound5.scm"))
 (define sound6 (file->value "test/sound6.scm"))
 (define sound7 (file->value "test/sound7.scm"))
+(define sound8 (file->value "test/sound8.scm"))
