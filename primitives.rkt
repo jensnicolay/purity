@@ -11,8 +11,6 @@
         (for/fold ((states (set))) ((w (γ (car rands))))
           (match w
             ((addr a)
-             (when rt-memo?
-               (read-effect! a ctxs))
              (set-union states 
                         (for/fold ((states2 (set))) ((ww (γ (store-lookup σ a))))
                           (match ww
@@ -26,9 +24,6 @@
         (for/fold ((states (set))) ((w (γ (car rands))))
           (match w
             ((addr a)
-             (when rt-memo?
-               (read-effect! a ctxs)
-               (write-effect! a ctxs))
              (set-union states 
                         (for/fold ((states2 (set))) ((ww (γ (store-lookup σ a))))
                           (match ww
@@ -44,8 +39,6 @@
         (for/fold ((states (set))) ((w (γ (car rands))))
           (match w
             ((addr a)
-             (when rt-memo?
-               (read-effect! a ctxs))
              (set-union states 
                         (for/fold ((states2 (set))) ((ww (γ (store-lookup σ a))))
                           (match ww
@@ -59,9 +52,6 @@
         (for/fold ((states (set))) ((w (γ (car rands))))
           (match w
             ((addr a)
-             (when rt-memo?
-               (read-effect! a ctxs)
-               (write-effect! a ctxs))
              (set-union states 
                         (for/fold ((states2 (set))) ((ww (γ (store-lookup σ a))))
                           (match ww
@@ -77,8 +67,6 @@
         (let ((v (for/fold ((v ⊥)) ((w (γ (car rands))))
                    (match w
                      ((addr a)
-                      (when rt-memo?
-                        (read-effect! a ctxs))
                       (for/fold ((v2 v)) ((ww (γ (store-lookup σ a))))
                         (match ww
                              ((cons _ _) (⊔ v2 (α #t)))
@@ -94,8 +82,6 @@
          (if (set-member? seen a)
              (set (cons (α (~a v)) σ))
              (begin
-               (when rt-memo?
-                 (read-effect! a ctxs))
                (apply set-union (set-map (γ (store-lookup σ a)) (lambda (w) (helper w (set-add seen a))))))))
         ((cons v1 v2)
          (let ((s1 (helper v1 seen))
