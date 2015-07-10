@@ -1,2 +1,2 @@
-Read-tracking memoization
-=========================
+Purity
+======

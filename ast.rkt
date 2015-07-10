@@ -90,9 +90,9 @@
       ((«id» _ x) (if (set-member? env x)
                       (set)
                       (set x)))
-      ((«lam» _ x e) (f e (set-union env (list->set x))))
-      ((«let» _ x e0 e1) (set-union (f e0 env) (f e1 (set-add env x))))
-      ((«letrec» _ x e0 e1) (set-union (f e0 (set-add env x)) (f e1 (set-add env x))))
+      ((«lam» _ x e) (f e (set-union env (list->set (map «id»-x x)))))
+      ((«let» _ x e0 e1) (set-union (f e0 env) (f e1 (set-add env («id»-x x)))))
+      ((«letrec» _ x e0 e1) (set-union (f e0 (set-add env («id»-x x))) (f e1 (set-add env («id»-x x)))))
       ((«if» _ ae e1 e2) (set-union (f ae env) (f e1 env) (f e2 env)))
       ((«set!» _ x ae) (set-union (f x env) (f ae env)))
       ((«quo» _ _) (set))
@@ -101,3 +101,30 @@
       ((«lit» _ _) (set))
       (_ (error "cannot handle expression" e))))
   (f e (set)))
+
+(define (children e)
+  (match e
+    ((«id» _ x) (set))
+    ((«lam» _ x e) (set-add (list->set x) e))
+    ((«let» _ x e0 e1) (set x e0 e1))
+    ((«letrec» _ x e0 e1) (set x e0 e1))
+    ((«if» _ ae e1 e2) (set ae e1 e2))
+    ((«set!» _ x ae) (set x ae))
+    ((«quo» _ _) (set))
+    ((«app» _ rator rands) (set-add (list->set rands) rator))
+    ((«id» _ _) (set))
+    ((«lit» _ _) (set))
+    (_ (error "cannot handle expression" e))))
+  
+
+(define (parent e ast)
+  (let ((cs (children ast)))
+    (if (set-member? cs e)
+        ast
+        (let loop ((cs cs))
+          (if (set-empty? cs)
+              #f
+              (let ((p (parent e (set-first cs))))
+                (or p (loop (set-rest cs)))))))))
+
+

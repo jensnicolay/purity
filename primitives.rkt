@@ -1,4 +1,4 @@
-  (define (prim-cons e rands σ ι κ Ξ ctxs)
+  (define (prim-cons e rands σ ι κ Ξ)
     (if (= (length rands) 2)
         (let* ((a (alloc "!%cons" e))
                (v (α (cons (car rands) (cadr rands))))
@@ -6,7 +6,7 @@
           (set (cons (α (addr a)) σ*)))
         (set)))
 
-  (define (prim-car e rands σ ι κ Ξ ctxs)
+  (define (prim-car e rands σ ι κ Ξ)
     (if (= (length rands) 1)
         (for/fold ((states (set))) ((w (γ (car rands))))
           (match w
@@ -19,7 +19,7 @@
             (_ states)))
         (set)))
 
-  (define (prim-set-car! e rands σ ι κ Ξ ctxs)
+  (define (prim-set-car! e rands σ ι κ Ξ)
     (if (= (length rands) 2)
         (for/fold ((states (set))) ((w (γ (car rands))))
           (match w
@@ -34,7 +34,7 @@
             (_ states)))
         (set)))
 
-  (define (prim-cdr e rands σ ι κ Ξ ctxs)
+  (define (prim-cdr e rands σ ι κ Ξ)
     (if (= (length rands) 1)
         (for/fold ((states (set))) ((w (γ (car rands))))
           (match w
@@ -47,7 +47,7 @@
             (_ states)))
         (set)))
 
-  (define (prim-set-cdr! e rands σ ι κ Ξ ctxs)
+  (define (prim-set-cdr! e rands σ ι κ Ξ)
     (if (= (length rands) 2)
         (for/fold ((states (set))) ((w (γ (car rands))))
           (match w
@@ -62,7 +62,7 @@
             (_ states)))
         (set)))
 
-  (define (prim-pair e rands σ ι κ Ξ ctxs)
+  (define (prim-pair e rands σ ι κ Ξ)
     (if (= (length rands) 1)
         (let ((v (for/fold ((v ⊥)) ((w (γ (car rands))))
                    (match w
@@ -75,7 +75,7 @@
           (set (cons v σ)))
         (set)))  
 
-  (define (prim-to-string e rands σ ι κ Ξ ctxs)
+  (define (prim-to-string e rands σ ι κ Ξ)
     (define (helper v seen)
       (match v
         ((addr a)
@@ -99,12 +99,13 @@
        (α (equal? a1 a2)))
       ((_ _) (α-eq? v1 v2))))
 
-  (define (prim-eq? e rands σ ι κ Ξ ctxs)
+  (define (prim-eq? e rands σ ι κ Ξ)
     (if (= (length rands) 2)
         (let* ((w1 (γ (car rands)))
                (w2 (γ (cadr rands)))
                (v (for*/fold ((v ⊥)) ((v1 w1) (v2 w2)) (⊔ v (eq?-helper v1 v2 σ)))))
           (set (cons v σ)))
         (set)))
-  (define (prim-error e rands σ ι κ Ξ ctxs)
+
+  (define (prim-error e rands σ ι κ Ξ)
     (set))
