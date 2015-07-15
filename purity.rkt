@@ -477,48 +477,54 @@
   (let* ((graph (system-graph system))
          (Ξ (system-Ξ system))
          (initial (system-initial system))
-         (ast (ev-e initial))
-         (C (make-hash)))
+         (ast (ev-e initial)))
     
-    (define (traverse S W)
+    (define (traverse S W C)
       (if (set-empty? W)
           C
           (let ((state (set-first W)))
             (if (set-member? S state)
-                (traverse S (set-rest W))
+                (traverse S (set-rest W) C)
                 (let ((update? #f)
                       (successors (hash-ref graph state)))
 
                   ;(printf "\n\n~a\n" state)                
                   
-                  (define (mark-proc! clo)
+                  (define (mark-proc C clo)
                     (let ((current-class (hash-ref C clo)))
-                      (unless (eq? current-class "PROC")
-                        (hash-set! C clo "PROC")
-                        (set! update? #t))))
+                      (if (eq? current-class "PROC")
+                          C
+                          (begin
+                            (set! update? #t)
+                            (hash-set C clo "PROC")))))
                   
-                  (match state
-                    
-                    ((ev («set!» _ x ae) ρ _ _ κ)
-                     (let ((a (env-lookup ρ («id»-x x)))
-                           (ctxs (stack-contexts κ Ξ))
-                           (decl (get-declaration («id»-x x) (ev-e state) ast)))
-                       (for ((τ ctxs))
-                         (let* ((clo (ctx-clo τ))
-                                (λ (clo-λ clo)))
-                           (when (parent-scope-declaration? decl λ ast)
-                             ;(printf "in outer scope ~a ~a: marking ~a proc\n" decl λ clo)
-                             (mark-proc! clo))
-                             ))))
-                    
-                    (_ #f))
+                  (define (handle-state state C)
+                    (match state
+                      ((ev («set!» _ x ae) ρ _ _ κ)
+                       (let ((a (env-lookup ρ («id»-x x)))
+                             (ctxs (stack-contexts κ Ξ))
+                             (decl (get-declaration («id»-x x) (ev-e state) ast)))
+                         (let stack-walk ((ctxs ctxs) (C C))
+                           (if (set-empty? ctxs)
+                               C
+                               (let* ((τ (set-first ctxs))
+                                      (clo (ctx-clo τ))
+                                      (λ (clo-λ clo)))
+                                 (if (parent-scope-declaration? decl λ ast)
+                                     ;(printf "in outer scope ~a ~a: marking ~a proc\n" decl λ clo)
+                                     (let ((C* (mark-proc C clo)))
+                                       (stack-walk (set-rest ctxs) C*))
+                                     (stack-walk (set-rest ctxs) C)))))))
+                      (_ C)))
                   
-                  (traverse (if update? (set) (set-add S state)) (set-union (set-rest W) successors))))))
+                  (let ((C* (handle-state state C)))
+                    (traverse (if update? (set) (set-add S state)) (set-union (set-rest W) successors) C*))))))
       ); end traverse
-    (for ((κ (hash-keys Ξ)))
-      (let ((clo (ctx-clo κ)))
-        (hash-set! C clo "RT")))
-    (traverse (set) (set initial))))
+    (let ((C
+           (for/hash ((κ (hash-keys Ξ)))
+             (let ((clo (ctx-clo κ)))
+               (values clo "RT")))))
+      (traverse (set) (set initial) C))))
 ;;
 
 
