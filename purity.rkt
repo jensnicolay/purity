@@ -425,7 +425,7 @@
 (define (type-eval-1 e)
   (do-eval e type-mach-1))
 ;;
-(define (parent-scope-declaration? decl e ast)
+(define (outer-scope-declaration? decl e ast)
   (let up ((e e))
     (let ((p (parent e ast)))
       (match p
@@ -449,6 +449,11 @@
              (up p)))
         (_ (up p))))))
 
+(define (inner-scope-declaration? decl e)
+  (or (eq? decl e)
+      (for/or ((e* (children e)))
+        (inner-scope-declaration? decl e*))))
+    
 (define (get-declaration name e ast)
   (let up ((e e))
     (let ((p (parent e ast)))
@@ -479,52 +484,106 @@
          (initial (system-initial system))
          (ast (ev-e initial)))
     
-    (define (traverse S W C)
+    (define (traverse S W C R O P)
       (if (set-empty? W)
           C
           (let ((state (set-first W)))
             (if (set-member? S state)
-                (traverse S (set-rest W) C)
+                (traverse S (set-rest W) C R O P)
                 (let ((update? #f)
                       (successors (hash-ref graph state)))
 
                   ;(printf "\n\n~a\n" state)                
                   
-                  (define (mark-proc C clo)
-                    (let ((current-class (hash-ref C clo)))
+                  (define (mark-proc C λ)
+                    (let ((current-class (hash-ref C λ)))
                       (if (eq? current-class "PROC")
                           C
                           (begin
                             (set! update? #t)
-                            (hash-set C clo "PROC")))))
+                            (hash-set C λ "PROC")))))
                   
-                  (define (handle-state state C)
+                  (define (mark-obs C λ)
+                    (let ((current-class (hash-ref C λ)))
+                      (if (or (eq? current-class "OBS") (eq? current-class "PROC"))
+                          C
+                          (begin
+                            (set! update? #t)
+                            (hash-set C λ "OBS")))))
+                  
+                  (define (add-read-dep R a decl λ)
+                    (let* ((key (cons a decl))
+                           (current-deps (hash-ref R key (set))))
+                      (if (set-member? current-deps λ)
+                          R
+                          (begin
+                            (set! update? #t)
+                            (hash-set R key (set-add current-deps λ))))))
+                  
+                  (define (add-potential-obs O a decl λ)
+                    (let* ((key (cons a decl))
+                           (current-os (hash-ref O key (set))))
+                      (if (set-member? current-os λ)
+                          O
+                          (begin
+                            (set! update? #t)
+                            (hash-set O key (set-add current-os λ))))))
+                  
+                  (define (handle-state state C R O P)
                     (match state
+                      
                       ((ev («set!» _ x ae) ρ _ _ κ)
                        (let ((a (env-lookup ρ («id»-x x)))
                              (ctxs (stack-contexts κ Ξ))
                              (decl (get-declaration («id»-x x) (ev-e state) ast)))
                          (let stack-walk ((ctxs ctxs) (C C))
                            (if (set-empty? ctxs)
-                               C
+                               (let update-o ((O O) (r-deps (hash-ref R (cons a decl) (set))))
+                                 (if (set-empty? r-deps)
+                                     (values C R O P)
+                                     (let* ((r-dep (set-first r-deps))
+                                            (O* (add-potential-obs O a decl r-dep)))
+                                       (update-o O* (set-rest r-deps)))))
                                (let* ((τ (set-first ctxs))
                                       (clo (ctx-clo τ))
                                       (λ (clo-λ clo)))
-                                 (if (parent-scope-declaration? decl λ ast)
-                                     ;(printf "in outer scope ~a ~a: marking ~a proc\n" decl λ clo)
-                                     (let ((C* (mark-proc C clo)))
+                                 (if (outer-scope-declaration? decl λ ast)
+                                     (let ((C* (mark-proc C λ)))
                                        (stack-walk (set-rest ctxs) C*))
                                      (stack-walk (set-rest ctxs) C)))))))
-                      (_ C)))
+                      
+                      ((ev («id» _ x) ρ _ _ κ)
+                       (let ((a (env-lookup ρ x))
+                             (ctxs (stack-contexts κ Ξ))
+                             (decl (get-declaration x (ev-e state) ast)))
+                         (let stack-walk ((ctxs ctxs) (C C) (R R))
+                           (if (set-empty? ctxs)
+                               (values C R O P)
+                               (let* ((τ (set-first ctxs))
+                                      (clo (ctx-clo τ))
+                                      (λ (clo-λ clo)))
+                                 (if (inner-scope-declaration? decl λ)
+                                     (stack-walk (set-rest ctxs) C R)
+                                     (if (outer-scope-declaration? decl λ ast)
+                                         (let* ((R* (add-read-dep R a decl λ))
+                                                (potential-o (hash-ref O (cons a decl) (set)))
+                                                (C* (if (set-member? potential-o λ)
+                                                        (mark-obs C λ)
+                                                        C)))
+                                           (stack-walk (set-rest ctxs) C* R*))
+                                         (stack-walk (set-rest ctxs) C R))))))))
+                                         
+                      (_ (values C R O P))))
                   
-                  (let ((C* (handle-state state C)))
-                    (traverse (if update? (set) (set-add S state)) (set-union (set-rest W) successors) C*))))))
+                  (let-values (((C* R* O* P*) (handle-state state C R O P)))
+                    (traverse (if update? (set) (set-add S state)) (set-union (set-rest W) successors) C* R* O* P*))))))
       ); end traverse
     (let ((C
            (for/hash ((κ (hash-keys Ξ)))
-             (let ((clo (ctx-clo κ)))
-               (values clo "RT")))))
-      (traverse (set) (set initial) C))))
+             (let* ((clo (ctx-clo κ))
+                    (λ (clo-λ clo)))
+               (values λ "RT")))))
+      (traverse (set) (set initial) C (hash) (hash) (hash)))))
 ;;
 
 
@@ -568,7 +627,7 @@
 (define (purity-test)
   (define (test e expected)
     (let* ((C (purity-analysis (type-mach-0 e)))
-           (C* (make-hash (hash-map C (lambda (k v) (cons («lam»-l (clo-λ k)) v))))))
+           (C* (make-hash (hash-map C (lambda (k v) (cons («lam»-l k) v))))))
       (unless (equal? (make-hash expected) C*)
           (printf "error ~a\n~a ~a\n" e expected C*))))
   (test fac '((2 . "RT")))
@@ -592,6 +651,11 @@
   (test '(letrec ((f (lambda (n) (let ((m (- n 1))) (f m))))) (f 123)) '((2 . "RT")))
   (test '(letrec ((f (lambda (n) (let ((m (- n 1))) (let ((u (set! n m))) (f n)))))) (f 123)) '((2 . "RT")))
   (test '(letrec ((f (lambda (n) (let ((u (set! n 333))) (f n))))) (f 123)) '((2 . "RT")))
+  (test '(letrec ((f (lambda (n) (let ((u (set! n 333))) (f n))))) (f 123)) '((2 . "RT")))
+  (test '(let ((z #f)) (let ((f (lambda () z))) (let ((u (f))) (set! z #t)))) '((5 . "RT")))
+  (test '(let ((z #f)) (let ((f (lambda () z))) (let ((u (f))) (let ((v (set! z #t))) (f))))) '((5 . "OBS")))
+  (test '(let ((f (lambda () (let ((x 1)) (let ((g (lambda () x))) (let ((u (g))) (let ((v (set! x 5))) (g)))))))) (f)) '((2 . "RT") (8 . "OBS")))
+  (test '(let ((f (lambda () (let ((x 1)) (let ((g (lambda () x))) (let ((uu x)) (let ((u (g))) (let ((v (set! x 5))) (g))))))))) (f)) '((2 . "RT") (8 . "OBS")))
   )
 
 
