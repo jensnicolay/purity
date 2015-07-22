@@ -552,6 +552,11 @@
                                        (stack-walk (set-rest ctxs) C*))
                                      (stack-walk (set-rest ctxs) C)))))))
                       
+                      ((ev («app» _ («id» _ "set-car!") `(,ae0 ,ae1)) ρ σ ι κ)
+                       (let ((a (env-lookup ρ e0))
+                             (ctxs (stack-contexts κ Ξ))
+                             (decl (get-declaration («id»-x x) (ev-e state) ast)))
+                      
                       ((ev («id» _ x) ρ _ _ κ)
                        (let ((a (env-lookup ρ x))
                              (ctxs (stack-contexts κ Ξ))
@@ -572,6 +577,8 @@
                                                         C)))
                                            (stack-walk (set-rest ctxs) C* R*))
                                          (stack-walk (set-rest ctxs) C R))))))))
+                      
+                       (values C R O P))
                                          
                       (_ (values C R O P))))
                   
@@ -656,6 +663,9 @@
   (test '(let ((z #f)) (let ((f (lambda () z))) (let ((u (f))) (let ((v (set! z #t))) (f))))) '((5 . "OBS")))
   (test '(let ((f (lambda () (let ((x 1)) (let ((g (lambda () x))) (let ((u (g))) (let ((v (set! x 5))) (g)))))))) (f)) '((2 . "RT") (8 . "OBS")))
   (test '(let ((f (lambda () (let ((x 1)) (let ((g (lambda () x))) (let ((uu x)) (let ((u (g))) (let ((v (set! x 5))) (g))))))))) (f)) '((2 . "RT") (8 . "OBS")))
+  (test '(let ((f (lambda () (let ((o (cons 1 2))) (set-car! o 3))))) (f)) '((2 . "RT")))
+  (test '(let ((f (lambda () (let ((g (lambda () (cons 1 2)))) (let ((o (g))) (car o)))))) (f)) '((2 . "RT") (5 . "RT")))
+  (test '(let ((f (lambda () (let ((o (cons 1 2))) (let ((g (lambda () (set-car! o 3)))) (let ((u (g))) (car o))))))) (f)) '((2 . "RT") (11 . "PROC")))
   )
 
 
