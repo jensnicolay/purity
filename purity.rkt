@@ -488,14 +488,20 @@
       (match state
         ((ev («set!» _ x ae) ρ σ ι κ)
          (let ((decl (get-declaration («id»-x x) x ast)))
-           (if (fresh? decl fresh ast)
+           (if (fresh? ae fresh ast)
+               (set-add fresh decl)
+               (set-remove fresh decl))))
+        ((ev («let» _ x e0 e1) ρ σ ι κ)
+         (let ((decl (get-declaration («id»-x x) x ast)))
+           (if (fresh? e0 fresh ast)
                (set-add fresh decl)
                (set-remove fresh decl))))
         ((ko (cons (letk x e ρ) ι) κ v σ)
          (let ((decl (get-declaration («id»-x x) x ast)))
-           (if (set-member? E (fr)) 
+           (if (set-member? E (fr))
                (set-add fresh decl)
-               (set-remove fresh decl))))
+               ;(set-remove fresh decl)))) ; can never overrule ev let
+               fresh)))
         (_ fresh)))
     
     (define (traverse S W Fκ Fς)
@@ -788,6 +794,10 @@
   (test '(letrec ((f (lambda (p) (let ((pp (cons 1 2))) (let ((u (set-car! pp p))) (f pp)))))) (f 3)) '((2 . "RT")))
   (test '(letrec ((f (lambda (p) (let ((o (cons 1 p))) (let ((u (set-car! o 3))) (f o)))))) (f 2)) '((2 . "RT")))
   (test '(letrec ((f (lambda () (let ((o (cons 1 2))) (let ((u (set-car! o 3))) (let ((v (f))) o)))))) (f)) '((2 . "RT")))
+  (test '(let ((o (cons 1 2))) (letrec ((f (lambda () (let ((p (cons 1 2))) (let ((u (set-cdr! p 3))) (let ((v (set! p o))) (let ((w (set-cdr! p 4))) (f)))))))) (f))) '((8 . "PROC")))
+  (test '(let ((o (cons 1 2))) (letrec ((f (lambda () (let ((p (cons 1 2))) (let ((u (set-cdr! p 3))) (let ((p o)) (let ((w (set-cdr! p 4))) (f)))))))) (f))) '((8 . "PROC")))
+  (test '(let ((o (cons 1 2))) (letrec ((f (lambda () (let ((p o)) (let ((pp (cons 1 2))) (let ((v (set! p pp))) (let ((w (set-cdr! p 4))) (f)))))))) (f))) '((8 . "RT")))
+  (test '(let ((o (cons 1 2))) (letrec ((f (lambda () (let ((p o)) (let ((pp (cons 1 2))) (let ((p pp)) (let ((w (set-cdr! p 4))) (f)))))))) (f))) '((8 . "RT")))
   )
 
 
