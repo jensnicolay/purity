@@ -98,7 +98,7 @@
         (fprintf dotf "~a [label=\"~a | ~a\"];\n" i i (state-repr s))))
     (hash-for-each graph (lambda (s out)
                            (let ((i1 (vector-member s states))
-                                 (is (set-map out (lambda (s2) (vector-member s2 states)))))
+                                 (is (set-map out (lambda (s2E) (vector-member (car s2E) states)))))
                              (for-each (lambda (i2)
                                          (fprintf dotf "~a -> ~a;\n" i1 i2)) is))))
     (fprintf dotf "}")

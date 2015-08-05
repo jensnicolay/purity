@@ -3,7 +3,7 @@
         (let* ((a (alloc "!%cons" e))
                (v (α (cons (car rands) (cadr rands))))
                (σ* (store-alloc σ a v)))
-          (set (cons (α (addr a)) σ*)))
+          (set (list (α (addr a)) σ* (set (fr)))))
         (set)))
 
   (define (prim-car e rands σ ι κ Ξ)
@@ -14,7 +14,7 @@
              (set-union states 
                         (for/fold ((states2 (set))) ((ww (γ (store-lookup σ a))))
                           (match ww
-                            ((cons v _) (set-add states2 (cons v σ)))
+                            ((cons v _) (set-add states2 (list v σ (set (rp a "car" (car («app»-aes e)))))))
                             (_ states2)))))
             (_ states)))
         (set)))
@@ -29,7 +29,7 @@
                           (match ww
                             ((cons _ vcdr)
                              (let ((σ* (store-update σ a (α (cons (cadr rands) vcdr)))))
-                               (set-add states2 (cons (cadr rands) σ*))))
+                               (set-add states2 (list (cadr rands) σ* (set (wp a "car" (car («app»-aes e))))))))
                             (_ states2)))))
             (_ states)))
         (set)))
@@ -42,7 +42,7 @@
              (set-union states 
                         (for/fold ((states2 (set))) ((ww (γ (store-lookup σ a))))
                           (match ww
-                            ((cons _ v) (set-add states2 (cons v σ)))
+                            ((cons _ v) (set-add states2 (list v σ (set (rp a "cdr" (car («app»-aes e)))))))
                             (_ states2)))))
             (_ states)))
         (set)))
@@ -57,7 +57,7 @@
                           (match ww
                             ((cons vcar _)
                              (let ((σ* (store-update σ a (α (cons vcar (cadr rands))))))
-                               (set-add states2 (cons (cadr rands) σ*))))
+                               (set-add states2 (list (cadr rands) σ* (set (wp a "cdr" (car («app»-aes e))))))))
                             (_ states2)))))
             (_ states)))
         (set)))

@@ -143,3 +143,6 @@
 (define sound6 (file->value "test/sound6.scm"))
 (define sound7 (file->value "test/sound7.scm"))
 (define sound8 (file->value "test/sound8.scm"))
+(define treenode1 '(let ((tree-node (lambda (l) (let ((this (cons 1 2))) (let ((a this)) (set-car! a l)))))) 
+           (letrec ((f (lambda (levels) (let ((left #f)) (let ((c (<= levels 1))) (let ((u (if c (set! left 'null) (let ((n (- levels 1))) (let ((ll (f n))) (set! left ll)))))) (tree-node left)))))))
+             (f 3))))
