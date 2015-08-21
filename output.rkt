@@ -87,7 +87,7 @@
 
 
 
-(define (generate-dot e sys name)
+(define (generate-dot sys name)
   
   (let* ((graph (system-graph sys))
          (states (system-states sys))
@@ -108,5 +108,5 @@
 
 (define (graph e mach name)
   (parameterize ((TIMELIMIT 1))
-    (generate-dot e (mach e) name)))
+    (generate-dot (mach e) name)))
 
