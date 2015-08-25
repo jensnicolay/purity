@@ -149,7 +149,9 @@
 
 (define (purity-test)
   (define (test e expected)
-    (let* ((C (purity-analysis (type-mach-0 e)))
+    (let* ((sys (type-mach-0 e))
+           (Fς (fresh-analysis sys))
+           (C (purity-analysis sys Fς))
            (C* (make-hash (hash-map C (lambda (k v) (cons («lam»-l k) v))))))
       (unless (equal? (make-hash expected) C*)
           (printf "error ~a\n~a ~a\n" e expected C*))))
