@@ -64,31 +64,29 @@
 
   (define (prim-pair e rands σ ι κ Ξ)
     (if (= (length rands) 1)
-        (let ((v (for/fold ((v ⊥)) ((w (γ (car rands))))
-                   (match w
-                     ((addr a)
-                      (for/fold ((v2 v)) ((ww (γ (store-lookup σ a))))
-                        (match ww
-                             ((cons _ _) (⊔ v2 (α #t)))
-                             (_ (⊔ v2 (α #f))))))
-                     (_ (⊔ v (α #f)))))))
-          (set (cons v σ)))
-        (set)))  
+        (for/fold ((states (set))) ((w (γ (car rands))))
+          (match w
+            ((addr a)
+             (set-union states 
+                        (for/fold ((states2 (set))) ((ww (γ (store-lookup σ a))))
+                          (set-add states2 (list (α (pair? ww)) σ (set))))))
+            (_ (set-add states (list (α #f) σ (set))))))
+        (set)))
 
   (define (prim-to-string e rands σ ι κ Ξ)
     (define (helper v seen)
       (match v
         ((addr a)
          (if (set-member? seen a)
-             (set (cons (α (~a v)) σ))
+             (set (list (α (~a v)) σ (set)))
              (begin
                (apply set-union (set-map (γ (store-lookup σ a)) (lambda (w) (helper w (set-add seen a))))))))
         ((cons v1 v2)
          (let ((s1 (helper v1 seen))
                (s2 (helper v2 seen)))
            (for*/set ((sσ1 s1) (sσ2 s2))
-             (cons (α (~a (cons (car sσ1) (car sσ2)))) σ))))
-        (_ (set (cons (α (~a v)) σ)))))
+             (list (α (~a (cons (car sσ1) (car sσ2)))) σ (set)))))
+        (_ (set (list (α (~a v)) σ (set))))))
     (if (= (length rands) 1)
         (apply set-union (set-map (γ (car rands)) (lambda (w) (helper w (set)))))
         (set)))
@@ -104,7 +102,7 @@
         (let* ((w1 (γ (car rands)))
                (w2 (γ (cadr rands)))
                (v (for*/fold ((v ⊥)) ((v1 w1) (v2 w2)) (⊔ v (eq?-helper v1 v2 σ)))))
-          (set (cons v σ)))
+          (set (list v σ (set))))
         (set)))
 
   (define (prim-error e rands σ ι κ Ξ)
