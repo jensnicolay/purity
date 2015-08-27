@@ -154,7 +154,7 @@
            (ast (ev-e initial))
            (Ξ (system-Ξ sys))
            (Fς (fresh-analysis sys))
-           (handler (make-handler ast Ξ Fς))
+           (handler (make-handler ast Ξ Fς (lambda _ #t)))
            (C (purity-analysis sys handler))
            (C* (make-hash (hash-map C (lambda (k v) (cons («lam»-l k) v))))))
       (unless (equal? (make-hash expected) C*)

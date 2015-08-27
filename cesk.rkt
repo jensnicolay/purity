@@ -134,7 +134,7 @@
 (define (stack-addresses ι κ)
   (set-union (if (null? ι) (set) (apply set-union (map touches ι))) (if κ (ctx-A κ) (set))))
 
-(define (make-machine global α γ ⊥ ⊔ alloc store-update true? false? α-eq?)
+(define (make-machine global α γ ⊥ ⊔ alloc K store-update true? false? α-eq?)
   
   (define (explore e)
     (define Ξ (make-hash))
@@ -279,7 +279,7 @@
                    (match w
                      ((clo (and λ («lam» _ x e0)) ρ**)
                       (let* ((A (stack-addresses ι κ))
-                             (τ (ctx #f λ #f (hash-keys σ) A)))
+                             (τ (K e w rvs σ A)))
                         
                         (define (bind-loop x vs ρ* σ*)
                           (match x
@@ -303,6 +303,8 @@
         ((ko (cons (haltk) _) #f v _)
          (set))
         ((ko ι κ v σ)
+         ;(when (equal? v ⊥)
+         ;  (printf "o oh\n"))
          (let* ((ικGs (stack-pop ι κ Ξ (set))))
            (let loop ((ικGs ικGs) (succ (set)))
              (if (set-empty? ικGs)
