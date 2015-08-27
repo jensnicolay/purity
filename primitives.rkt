@@ -8,69 +8,74 @@
 
   (define (prim-car e rands σ ι κ Ξ)
     (if (= (length rands) 1)
-        (for/fold ((states (set))) ((w (γ (car rands))))
-          (match w
-            ((addr a)
-             (set-union states 
-                        (for/fold ((states2 (set))) ((ww (γ (store-lookup σ a))))
-                          (match ww
-                            ((cons v _) (set-add states2 (list v σ (set (rp a "car" (car («app»-aes e)))))))
-                            (_ states2)))))
-            (_ states)))
-        (set)))
-
-  (define (prim-set-car! e rands σ ι κ Ξ)
-    (if (= (length rands) 2)
-        (for/fold ((states (set))) ((w (γ (car rands))))
-          (match w
-            ((addr a)
-             (set-union states 
-                        (for/fold ((states2 (set))) ((ww (γ (store-lookup σ a))))
-                          (match ww
-                            ((cons _ vcdr)
-                             (let ((σ* (store-update σ a (α (cons (cadr rands) vcdr)))))
-                               (set-add states2 (list (cadr rands) σ* (set (wp a "car" (car («app»-aes e))))))))
-                            (_ states2)))))
-            (_ states)))
+        (let-values (((v E)
+                      (for/fold ((v ⊥) (E (set))) ((w (γ (car rands))))
+                        (match w
+                          ((addr a)
+                           (values (for/fold ((v v)) ((ww (γ (store-lookup σ a))))
+                                     (match ww
+                                       ((cons v-car _) (⊔ v v-car))
+                                       (_ v)))
+                                   (set-add E (rp a "car" (car («app»-aes e))))))
+                          (_ (values v E))))))
+          (set (list v σ E)))
         (set)))
 
   (define (prim-cdr e rands σ ι κ Ξ)
     (if (= (length rands) 1)
-        (for/fold ((states (set))) ((w (γ (car rands))))
-          (match w
-            ((addr a)
-             (set-union states 
-                        (for/fold ((states2 (set))) ((ww (γ (store-lookup σ a))))
-                          (match ww
-                            ((cons _ v) (set-add states2 (list v σ (set (rp a "cdr" (car («app»-aes e)))))))
-                            (_ states2)))))
-            (_ states)))
+        (let-values (((v E)
+                      (for/fold ((v ⊥) (E (set))) ((w (γ (car rands))))
+                        (match w
+                          ((addr a)
+                           (values (for/fold ((v v)) ((ww (γ (store-lookup σ a))))
+                                     (match ww
+                                       ((cons _ v-cdr) (⊔ v v-cdr))
+                                       (_ v)))
+                                   (set-add E (rp a "cdr" (car («app»-aes e))))))
+                          (_ (values v E))))))
+          (set (list v σ E)))
         (set)))
 
-  (define (prim-set-cdr! e rands σ ι κ Ξ)
+                        
+(define (prim-set-car! e rands σ ι κ Ξ)
     (if (= (length rands) 2)
-        (for/fold ((states (set))) ((w (γ (car rands))))
-          (match w
-            ((addr a)
-             (set-union states 
-                        (for/fold ((states2 (set))) ((ww (γ (store-lookup σ a))))
-                          (match ww
-                            ((cons vcar _)
-                             (let ((σ* (store-update σ a (α (cons vcar (cadr rands))))))
-                               (set-add states2 (list (cadr rands) σ* (set (wp a "cdr" (car («app»-aes e))))))))
-                            (_ states2)))))
-            (_ states)))
+        (let-values (((σ E)
+                      (for/fold ((σ σ) (E (set))) ((w (γ (car rands))))
+                        (match w
+                          ((addr a)
+                           (values (for/fold ((σ σ)) ((ww (γ (store-lookup σ a))))
+                                     (match ww
+                                       ((cons _ v-cdr) (store-update σ a (α (cons (cadr rands) v-cdr))))
+                                       (_ σ)))
+                                   (set-add E (wp a "car" (car («app»-aes e))))))
+                          (_ (values σ E))))))
+          (set (list (α 'undefined) σ E)))
         (set)))
+
+(define (prim-set-cdr! e rands σ ι κ Ξ)
+  (if (= (length rands) 2)
+      (let-values (((σ E)
+                    (for/fold ((σ σ) (E (set))) ((w (γ (car rands))))
+                      (match w
+                        ((addr a)
+                         (values (for/fold ((σ σ)) ((ww (γ (store-lookup σ a))))
+                                   (match ww
+                                     ((cons v-car _) (store-update σ a (α (cons v-car (cadr rands)))))
+                                     (_ σ)))
+                                 (set-add E (wp a "cdr" (car («app»-aes e))))))
+                        (_ (values σ E))))))
+        (set (list (α 'undefined) σ E)))
+      (set)))
 
   (define (prim-pair e rands σ ι κ Ξ)
     (if (= (length rands) 1)
-        (for/fold ((states (set))) ((w (γ (car rands))))
-          (match w
-            ((addr a)
-             (set-union states 
-                        (for/fold ((states2 (set))) ((ww (γ (store-lookup σ a))))
-                          (set-add states2 (list (α (pair? ww)) σ (set))))))
-            (_ (set-add states (list (α #f) σ (set))))))
+        (let ((v (for/fold ((v ⊥)) ((w (γ (car rands))))
+                   (match w
+                     ((addr a)
+                      (for/fold ((v v)) ((ww (γ (store-lookup σ a))))
+                        (⊔ v (α (pair? ww)))))
+                     (_ (α #f))))))
+          (set (list v σ (set))))
         (set)))
 
   (define (prim-to-string e rands σ ι κ Ξ)

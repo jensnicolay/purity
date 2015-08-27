@@ -46,7 +46,6 @@
 (struct ko (ι κ v σ) #:transparent
   #:property prop:custom-write (lambda (v p w?)
                                  (fprintf p "KO ι ~a\nκ ~a\nv ~a\nσ ~a" (ko-ι v) (ko-κ v) (ko-v v) (ko-σ v))))
-(struct ctx (e clo vs σ A) #:transparent)
 (struct letk (x e ρ) #:transparent)
 (struct letreck (a e ρ) #:transparent)
 (struct haltk () #:transparent)
@@ -65,6 +64,9 @@
 (struct system (states duration initial graph Ξ ⊥ ⊔ γ answer? exit msg) #:transparent
   #:property prop:custom-write (lambda (v p w?)
                                  (fprintf p "<sys #~a ~a ~a>" (vector-length (system-states v)) (system-exit v) (~a (system-msg v) #:max-width 70))))
+
+(struct ctx (e λ vs σ A) #:transparent)
+(define ctx-Aσ ctx-σ)
 
 (struct wv (a x) #:transparent)
 (struct rv (a x) #:transparent)
@@ -275,9 +277,9 @@
              (if (null? rands)
                  (for/fold ((succ (set))) ((w (γ v)))
                    (match w
-                     ((clo («lam» _ x e0) ρ**)
+                     ((clo (and λ («lam» _ x e0)) ρ**)
                       (let* ((A (stack-addresses ι κ))
-                             (τ (ctx e w rvs σ A)))
+                             (τ (ctx #f λ #f (hash-keys σ) A)))
                         
                         (define (bind-loop x vs ρ* σ*)
                           (match x
@@ -342,6 +344,11 @@
                               (let* ((existing (hash-ref graph q (set)))
                                      (updated (set-union existing succs-gc)))
                                 (hash-set! graph q updated)
+                                ;(when (> (set-count updated) 10)
+                                ;  (printf "~a has ~a succs\n" (state-repr q) (set-count updated))
+                                ;  (for ((succ updated))
+                                ;    (printf "\t~a\n" (state-repr (car succ))))
+                                ;  )
                                 (when (> Ξi old-Ξi)
                                   (set-clear! visited))
                                 (explore-loop (set-union new-states (set-rest todo))))
