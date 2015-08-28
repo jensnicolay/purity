@@ -194,6 +194,9 @@
     ((null? v) (set v))
     (else (error "bwek" v))))
 
+(define (pt-eq? v1 v2)
+  (set PRIM))
+
 (define pt-global
   (let ((->prim
          (lambda vs
@@ -240,4 +243,4 @@
       ("char-numeric?" . ,(pt-α (prim2 "char-numeric?" ->prim)))
       ("char=?" . ,(pt-α (prim2 "char=?" ->prim))))))
 
-(define pt-lattice (lattice pt-α type-γ type-⊥ type-⊔ type-true? type-false? type-eq? pt-global))
+(define pt-lattice (lattice pt-α type-γ type-⊥ type-⊔ type-true? type-false? pt-eq? pt-global))

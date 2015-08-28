@@ -363,7 +363,7 @@
 (define (server-flow-test)
   (parameterize ((CESK-TIMELIMIT 60) (THROW #f))
     (apply flow-test '(fac fib fib-mut blur eta mj09 gcipd kcfa2 kcfa3 rotate loop2
-                                     sat collatz rsa primtest factor nqueens boyer dderiv mceval))))
+                                     sat collatz rsa primtest factor nqueens dderiv boyer mceval))))
 
 (define THROW (make-parameter #t))
 

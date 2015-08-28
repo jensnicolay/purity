@@ -358,7 +358,7 @@
                                 ;  (printf "~a has ~a succs\n" (state-repr q) (set-count updated))
                                 ;  (for ((succ updated))
                                 ;    (printf "\t~a\n" (state-repr (car succ))))
-                                ; )
+                                ;)
                                 (when (> Ξi old-Ξi)
                                   (set-clear! visited))
                                 (explore-loop (set-union new-states (set-rest todo))))
