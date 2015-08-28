@@ -134,7 +134,15 @@
 (define (stack-addresses ι κ)
   (set-union (if (null? ι) (set) (apply set-union (map touches ι))) (if κ (ctx-A κ) (set))))
 
-(define (make-machine global α γ ⊥ ⊔ alloc K store-update true? false? α-eq?)
+(define (make-machine lattice alloc K store-update)
+
+  (define α (lattice-α lattice))
+  (define γ (lattice-γ lattice))
+  (define ⊥ (lattice-⊥ lattice))
+  (define ⊔ (lattice-⊔ lattice))
+  (define true? (lattice-true? lattice))
+  (define false? (lattice-false? lattice))
+  (define α-eq? (lattice-eq? lattice))
   
   (define (explore e)
     (define Ξ (make-hash))
@@ -143,7 +151,7 @@
     (include "primitives.rkt")
     
     (define (inject e)
-      (let ((global* (append global
+      (let ((global* (append (lattice-global lattice)
                              `(("eq?" . ,(α (prim "eq?" prim-eq?)))
                                ("~a" . ,(α (prim "~a" prim-to-string)))
                                ("error" . ,(α (prim "error" prim-error)))
@@ -190,7 +198,7 @@
       (if (pair? e)
           (match-let (((cons car-v car-σ) (alloc-literal (car e) σ)))
             (match-let (((cons cdr-v cdr-σ) (alloc-literal (cdr e) car-σ)))
-              (let ((a (alloc "%$lit" e)))
+              (let ((a (alloc "%cons" e)))
                 (cons (α (addr a)) (store-alloc cdr-σ a (α (cons car-v cdr-v)))))))
           (cons (α e) σ)))
     
@@ -346,7 +354,7 @@
                               (let* ((existing (hash-ref graph q (set)))
                                      (updated (set-union existing succs-gc)))
                                 (hash-set! graph q updated)
-                                ;(when (> (set-count updated) 2)
+                                ;(when (> (set-count updated) 3)
                                 ;  (printf "~a has ~a succs\n" (state-repr q) (set-count updated))
                                 ;  (for ((succ updated))
                                 ;    (printf "\t~a\n" (state-repr (car succ))))
@@ -384,7 +392,7 @@ explore)
 ;; allocators
 (define conc-alloc-counter 0)
 (define conc-alloc
-  (lambda (_ __)
+  (lambda _
     (set! conc-alloc-counter (add1 conc-alloc-counter))
     conc-alloc-counter))
 

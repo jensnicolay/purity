@@ -1,6 +1,6 @@
   (define (prim-cons e rands σ ι κ Ξ)
     (if (= (length rands) 2)
-        (let* ((a (alloc "!%cons" e))
+        (let* ((a (alloc "%cons" e))
                (v (α (cons (car rands) (cadr rands))))
                (σ* (store-alloc σ a v)))
           (set (list (α (addr a)) σ* (set (fr)))))

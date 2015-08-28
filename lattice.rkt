@@ -1,3 +1,5 @@
+(struct lattice (α γ ⊥ ⊔ true? false? eq? global))
+
 ;; conc lattice
 (define (conc-α v)
   v)
@@ -69,7 +71,9 @@
     ("%random" . ,(conc-α (prim2 "%random" %random)))))
 
 (define (conc-eq? v1 v2)
-  (eq? v1 v2))    
+  (eq? v1 v2))
+
+(define conc-lattice (lattice conc-α conc-γ conc-⊥ conc-⊔ conc-true? conc-false? conc-eq? conc-global))
 ;;
 
 ;; type lattice
@@ -168,4 +172,72 @@
 
 (define (type-eq? v1 v2)
   (set BOOL))
+
+(define type-lattice (lattice type-α type-γ type-⊥ type-⊔ type-true? type-false? type-eq? type-global))
 ;;
+
+;; points-to lattice
+(define PRIM "PRIM")
+
+(define (pt-α v)
+  (cond
+    ((number? v) (set PRIM))
+    ((boolean? v) (set PRIM))
+    ((symbol? v) (set PRIM))
+    ((string? v) (set PRIM))
+    ((char? v) (set PRIM))
+    ((clo? v) (set v))
+    ((prim? v) (set v))
+    ((prim2? v) (set v))
+    ((addr? v) (set v))
+    ((pair? v) (set v))
+    ((null? v) (set v))
+    (else (error "bwek" v))))
+
+(define pt-global
+  (let ((->prim
+         (lambda vs
+           (set PRIM))))
+    `(("=" . ,(pt-α (prim2 "=" ->prim)))
+      ("<" . ,(pt-α (prim2 "<" ->prim)))
+      ("<=" . ,(pt-α (prim2 "<=" ->prim)))
+      (">" . ,(pt-α (prim2 ">" ->prim)))
+      (">=" . ,(pt-α (prim2 ">=" ->prim)))
+      ("+" . ,(pt-α (prim2 "+" ->prim)))
+      ("-" . ,(pt-α (prim2 "-" ->prim)))
+      ("*" . ,(pt-α (prim2 "*" ->prim)))
+      ("/" . ,(pt-α (prim2 "/" ->prim)))
+      ("not" . ,(pt-α (prim2 "not" ->prim)))
+      ("and" . ,(pt-α (prim2 "and" ->prim)))
+      ("or" . ,(pt-α (prim2 "or" ->prim)))
+      ("gcd" . ,(pt-α (prim2 "gcd" ->prim)))
+      ("modulo" . ,(pt-α (prim2 "modulo" ->prim)))
+      ("remainder" . ,(pt-α (prim2 "remainder" ->prim)))
+      ("quotient" . ,(pt-α (prim2 "quotient" ->prim)))
+      ("ceiling" . ,(pt-α (prim2 "ceiling" ->prim)))
+      ("log" . ,(pt-α (prim2 "log" ->prim)))
+      ("even?" . ,(pt-α (prim2 "even?" ->prim)))
+      ("odd?" . ,(pt-α (prim2 "odd?" ->prim)))
+      ("symbol?" . ,(pt-α (prim2 "symbol?" ->prim)))
+      ("null?" . ,(pt-α (prim2 "null?" ->prim)))
+      ("char?" . ,(pt-α (prim2 "char?" ->prim)))
+      ("%random" . ,(pt-α (prim2 "%random" ->prim)))
+      ("integer?" . ,(pt-α (prim2 "integer?" ->prim)))
+      ("random" . ,(pt-α (prim2 "random" ->prim)))
+      ("string-length" . ,(pt-α (prim2 "string-length" ->prim)))
+      ("string-ref" . ,(pt-α (prim2 "string-ref" ->prim)))
+      ("list->string" . ,(pt-α (prim2 "list->string" ->prim)))
+      ("number?" . ,(pt-α (prim2 "number?" ->prim)))
+      ("number->string" . ,(pt-α (prim2 "number->string" ->prim)))
+      ("string?" . ,(pt-α (prim2 "string?" ->prim)))
+      ("string->symbol" . ,(pt-α (prim2 "string->symbol" ->prim)))
+      ("symbol->string" . ,(pt-α (prim2 "symbol->string" ->prim)))
+      ;("list?" . ,(type-α (prim2 "list?" any->bool)))
+      ;("pair?" . ,(type-α (prim2 "pair?" any->bool)))
+      ("string-append" . ,(pt-α (prim2 "string->append" ->prim)))
+      ("char->integer" . ,(pt-α (prim2 "char->integer" ->prim)))
+      ("char-alphabetic?" . ,(pt-α (prim2 "char-alphabetic?" ->prim)))
+      ("char-numeric?" . ,(pt-α (prim2 "char-numeric?" ->prim)))
+      ("char=?" . ,(pt-α (prim2 "char=?" ->prim))))))
+
+(define pt-lattice (lattice pt-α type-γ type-⊥ type-⊔ type-true? type-false? type-eq? pt-global))

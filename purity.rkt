@@ -23,9 +23,9 @@
 (define (ctx-lim3 e clo rvs σ A)
   (ctx #f #f #f #f A))
 
-(define conc-mach (make-machine conc-global conc-α conc-γ conc-⊥ conc-⊔ conc-alloc ctx-lim strong-update conc-true? conc-false? conc-eq?))
-(define type-mach-0 (make-machine type-global type-α type-γ type-⊥ type-⊔ mono-alloc ctx-lim weak-update type-true? type-false? type-eq?))
-(define type-mach-1 (make-machine type-global type-α type-γ type-⊥ type-⊔ poly-alloc ctx-lim weak-update type-true? type-false? type-eq?))
+(define conc-mach (make-machine conc-lattice conc-alloc ctx strong-update))
+(define type-mach-0 (make-machine pt-lattice mono-alloc ctx-lim2 weak-update))
+(define type-mach-1 (make-machine type-lattice poly-alloc ctx-lim weak-update))
 
 (define (conc-eval e)
   (do-eval e conc-mach))
