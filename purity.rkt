@@ -123,7 +123,7 @@
                        (fresh (hash-ref Fκ κ (set)))
                        (fresh* (handle-state state E fresh))
                        (Fκ* (hash-set Fκ κ fresh*))
-                       (Fς* (hash-set Fς state fresh*))
+                       (Fς* (hash-set Fς state Fκ))
                        (ΔW (hash-ref graph state)))
                   (traverse (set-add S state) (set-union (set-rest W) ΔW) Fκ* Fς*))))))
     
@@ -246,6 +246,34 @@
                                    C)))
                       (stack-walk (set-rest ctxs) C* R*))
                     (stack-walk (set-rest ctxs) C R))))))))
+; P FRESH
+(define (handle-wp-fresh x ctxs ctx-λ Fκ ast C R O)
+  (let stack-walk ((ctxs ctxs) (C C))
+    (if (set-empty? ctxs)
+        (values C R O)
+        (let* ((κ (set-first ctxs))
+               (fresh (hash-ref Fκ κ (set))))
+          (if (fresh? x fresh ast)
+              (stack-walk (set-rest ctxs) C)
+              (let* ((λ (ctx-λ κ))
+                     (C* (mark-proc C λ)))
+                (stack-walk (set-rest ctxs) C*)))))))
+(define (handle-rp-fresh a n x ctxs ctx-λ Fκ ast C R O)
+  (let stack-walk ((ctxs ctxs) (C C) (R R))
+    (if (set-empty? ctxs)
+        (values C R O)
+        (let* ((κ (set-first ctxs))
+               (fresh (hash-ref Fκ κ (set))))
+          (if (fresh? x fresh ast)
+              (stack-walk (set-rest ctxs) C R)
+              (let* ((λ (ctx-λ κ))
+                     (R* (add-read-dep R a n λ))
+                     (potential-o (hash-ref O (cons a n) (set)))
+                     (C* (if (set-member? potential-o λ)
+                             (mark-obs C λ)
+                             C)))
+                (stack-walk (set-rest ctxs) C* R*)))))))
+
 ; FALLBACK
 (define (handle-w ctxs ctx-λ C R O)
   (let stack-walk ((ctxs ctxs) (C C))
@@ -325,15 +353,11 @@
                               (let* ((r-dep (set-first r-deps))
                                      (O* (add-potential-obs O a n r-dep)))
                                 (update-o O* (set-rest r-deps)))))))
-               (if (fresh? x (hash-ref Fς state) ast) ; freshness is ONLY about observability!
-                   (values C R O*)
-                   (handle-w ctxs ctx-λ C R O*))))  
+               (handle-wp-fresh x ctxs ctx-λ (hash-ref Fς state) ast C R O)))
             ((rv a x)
              (handle-rv-scope a x ctxs ctx-λ ast C R O))
             ((rp a n x)
-             (if (fresh? x (hash-ref Fς state) ast)
-                 (values C R O)
-                 (handle-r a n ctxs ctx-λ C R O)))
+             (handle-rp-fresh a n x ctxs ctx-λ (hash-ref Fς state) ast C R O))
             (_ (values C R O))))))))
 
 (define (purity-analysis system handler ctx-λ)
@@ -397,6 +421,9 @@
 (define THROW (make-parameter #t))
 
 (struct benchmark-config (name mach ctx-λ handler))
+(define conc-config (benchmark-config "CFA" (make-machine conc-lattice conc-alloc full-context strong-update)
+                                    (lambda (κ) (clo-λ (full-ctx-clo κ)))
+                                    (make-address-handler (lambda (κ) (hash-keys (full-ctx-σ κ))))))
 (define fa-config (benchmark-config "FA" (make-machine type-lattice mono-alloc full-context weak-update)
                                     (lambda (κ) (clo-λ (full-ctx-clo κ)))
                                     (make-address-handler (lambda (κ) (hash-keys (full-ctx-σ κ))))))
@@ -411,7 +438,7 @@
   (when (null? ens)
     (set! ens '(fac fib fib-mut blur eta mj09 gcipd kcfa2 kcfa3 rotate loop2 sat collatz rsa primtest factor)))
   (printf "Benchmarks: ~a\n" ens)
-  (define configs (list fa-config la-config lsf-config))
+  (define configs (list conc-config fa-config la-config lsf-config))
   (printf "Configs: ~a\n" configs)
   (for/list ((en ens))
     (for/list ((config configs))
@@ -421,7 +448,7 @@
 (define (server-test)
   (parameterize ((CESK-TIMELIMIT 60) (THROW #f))
     (let ((results (apply test '(fac fib fib-mut blur eta mj09 gcipd kcfa2 kcfa3 rotate loop2 sat collatz rsa primtest factor
-                                     nqueens dderiv 
+                                     nqueens dderiv destruct
                                      ; regex boyer mceval
                                      )))) 
       (printf "Done.")
@@ -470,7 +497,7 @@
                                                           ((eq? c "PROC") (values num-pure num-obs (+ num-proc 1)))
                                                           (else (raise "unknown effect class"))))))
               (benchmark name flow-state-count flow-duration flow-exit msg num-called num-pure num-obs num-proc)))
-          (benchmark name flow-state-count flow-duration flow-exit msg 0 0 0 0 0)))))
+          (benchmark name flow-state-count flow-duration flow-exit msg 0 0 0 0)))))
 
 
 

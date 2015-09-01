@@ -146,6 +146,7 @@
 (define treenode1 '(let ((tree-node (lambda (l) (let ((this (cons 1 2))) (let ((a this)) (set-car! a l)))))) 
            (letrec ((f (lambda (levels) (let ((left #f)) (let ((c (<= levels 1))) (let ((u (if c (set! left 'null) (let ((n (- levels 1))) (let ((ll (f n))) (set! left ll)))))) (tree-node left)))))))
              (f 3))))
+(define destruct (file->value "test/destruct.scm"))
 
 (define (purity-test)
   (define (test e expected)
