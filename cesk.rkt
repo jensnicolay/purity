@@ -184,18 +184,15 @@
       (let ((current (hash-ref σ a ⊥)))
         (hash-set σ a (⊔ current v))))
     
-    (define (stack-alloc! τ stack)
+    (define (stack-alloc! κ stack)
       ;(printf "allocing ctx ~a stack ~a " (ctx->ctxi τ) (stack-to-string stack))
-      (let ((stacks (hash-ref Ξ τ #f)))
+      (let ((stacks (hash-ref Ξ κ #f)))
         (if stacks
             (unless (set-member? stacks stack)
               ;(printf "ADDING to ~a\n" (set-map stacks stack-to-string))
-              (hash-set! Ξ τ (set-add stacks stack))
+              (hash-set! Ξ κ (set-add stacks stack))
               (set! Ξi (add1 Ξi)))
-            (begin
-              ;(printf "NEW CTX\n")
-              (hash-set! Ξ τ (set stack))
-              (set! Ξi (add1 Ξi))))))
+            (hash-set! Ξ κ (set stack)))))
     
     (define (alloc-literal e σ)
       (if (pair? e)
