@@ -421,7 +421,7 @@
 (define THROW (make-parameter #t))
 
 (struct benchmark-config (name mach ctx-λ handler))
-(define conc-config (benchmark-config "CFA" (make-machine conc-lattice conc-alloc full-context strong-update)
+(define conc-config (benchmark-config "CONC" (make-machine conc-lattice conc-alloc full-context strong-update)
                                     (lambda (κ) (clo-λ (full-ctx-clo κ)))
                                     (make-address-handler (lambda (κ) (hash-keys (full-ctx-σ κ))))))
 (define fa-config (benchmark-config "FA" (make-machine type-lattice mono-alloc full-context weak-update)
@@ -499,6 +499,9 @@
               (benchmark name flow-state-count flow-duration flow-exit msg num-called num-pure num-obs num-proc)))
           (benchmark name flow-state-count flow-duration flow-exit msg 0 0 0 0)))))
 
+(define (print-purity-info C)
+  (for (((λ c) C))
+    (printf "~a -> ~a\n" (~a λ #:max-width 30) c)))
 
 
 (define (state-repr s)
