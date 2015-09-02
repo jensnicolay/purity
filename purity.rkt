@@ -137,16 +137,10 @@
     (_ #f)))
 
 (define (mark-proc C λ)
-  (let ((current-class (hash-ref C λ)))
-    (if (eq? current-class "PROC")
-        C
-        (hash-set C λ "PROC"))))
+  (hash-set C λ (set-add (hash-ref C λ) "GEN")))
 
 (define (mark-obs C λ)
-  (let ((current-class (hash-ref C λ)))
-    (if (or (eq? current-class "OBS") (eq? current-class "PROC"))
-        C
-        (hash-set C λ "OBS"))))
+  (hash-set C λ (set-add (hash-ref C λ) "OBS")))
 
 (define (add-read-dep R a decl λ)
   (let* ((key (cons a decl))
@@ -367,12 +361,12 @@
          (γ (lattice-γ (system-lattice system)))
          (initial (system-initial system))
          (ast (ev-e initial)))
-    
-    (define (C0)
+
+    (define C0
       (for/hash ((κ (hash-keys Ξ)))
         (let* ((λ (ctx-λ κ)))
-          (values λ "PURE"))))
-    
+          (values λ (set)))))    
+        
     (define (traverse S W C R O)
       (if (set-empty? W)
           C
@@ -392,7 +386,7 @@
                                 (let-values (((C*** R*** O***) (handler (set-first E) state ast Ξ ctx-λ C** R** O**)))
                                   (effect-loop (set-rest E) C*** R*** O***))))))))))))
     
-    (traverse (set) (set initial) (C0) (hash) (hash))))
+    (traverse (set) (set initial) C0 (hash) (hash))))
 
 
 
@@ -454,7 +448,7 @@
       (printf "Done.")
       results)))              
 
-(struct benchmark (name state-count duration exit msg num-called num-pure num-obs num-proc))
+(struct benchmark (name state-count duration exit msg num-lambdas num-called num-pure num-obs num-proc))
 
 (define (perform-benchmark name e config)
   (printf "~a ~a" (~a name #:min-width 12) (~a (benchmark-config-name config) #:min-width 5 #:max-width 5))
@@ -466,9 +460,10 @@
          (msg (benchmark-msg bench))
          (state-count (benchmark-state-count bench))
          (duration (benchmark-duration bench)))
-    (printf "#~a flow-time ~a called ~a pure ~a obs ~a proc ~a | ~a\n"
+    (printf "#~a flow-time ~a lams ~a called ~a pure ~a obs ~a gen ~a | ~a\n"
             (~a (if (eq? exit 'ok) state-count (format ">~a" state-count)) #:min-width 7)
             (~a duration #:min-width 7)
+            (~a (benchmark-num-lambdas bench) #:min-width 3)
             (~a (benchmark-num-called bench) #:min-width 3)
             (~a (benchmark-num-pure bench) #:min-width 2)
             (~a (benchmark-num-obs bench) #:min-width 2)
@@ -477,7 +472,9 @@
     bench))
 
 (define (benchmark-eval name e mach ctx-λ handler)
-  (with-handlers ((exn:fail? (lambda (exc) (if (THROW) (raise exc) (benchmark name -1 -1 'error exc 0 0 0 0)))))
+  (define (nodes ast) (for/fold ((cs (list ast))) ((c (children ast))) (append cs (nodes c))))
+  (define (lambdas ast) (filter «lam»? (nodes ast)))
+  (with-handlers ((exn:fail? (lambda (exc) (if (THROW) (raise exc) (benchmark name -1 -1 'error exc 0 0 0 0 0)))))
     (let* ((sys (mach e))
            (flow-duration (system-duration sys))
            (flow-state-count (vector-length (system-states sys)))
@@ -486,18 +483,19 @@
       (if (eq? flow-exit 'ok)
           (let* ((initial (system-initial sys))
                  (ast (ev-e initial))
+                 (num-lambdas (length (lambdas ast)))
                  (Ξ (system-Ξ sys))
                  (C (purity-analysis sys (handler sys) ctx-λ))
                  (num-called (set-count (list->set (map (lambda (κ) (ctx-λ κ)) (hash-keys Ξ))))))
             (let-values (((num-pure num-obs num-proc) (for/fold ((num-pure 0) (num-obs 0) (num-proc 0)) (((λ c) C))
-                                                        ;(printf "~a -> ~a\n" (~a λ #:max-width 30) c)
-                                                        (cond
-                                                          ((eq? c "PURE") (values (+ num-pure 1) num-obs num-proc))
-                                                          ((eq? c "OBS") (values num-pure (+ num-obs 1) num-proc))
-                                                          ((eq? c "PROC") (values num-pure num-obs (+ num-proc 1)))
-                                                          (else (raise "unknown effect class"))))))
-              (benchmark name flow-state-count flow-duration flow-exit msg num-called num-pure num-obs num-proc)))
-          (benchmark name flow-state-count flow-duration flow-exit msg 0 0 0 0)))))
+                                                        (let ((c (hash-ref C λ (set))))
+                                                          ;(printf "~a -> ~a\n" (~a λ #:max-width 30) c)
+                                                          (cond
+                                                            ((set-empty? c) (values (add1 num-pure) num-obs num-proc))
+                                                            ((set-member? c "GEN") (values num-pure num-obs (add1 num-proc)))
+                                                            (else (values num-pure (add1 num-obs) num-proc)))))))
+              (benchmark name flow-state-count flow-duration flow-exit msg num-lambdas num-called num-pure num-obs num-proc)))
+          (benchmark name flow-state-count flow-duration flow-exit msg 0 0 0 0 0)))))
 
 (define (print-purity-info C)
   (for (((λ c) C))
