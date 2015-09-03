@@ -428,16 +428,21 @@
                                      lim2-ctx-λ
                                      (make-non-address-handler)))
 
+(define PRINT-PER-LAMBDA (make-parameter #t))
+
 (define (test . ens)  
   (when (null? ens)
     (set! ens '(fac fib fib-mut blur eta mj09 gcipd kcfa2 kcfa3 rotate loop2 sat collatz rsa primtest factor)))
   (printf "Benchmarks: ~a\n" ens)
   (define configs (list conc-config fa-config la-config lsf-config))
   (printf "Configs: ~a\n" configs)
-  (for/list ((en ens))
-    (for/list ((config configs))
-      (let ((e (eval en)))
-        (perform-benchmark en e config)))))
+  (parameterize ((PRINT-PER-LAMBDA #f))
+    (for/list ((en ens))
+      (cons en
+            (for/list ((config configs))
+              (let ((e (eval en)))
+                (printf "~a" (~a en #:min-width 15))
+                (cons (benchmark-config-name config) (purity e config))))))))
 
 (define (server-test)
   (parameterize ((CESK-TIMELIMIT 60) (THROW #f))
@@ -446,21 +451,22 @@
                                      ; regex boyer mceval
                                      )))) 
       (printf "Done.")
-      results)))              
+      results)))
 
-(struct benchmark (name state-count duration exit msg num-lambdas num-called num-pure num-obs num-proc))
 
-(define (perform-benchmark name e config)
-  (printf "~a ~a" (~a name #:min-width 12) (~a (benchmark-config-name config) #:min-width 5 #:max-width 5))
+(struct benchmark (state-count duration exit msg num-lambdas num-called num-pure num-obs num-proc))
+
+(define (purity e config)
+  (printf "~a" (~a (benchmark-config-name config) #:min-width 5 #:max-width 5))
   (let* ((mach (benchmark-config-mach config))
          (ctx-λ (benchmark-config-ctx-λ config))
          (handler (benchmark-config-handler config))
-         (bench (benchmark-eval name e mach ctx-λ handler))
+         (bench (benchmark-eval e mach ctx-λ handler))
          (exit (benchmark-exit bench))
          (msg (benchmark-msg bench))
          (state-count (benchmark-state-count bench))
          (duration (benchmark-duration bench)))
-    (printf "#~a flow-time ~a lams ~a called ~a pure ~a obs ~a gen ~a | ~a\n"
+    (printf "#~a flow-time ~a lams ~a called ~a pure ~a obs ~a proc ~a | ~a\n"
             (~a (if (eq? exit 'ok) state-count (format ">~a" state-count)) #:min-width 7)
             (~a duration #:min-width 7)
             (~a (benchmark-num-lambdas bench) #:min-width 3)
@@ -471,10 +477,18 @@
             (~a msg #:max-width 72))
     bench))
 
-(define (benchmark-eval name e mach ctx-λ handler)
+(define (go->pop C)
+  (for/hash (((λ c) C))
+    (cond
+      ((set-empty? c) (values λ "PURE"))
+      ((set-member? c "GEN") (values λ "PROC"))
+      (else (values λ "OBS")))))
+
+
+(define (benchmark-eval e mach ctx-λ handler)
   (define (nodes ast) (for/fold ((cs (list ast))) ((c (children ast))) (append cs (nodes c))))
   (define (lambdas ast) (filter «lam»? (nodes ast)))
-  (with-handlers ((exn:fail? (lambda (exc) (if (THROW) (raise exc) (benchmark name -1 -1 'error exc 0 0 0 0 0)))))
+  (with-handlers ((exn:fail? (lambda (exc) (if (THROW) (raise exc) (benchmark -1 -1 'error exc 0 0 0 0 0)))))
     (let* ((sys (mach e))
            (flow-duration (system-duration sys))
            (flow-state-count (vector-length (system-states sys)))
@@ -486,16 +500,18 @@
                  (num-lambdas (length (lambdas ast)))
                  (Ξ (system-Ξ sys))
                  (C (purity-analysis sys (handler sys) ctx-λ))
+                 (Cpop (go->pop C))
                  (num-called (set-count (list->set (map (lambda (κ) (ctx-λ κ)) (hash-keys Ξ))))))
-            (let-values (((num-pure num-obs num-proc) (for/fold ((num-pure 0) (num-obs 0) (num-proc 0)) (((λ c) C))
-                                                        (let ((c (hash-ref C λ (set))))
-                                                          ;(printf "~a -> ~a\n" (~a λ #:max-width 30) c)
+            (let-values (((num-pure num-obs num-proc) (for/fold ((num-pure 0) (num-obs 0) (num-proc 0)) (((λ c) Cpop))
+                                                          (when (PRINT-PER-LAMBDA)
+                                                            (printf "~a -> ~a\n" (~a λ #:max-width 30) c))
                                                           (cond
-                                                            ((set-empty? c) (values (add1 num-pure) num-obs num-proc))
-                                                            ((set-member? c "GEN") (values num-pure num-obs (add1 num-proc)))
-                                                            (else (values num-pure (add1 num-obs) num-proc)))))))
-              (benchmark name flow-state-count flow-duration flow-exit msg num-lambdas num-called num-pure num-obs num-proc)))
-          (benchmark name flow-state-count flow-duration flow-exit msg 0 0 0 0 0)))))
+                                                            ((eq? c "PURE") (values (add1 num-pure) num-obs num-proc))
+                                                            ((eq? c "PROC") (values num-pure num-obs (add1 num-proc)))
+                                                            ((eq? c "OBS") (values num-pure (add1 num-obs) num-proc))
+                                                            (else (raise c))))))
+              (benchmark flow-state-count flow-duration flow-exit msg num-lambdas num-called num-pure num-obs num-proc)))
+          (benchmark flow-state-count flow-duration flow-exit msg 0 0 0 0 0)))))
 
 (define (print-purity-info C)
   (for (((λ c) C))
@@ -525,7 +541,7 @@
       ((list res-0 res-0-summ res-0-sa res-1 res-1-summ res-1-sa)
        ;; 0-CFA
        (printf "\\code{~a}      & 0CFA         & ~a   & ~a     & ~a          \\\\"
-               (~a (benchmark-name res-0)) 
+               (~a "benchmark-name res-0") 
                (~a (to-states res-0))      
                (~a (to-states res-0-summ))
                (~a (to-states res-0-sa))
@@ -553,7 +569,7 @@
       ((list res-0 res-0-summ res-0-sa res-1 res-1-summ res-1-sa)
        ;; 0-CFA
        (printf "\\code{~a}      & 0CFA         & ~a   & ~a      & ~a          \\\\"
-               (~a (benchmark-name res-0)) 
+               (~a "benchmark-name res-0") 
                (~a (to-time res-0))      
                (~a (to-time res-0-summ))
                (~a (to-time res-0-sa)))
