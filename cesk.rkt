@@ -200,7 +200,7 @@
       (if (pair? e)
           (match-let (((cons car-v car-σ) (alloc-literal (car e) σ)))
             (match-let (((cons cdr-v cdr-σ) (alloc-literal (cdr e) car-σ)))
-              (let ((a (conc-alloc)))
+              (let ((a (alloc e e)))
                 (cons (α (addr a)) (store-alloc cdr-σ a (α (cons car-v cdr-v)))))))
           (cons (α e) σ)))
     
