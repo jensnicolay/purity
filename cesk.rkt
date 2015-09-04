@@ -274,7 +274,7 @@
            (if (ae? e0)
                (let-values (((v E) (eval-atom e0 ρ* σ*)))
                  (apply-letrec-kont x e1 ρ* ι κ v σ* E))
-               (set (transition (ev e0 ρ* σ* (cons (letreck a e1 ρ*) ι) κ) (set))))))
+               (set (transition (ev e0 ρ* σ* (cons (letreck x e1 ρ*) ι) κ) (set))))))
         ((ev («set!» _ x ae) ρ σ ι κ)
          (let-values (((v E) (eval-atom ae ρ σ)))
            (let* ((a (env-lookup ρ («id»-x x)))
@@ -345,7 +345,7 @@
     
     (let ((start (current-milliseconds)))
       (let explore-loop ()
-        (if (and (zero? (remainder (set-count states) 1000))
+        (if (and (zero? (remainder (set-count states) 10000))
                  (> (current-milliseconds) time-limit))
             (make-system (- (current-milliseconds) start) 'user "time out")
             (if (set-empty? todo)
