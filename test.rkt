@@ -148,9 +148,11 @@
              (f 3))))
 (define destruct (add-length (file->value "test/destruct.scm")))
 
+
+#|
 (define (purity-test)
   (define (test e expected)
-    (for ((config (list lsf-config)))
+    (for ((config (list)))
       (match-let (((benchmark-config name mach ctx-λ handler) config))
         (let* ((sys (mach e))
                (initial (system-initial sys))
@@ -233,5 +235,5 @@
   (test '(let ((f (lambda () (cons 1 2)))) (f)) '((2 . "PURE")))
   (test '(let ((f (lambda () (cons 1 2)))) (let ((p (f))) (set-car! p 9))) '((2 . "PURE")))
   )
-
+|#
 

@@ -9,12 +9,8 @@
 
 (define conc-⊥ "conc-⊥")
 
-(define (conc-⊔ v1 v2)
-  (match* (v1 v2)
-    (((== conc-⊥) v) v)
-    ((v (== conc-⊥)) v)
-    ((v v) v)
-    ((_ _) (error "concrete join" v1 v2))))
+(define (conc-⊔ current new) ; ordered!
+  new)
 
 (define (conc-true? v)
   v)

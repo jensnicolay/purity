@@ -7,17 +7,9 @@
 (include "lattice.rkt")
 (include "test.rkt")
 
-(struct full-ctx (e clo vs σ A) #:transparent)
-(struct lim-ctx (λ Aσ A) #:transparent)
-(struct lim2-ctx (λ A) #:transparent)
-
-(define full-context (context full-ctx full-ctx-e full-ctx-A))
-(define lim-context (context (lambda (e clo vs σ A) (lim-ctx (clo-λ clo) (hash-keys σ) A)) (lambda _ #f) lim-ctx-A))
-(define lim2-context (context (lambda (e clo vs σ A) (lim2-ctx (clo-λ clo) A)) (lambda _ #f) lim2-ctx-A))
-
-(define conc-mach (make-machine conc-lattice conc-alloc full-context strong-update))
-(define type-mach-0 (make-machine type-lattice mono-alloc full-context weak-update))
-(define type-mach-1 (make-machine type-lattice poly-alloc full-context weak-update))
+(define conc-mach (make-machine conc-lattice conc-alloc))
+(define type-mach-0 (make-machine type-lattice mono-alloc))
+(define type-mach-1 (make-machine type-lattice poly-alloc))
 
 (define (do-eval e mach)
   (let ((sys (mach e)))
@@ -93,17 +85,17 @@
     
     (define (handle-state state E fresh)
       (match state
-        ((ev («set!» _ x ae) ρ σ ι κ)
+        ((ev («set!» _ x ae) ρ ι κ)
          (let ((decl (get-declaration («id»-x x) x ast)))
            (if (fresh? ae fresh ast)
                (set-add fresh decl)
                (set-remove fresh decl))))
-        ((ev («let» _ x e0 e1) ρ σ ι κ)
+        ((ev («let» _ x e0 e1) ρ ι κ)
          (let ((decl (get-declaration («id»-x x) x ast)))
            (if (fresh? e0 fresh ast)
                (set-add fresh decl)
                (set-remove fresh decl))))
-        ((ko (cons (letk x e ρ) ι) κ v σ)
+        ((ko (cons (letk x e ρ) ι) κ v)
          (let ((decl (get-declaration («id»-x x) x ast)))
            (if (set-member? E (fr))
                (set-add fresh decl)
@@ -388,8 +380,6 @@
     
     (traverse (set) (set initial) C0 (hash) (hash))))
 
-
-
 (define (flow-test . ens)
   (when (null? ens)
     (set! ens '(fac fib fib-mut blur eta mj09 gcipd kcfa2 kcfa3 rotate loop2 sat collatz rsa primtest factor nqueens)))
@@ -414,8 +404,14 @@
 
 (define THROW (make-parameter #t))
 
+(define (state-repr s)
+  (match s
+    ((ev e ρ ι κ) (format "~a | ~a" (~a e #:max-width 20) (ctx->ctxi κ)))
+    ((ko ι κ v) (format "~a | ~a" (~a v #:max-width 20) (ctx->ctxi κ)))))
+
+#|
 (struct benchmark-config (name mach ctx-λ handler))
-(define conc-config (benchmark-config "CONC" (make-machine conc-lattice conc-alloc full-context strong-update)
+(define conc-config (benchmark-config "CONC" (make-machine conc-lattice conc-alloc)
                                     (lambda (κ) (clo-λ (full-ctx-clo κ)))
                                     (make-address-handler (lambda (κ) (hash-keys (full-ctx-σ κ))))))
 (define fa-config (benchmark-config "FA" (make-machine type-lattice mono-alloc full-context weak-update)
@@ -517,12 +513,6 @@
   (for (((λ c) C))
     (printf "~a -> ~a\n" (~a λ #:max-width 30) c)))
 
-
-(define (state-repr s)
-  (match s
-    ((ev e ρ σ ι κ) (format "~a | ~a" (~a e #:max-width 20) (ctx->ctxi κ)))
-    ((ko ι κ v σ) (format "~a | ~a" (~a v #:max-width 20) (ctx->ctxi κ)))))
-
 ;; Lower-bound for printing time (if smaller, prints \epsilon), in seconds
 (define TIMECUTOFF (make-parameter 1))
 (define TIMEFORMAT (make-parameter
@@ -580,7 +570,7 @@
                (~a (to-time res-1-sa))))))
   (printf "\\end{tabular}\n"))
 
-
+|#
 
 (define (generate-dot sys name)
   
@@ -604,4 +594,5 @@
 (define (graph e mach name)
   (parameterize ((CESK-TIMELIMIT 1))
     (generate-dot (mach e) name)))
+
 
