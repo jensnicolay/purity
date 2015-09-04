@@ -149,7 +149,7 @@
   
   (define (explore e)
     (define Ξ (make-hash))
-    (define Ξi 0)
+    (define poppers (make-hash))
     
     (include "primitives.rkt")
     
@@ -171,7 +171,7 @@
             ('()
              (gc (ev compiled-e (↓ ρ (free compiled-e)) σ `(,(haltk)) #f) (hash) γ ctx-A))
             ((cons (cons x v) r)
-             (let ((a (conc-alloc x 0)))
+             (let ((a (conc-alloc)))
                (loop r (hash-set ρ x a) (hash-set σ a v))))))))
     
     ;(define (stack-to-string stack)
@@ -191,14 +191,16 @@
             (unless (set-member? stacks stack)
               ;(printf "ADDING to ~a\n" (set-map stacks stack-to-string))
               (hash-set! Ξ κ (set-add stacks stack))
-              (set! Ξi (add1 Ξi)))
+              (for ((s (hash-ref poppers κ (set))))
+                (set-remove! visited s)
+                (set! todo (set-add todo s))))
             (hash-set! Ξ κ (set stack)))))
     
     (define (alloc-literal e σ)
       (if (pair? e)
           (match-let (((cons car-v car-σ) (alloc-literal (car e) σ)))
             (match-let (((cons cdr-v cdr-σ) (alloc-literal (cdr e) car-σ)))
-              (let ((a (alloc "%cons" e)))
+              (let ((a (conc-alloc)))
                 (cons (α (addr a)) (store-alloc cdr-σ a (α (cons car-v cdr-v)))))))
           (cons (α e) σ)))
     
@@ -321,8 +323,11 @@
                      succ
                      (let* ((ικG (set-first ικGs))
                             (ι (car ικG))
-                        (κ (cadr ικG))
-                        (succ* (apply-local-kont ι κ v σ (set))))
+                            (κ (cadr ικG))
+                            (G (caddr ικG))
+                            (succ* (apply-local-kont ι κ v σ (set))))
+                       (for ((κ G))
+                         (hash-set! poppers κ (set-add (hash-ref poppers κ (set)) q)))
                        (loop (set-rest ικGs)
                              (set-union succ succ*))))))))
         )) ; end step
@@ -331,6 +336,7 @@
     (define graph (make-hash))
     (define states (mutable-set))
     (define initial (inject e))
+    (define todo (set initial))
     (define (make-system duration exit msg)
       (system (list->vector (set->list states)) duration initial graph Ξ lattice context answer? exit msg))
     
@@ -338,16 +344,17 @@
     (define time-limit (+ (current-milliseconds) (* (CESK-TIMELIMIT) 60000)))
     
     (let ((start (current-milliseconds)))
-      (let explore-loop ((todo (set initial)))
+      (let explore-loop ()
         (if (and (zero? (remainder (set-count states) 1000))
                  (> (current-milliseconds) time-limit))
             (make-system (- (current-milliseconds) start) 'user "time out")
             (if (set-empty? todo)
                 (make-system (- (current-milliseconds) start) 'ok "")
                 (let* ((q (set-first todo)))
+                  (set! todo (set-rest todo))
                   (if (set-member? visited q)
-                      (explore-loop (set-rest todo))
-                      (let ((old-Ξi Ξi))
+                      (explore-loop)
+                      (begin
                         ;(printf "q ~a\n" (state->statei q))
                         (set-add! visited q)
                         (set-add! states q)
@@ -361,9 +368,8 @@
                                 ;  (for ((succ updated))
                                 ;    (printf "\t~a\n" (state-repr (car succ))))
                                 ;)
-                                (when (> Ξi old-Ξi)
-                                  (set-clear! visited))
-                                (explore-loop (set-union new-states (set-rest todo))))
+                                (set! todo (set-union new-states todo))
+                                (explore-loop))
                               (match (set-first succs)
                                 ((transition s E)
                                  (let ((s-gc (gc s Ξ γ ctx-A)))
