@@ -1,3 +1,6 @@
+#lang racket
+(provide (all-defined-out))
+
 (struct «lit» (l v) #:transparent #:methods gen:equal+hash ((define equal-proc (lambda (s1 s2 requal?)
                                                                    (= («lit»-l s1) («lit»-l s2))))
                                               (define hash-proc (lambda (s rhash) («lit»-l s)))

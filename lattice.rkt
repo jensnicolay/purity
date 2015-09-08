@@ -1,4 +1,14 @@
+#lang racket
+(provide (all-defined-out))
+
 (struct lattice (α γ ⊥ ⊔ true? false? eq? global))
+
+(struct prim2 (name proc) #:methods gen:equal+hash ((define equal-proc (lambda (s1 s2 requal?)
+                                                                         (equal? (prim2-name s1) (prim2-name s2))))
+                                                    (define hash-proc (lambda (s rhash) (equal-hash-code (prim2-name s))))
+                                                    (define hash2-proc (lambda (s rhash) (equal-secondary-hash-code (prim2-name s))))))
+
+(define %random (lambda (n) (if (zero? n) 0 (random n))))
 
 ;; conc lattice
 (define (conc-α v)
@@ -87,6 +97,9 @@
     ((symbol? v) (set SYM))
     ((string? v) (set STR))
     ((char? v) (set CHAR))
+    (else (set v))))
+
+#|    
     ((clo? v) (set v))
     ((prim? v) (set v))
     ((prim2? v) (set v))
@@ -94,6 +107,7 @@
     ((pair? v) (set v))
     ((null? v) (set v))
     (else (error "bwek" v))))
+|#
 
 (define (type-γ v)
   v)
@@ -184,6 +198,9 @@
     ((symbol? v) (set PRIM))
     ((string? v) (set PRIM))
     ((char? v) (set PRIM))
+    (else (set v))))
+
+#|    
     ((clo? v) (set v))
     ((prim? v) (set v))
     ((prim2? v) (set v))
@@ -191,6 +208,8 @@
     ((pair? v) (set v))
     ((null? v) (set v))
     (else (error "bwek" v))))
+
+|#
 
 (define (pt-eq? v1 v2)
   (set PRIM))

@@ -1,7 +1,15 @@
+#lang racket
+(provide (all-defined-out))
+
+(require "general.rkt")
+(require "ast.rkt")
+(require "lattice.rkt")
+(require "test.rkt")
+
+
 (random-seed 111) ; deterministic random
 (define CESK-TIMELIMIT (make-parameter 2)) ; timeout in minutes
 
-(define %random (lambda (n) (if (zero? n) 0 (random n))))
 
 (define (index v x)
   (let ((i (vector-member x v)))
@@ -43,9 +51,9 @@
 (struct ev (e ρ ι κ) #:transparent
   #:property prop:custom-write (lambda (v p w?)
                                  (fprintf p "EV ~a\nρ ~a\nι ~a\nκ ~a" (ev-e v) (ev-ρ v) (ev-ι v) (ev-κ v))))
-(struct ko (ι κ v) #:transparent
+(struct ko (v ι κ) #:transparent
   #:property prop:custom-write (lambda (v p w?)
-                                 (fprintf p "KO ι ~a\nκ ~a\nv ~a" (ko-ι v) (ko-κ v) (ko-v v))))
+                                 (fprintf p "KO v ~a\nι ~a\nκ ~a" (ko-v v) (ko-ι v) (ko-κ v))))
 (struct letk (x e ρ) #:transparent)
 (struct letreck (a e ρ) #:transparent)
 (struct haltk () #:transparent)
@@ -56,22 +64,20 @@
                                                                         (equal? (prim-name s1) (prim-name s2))))
                                                    (define hash-proc (lambda (s rhash) (equal-hash-code (prim-name s))))
                                                    (define hash2-proc (lambda (s rhash) (equal-secondary-hash-code (prim-name s))))))
-(struct prim2 (name proc) #:methods gen:equal+hash ((define equal-proc (lambda (s1 s2 requal?)
-                                                                         (equal? (prim2-name s1) (prim2-name s2))))
-                                                    (define hash-proc (lambda (s rhash) (equal-hash-code (prim2-name s))))
-                                                    (define hash2-proc (lambda (s rhash) (equal-secondary-hash-code (prim2-name s))))))
 (struct addr (a) #:transparent)
-(struct system (states duration initial graph Ξ lattice context answer? exit msg) #:transparent
+(struct system (states duration initial graph σ Ξ lattice answer? exit msg) #:transparent
   #:property prop:custom-write (lambda (v p w?)
                                  (fprintf p "<sys #~a ~a ~a>" (vector-length (system-states v)) (system-exit v) (~a (system-msg v) #:max-width 70))))
 
-(struct context (kalloc e A))
+(struct ctx (λ ρ) #:transparent)
+(struct transition (s E) #:transparent)
 
 (struct wv (a x) #:transparent)
 (struct rv (a x) #:transparent)
 (struct wp (a n x) #:transparent)
 (struct rp (a n x) #:transparent)
 (struct fr () #:transparent)
+;(struct app (clo ) #:transparent)
 
 
 (define (touches d)
@@ -94,6 +100,11 @@
               (let* ((v (γ (store-lookup σ a)))
                      (T (touches v)))
                 (loop (set-union (set-rest A) T) (set-add R a))))))))
+(define (s-referenced s Ξ)
+  (match s
+    ((ev e ρ ι κ) (set-union (env-addresses (↓ ρ (free e))) (stack-addresses ι κ Ξ)))
+    ((ko v ι κ) (stack-addresses ι κ Ξ))))
+  
 ;(define (gc s Ξ γ ctx-A)
 ;  (match s
 ;    ((ev e ρ σ ι κ)
@@ -130,11 +141,10 @@
           (if (or (not κ) (set-member? seen κ))
               (loop (set-rest todo) seen)
               (loop (set-union (set-rest todo) (stack-lookup Ξ κ)) (set-add seen κ)))))))
-(define (stack-addresses ι κ ctx-A)
-  (for/fold ((A (if κ (ctx-A κ) (set)))) ((φ ι))
-    (set-union A (touches ι))))
+(define (stack-addresses ι κ Ξ)
+  (for/fold ((A (set))) ((φ (stack-frames ι κ Ξ)))
+    (set-union A (touches φ))))
 
-(struct ctx (e ρ) #:transparent)
 (define (make-machine lattice alloc)
 
   (define α (lattice-α lattice))
@@ -235,11 +245,9 @@
         ((«quo» _ atom)
          (values (α atom) (set)))
         (_ (error "cannot handle ae" ae))))
-
-    (struct transition (s E))
     
     (define (apply-let-kont x e ρ ι κ v E)
-      (let* ((a (alloc x (and κ (ctx-e κ))))
+      (let* ((a (alloc x (and κ (ctx-λ κ))))
              (ρ* (env-bind ρ («id»-x x) a)))
         (store-alloc! a v)
         (set (transition (ev e ρ* ι κ) E))))
@@ -253,7 +261,7 @@
          (apply-let-kont x e ρ ι κ v E))
         ((cons (letreck x e ρ) ι)
          (apply-letrec-kont x e ρ ι κ v E))
-        (_ (set (transition (ko ι κ v) E)))))
+        (_ (set (transition (ko v ι κ) E)))))
     
     ;(define (print-state q)
     ;  (match q
@@ -265,19 +273,19 @@
       (match q
         ((ev (? ae? ae) ρ ι κ)
          (let-values (((v E) (eval-atom ae ρ)))
-           (set (transition (ko ι κ v) E))))
+           (set (transition (ko v ι κ) E))))
         ((ev («if» _ ae e1 e2) ρ ι κ)
          (let-values (((v E) (eval-atom ae ρ)))
            (set-union (if (true? v)
                           (if (ae? e1)
                               (let-values (((v* E*) (eval-atom e1 ρ)))
-                                (set (transition (ko ι κ v*) (set-union E E*))))
+                                (set (transition (ko v* ι κ) (set-union E E*))))
                               (set (transition (ev e1 ρ ι κ) E)))
                           (set))
                       (if (false? v)
                           (if (ae? e2)
                               (let-values (((v* E*) (eval-atom e2 ρ)))
-                                (set (transition (ko ι κ v*) (set-union E E*))))
+                                (set (transition (ko v* ι κ) (set-union E E*))))
                               (set (transition (ev e2 ρ ι κ) E)))
                           (set)))))
         ((ev («let» _ x e0 e1) ρ ι κ)
@@ -286,7 +294,7 @@
                (apply-let-kont x e1 ρ ι κ v E))
              (set (transition (ev e0 ρ (cons (letk x e1 ρ) ι) κ) (set)))))
         ((ev («letrec» _ x e0 e1) ρ ι κ)
-         (let* ((a (alloc x (and κ (ctx-e κ))))
+         (let* ((a (alloc x (and κ (ctx-λ κ))))
                 (ρ* (env-bind ρ («id»-x x) a)))
            (store-alloc! a ⊥)
            (if (ae? e0)
@@ -297,10 +305,10 @@
          (let-values (((v E) (eval-atom ae ρ)))
            (let* ((a (env-lookup ρ («id»-x x))))
              (store-update! a v)
-             (set (transition (ko ι κ v) (set-add E (wv a x)))))))
+             (set (transition (ko v ι κ) (set-add E (wv a x)))))))
         ((ev («quo» _ e) ρ ι κ)
          (let ((v (alloc-literal! e)))
-           (set (transition (ko ι κ v) (set)))))
+           (set (transition (ko v ι κ) (set)))))
         ((ev (and («app» _ rator rands) e) ρ ι κ)
          (let-values (((v E) (eval-atom rator ρ)))
            (let rands-loop ((rands rands) (rvs '()) (E E))
@@ -311,7 +319,7 @@
                         (define (bind-loop x vs ρ*)
                           (match x
                             ('()
-                             (let ((κ* (ctx e0 ρ*)))
+                             (let ((κ* (ctx λ ρ*)))
                                (stack-alloc! κ* (cons ι κ))
                                (set-add succ (transition (ev e0 ρ* '() κ*) E))))
                             ((cons x xs)
@@ -322,15 +330,15 @@
                                    (bind-loop xs (cdr vs) (env-bind ρ* («id»-x x) a)))))))                        
                         (bind-loop x (reverse rvs) ρ**))
                      ((prim name proc)
-                      (set-union succ (list->set (set-map (proc e (reverse rvs) ι κ Ξ) (lambda (vE) (transition (ko ι κ (car vE)) (set-union E (cadr vE))))))))
+                      (set-union succ (list->set (set-map (proc e (reverse rvs) ι κ Ξ) (lambda (vE) (transition (ko (car vE) ι κ) (set-union E (cadr vE))))))))
                      ((prim2 _ proc)
-                      (set-union succ (set (transition (ko ι κ (apply proc (reverse rvs))) E))))
+                      (set-union succ (set (transition (ko (apply proc (reverse rvs)) ι κ) E))))
                      (_ (set))))
                  (let-values (((v E*) (eval-atom (car rands) ρ)))
                    (rands-loop (cdr rands) (cons v rvs) (set-union E E*)))))))
-        ((ko (cons (haltk) _) #f v)
+        ((ko _ (cons (haltk) _) #f)
          (set))
-        ((ko ι κ v)
+        ((ko v ι κ)
          (if (eq? v ⊥)
              (set)
              (let* ((ικGs (stack-pop ι κ Ξ (set))))
@@ -354,7 +362,7 @@
     (define initial (inject e))
     (define todo (set initial))
     (define (make-system duration exit msg)
-      (system (list->vector (set->list states)) duration initial graph Ξ lattice context answer? exit msg))
+      (system (list->vector (set->list states)) duration initial graph σ Ξ lattice answer? exit msg))
     
     ;(define state-limit (STATELIMIT))
     (define time-limit (+ (current-milliseconds) (* (CESK-TIMELIMIT) 60000)))
@@ -374,27 +382,20 @@
                         ;(printf "q ~a\n" (state->statei q))
                         (set-add! visited q)
                         (set-add! states q)
-                        (let succ-loop ((succs (step q)) (new-states (set)) (succs-gc (set)))
-                          (if (set-empty? succs)
-                              (let* ((existing (hash-ref graph q (set)))
-                                     (updated (set-union existing succs-gc)))
-                                (hash-set! graph q updated)
-                                ;(when (> (set-count updated) 3)
-                                ;  (printf "~a has ~a succs\n" (state-repr q) (set-count updated))
-                                ;  (for ((succ updated))
-                                ;    (printf "\t~a\n" (state-repr (car succ))))
-                                ;)
-                                (set! todo (set-union new-states todo))
-                                (when (> σi old-σi)
-                                  (set-clear! visited))
-                                (explore-loop))
-                              (match (set-first succs)
-                                ((transition s E)
-                                 (succ-loop (set-rest succs) (set-add new-states s) (set-add succs-gc (cons s E))))))))))))))
+                        (let* ((ts (step q))
+                               (new-states (for/set ((t ts)) (transition-s t)))
+                               (existing (hash-ref graph q (set)))
+                               (updated (set-union existing ts)))
+                          (hash-set! graph q updated)
+                          (set! todo (set-union new-states todo))
+                          (when (> σi old-σi)
+                            (set-clear! visited))
+                          (explore-loop)))))))))
+                              
   ) ; end explore  
 (define (answer? s)
   (match s
-    ((ko (cons (haltk) _) _ v) #t)
+    ((ko _ (cons (haltk) _) _) #t)
     (_ #f)))
 
 explore)
@@ -430,3 +431,41 @@ explore)
 ;              (clo-λ (ctx-clo ctx))
 ;              ctx)))
 ;;
+(define conc-mach (make-machine conc-lattice conc-alloc))
+(define type-mach-0 (make-machine type-lattice mono-alloc))
+(define type-mach-1 (make-machine type-lattice poly-alloc))
+
+(define (do-eval e mach)
+  (let ((sys (mach e)))
+    (if (eq? (system-exit sys) 'ok)
+        (answer-value sys)
+        (raise (system-msg sys)))))
+
+(define (conc-eval e)
+  (do-eval e conc-mach))
+(define (type-eval-0 e)
+  (do-eval e type-mach-0))
+(define (type-eval-1 e)
+  (do-eval e type-mach-1))
+
+(define (flow-test . ens)
+  (when (null? ens)
+    (set! ens '(fac fib fib-mut blur eta mj09 gcipd kcfa2 kcfa3 rotate loop2 sat collatz rsa primtest factor nqueens)))
+  (define (perform name e)
+    (let* ((sys (type-mach-0 e))
+           (flow-duration (system-duration sys))
+           (flow-state-count (vector-length (system-states sys)))
+           (flow-exit (system-exit sys))
+           (flow-msg (if (eq? flow-exit 'ok) (answer-value sys) (system-msg sys))))
+      (printf "~a states ~a time ~a | ~a\n"
+              (~a name #:min-width 12)
+              (~a (if (eq? flow-exit 'ok) flow-state-count (format ">~a" flow-state-count)) #:min-width 7)
+              (~a flow-duration #:min-width 7)
+              (~a flow-msg #:max-width 72))))
+  (for-each (lambda (en) (perform en (eval en)))
+            ens))
+
+(define (server-flow-test)
+  (parameterize ((CESK-TIMELIMIT 60))
+    (apply flow-test '(fac fib fib-mut blur eta mj09 gcipd kcfa2 kcfa3 rotate loop2
+                           sat collatz rsa primtest factor nqueens dderiv boyer mceval))))

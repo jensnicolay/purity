@@ -1,28 +1,14 @@
 #lang racket
 ;(require (submod racket/performance-hint))
 
-(include "general.rkt")
-(include "ast.rkt")
-(include "cesk.rkt")
-(include "lattice.rkt")
-(include "test.rkt")
+(require "general.rkt")
+(require "ast.rkt")
+(require "lattice.rkt")
+(require "cesk.rkt")
+(require "test.rkt")
 
-(define conc-mach (make-machine conc-lattice conc-alloc))
-(define type-mach-0 (make-machine type-lattice mono-alloc))
-(define type-mach-1 (make-machine type-lattice poly-alloc))
+(provide (all-defined-out))
 
-(define (do-eval e mach)
-  (let ((sys (mach e)))
-    (if (eq? (system-exit sys) 'ok)
-        (answer-value sys)
-        (raise (system-msg sys)))))
-
-(define (conc-eval e)
-  (do-eval e conc-mach))
-(define (type-eval-0 e)
-  (do-eval e type-mach-0))
-(define (type-eval-1 e)
-  (do-eval e type-mach-1))
 ;;
 (define (outer-scope-declaration? decl e ast)
   (let up ((e e))
@@ -95,7 +81,7 @@
            (if (fresh? e0 fresh ast)
                (set-add fresh decl)
                (set-remove fresh decl))))
-        ((ko (cons (letk x e ρ) ι) κ v)
+        ((ko v (cons (letk x e ρ) ι) κ)
          (let ((decl (get-declaration («id»-x x) x ast)))
            (if (set-member? E (fr))
                (set-add fresh decl)
@@ -127,6 +113,310 @@
      (let ((decl (get-declaration x e ast)))
        (set-member? fresh decl)))
     (_ #f)))
+
+(define (state-repr s)
+  (match s
+    ((ev e ρ ι κ) (format "~a | ~a" (~a e #:max-width 20) (ctx->ctxi κ)))
+    ((ko v ι κ) (format "~a | ~a" (~a v #:max-width 20) (ctx->ctxi κ)))))
+
+(define (state-κ s)
+  (match s
+    ((ev _ _ _ κ) κ)
+    ((ko _ _ κ) κ)))
+
+(define (call-state-analysis sys)
+  (let* ((graph (system-graph sys))
+         (σ (system-σ sys))
+         (Ξ (system-Ξ sys))
+         (γ (lattice-γ (system-lattice sys))))
+
+    (for/fold ((call-states (hash))) (((s ts) graph))
+      (match s
+        ((ev (? «app»? e) ρ ι κ)
+         (for/fold ((call-states call-states)) ((t ts))
+           (match t
+             ((transition (ev _ _ '() κ*) _)
+              (let* ((A-existing (hash-ref call-states κ* (set)))
+                     (A-updated (set-union A-existing (reachable (s-referenced s Ξ) σ γ))))
+                (hash-set call-states κ* A-updated)))
+             (_ call-states))))
+        (_ call-states)))))
+
+(define GENERATES "GEN")
+(define OBSERVES "OBS")
+
+(define (generates-address-analysis sys)
+  (let* ((call-states (call-state-analysis sys))
+         (graph (system-graph sys))
+         (σ (system-σ sys))
+         (Ξ (system-Ξ sys))
+         (γ (lattice-γ (system-lattice sys))))
+
+    (define (handle a F s)
+      (for/fold ((F F)) ((κ (stack-contexts (state-κ s) Ξ)))
+        (let ((A (hash-ref call-states κ)))
+          (if (set-member? A a)
+              (let ((λ (ctx-λ κ)))
+                (hash-set F λ (set-add (hash-ref F λ (set)) GENERATES)))
+              F))))
+    
+    (for/fold ((F (hash))) (((s ts) graph))
+        (for/fold ((F F)) ((t ts))
+          (match t
+            ((transition _ E)
+             (for/fold ((F F)) ((eff E))
+               (match eff
+                 ((wv a _)
+                  (handle a F s))
+                 ((wp a _ _)
+                  (handle a F s))
+                 (_ F)))))))))
+
+(define (observes-address-analysis sys)
+  (let* ((call-states (call-state-analysis sys))
+         (graph (system-graph sys))
+         (σ (system-σ sys))
+         (Ξ (system-Ξ sys))
+         (initial (system-initial sys)))
+
+    (define (add-read-dep a λ R)
+      (hash-set R a (set-add (hash-ref R a (set)) λ)))
+
+    (define (add-observer λ F)
+      (hash-set F λ (set-add (hash-ref F λ (set)) OBSERVES)))
+
+    (define (add-observers a F O)
+      (let ((λ-os (hash-ref O a (set))))
+        (for/fold ((F F)) ((λ-o λ-os))
+          (add-observer λ-o F))))
+           
+    (define (handle-w a R O)
+      (let ((λ-rs (hash-ref R a (set))))
+        (for/fold ((O O)) ((λ-r λ-rs))
+          (hash-set O a (set-add (hash-ref O a (set)) λ-r)))))
+
+    (define (handle-r a F R O s)
+      (for/fold ((F F) (R R)) ((κ (stack-contexts (state-κ s) Ξ)))
+        (let ((A (hash-ref call-states κ)))
+          (if (set-member? A a)
+              (let ((λ (ctx-λ κ)))
+                (values (add-observers a F O)
+                        (add-read-dep a λ R)))
+                (values F R)))))
+
+    (define (handle-wv a R O)
+      (handle-w a R O))
+
+    (define (handle-wp a n R O)
+      (handle-w (cons a n) R O))
+    
+    (define (handle-rv a F R O s)
+      (handle-r a F R O s))
+
+    (define (handle-rp a n F R O s)
+      (handle-r (cons a n) F R O s))
+
+    (define (traverse-graph S W F R O)
+      (if (set-empty? W)
+          F
+          (let ((s (set-first W)))
+            (if (set-member? S s)
+                (traverse-graph S (set-rest W) F R O)
+                (let-values (((W* F* R* O*)
+                              (for/fold ((W W) (F F) (R R) (O O)) ((t (hash-ref graph s (set))))
+                                (match t
+                                  ((transition s* E)
+                                   (let ((W (set-add (set-remove W s) s*)))
+                                     (for/fold ((W W) (F F) (R R) (O O)) ((eff E))
+                                       (match eff
+                                         ((wv a _)
+                                          (let ((O (handle-wv a R O)))
+                                            (values W F R O)))
+                                         ((wp a n _)
+                                          (let ((O (handle-wp a n R O)))
+                                            (values W F R O)))
+                                         ((rv a _)
+                                        (let-values (((F R) (handle-rv a F R O s)))
+                                          (values W F R O)))
+                                         ((rp a n _)
+                                        (let-values (((F R) (handle-rp a n F R O s)))
+                                          (values W F R O)))
+                                       (_ (values W F R O))))))))))
+                  (let* ((unchanged (and (equal? F F*) (equal? R R*) (equal? O O*)))
+                         (S* (if unchanged (set-add S s) (set))))
+                    (traverse-graph S* W* F* R* O*)))))))
+
+    (traverse-graph (set) (set initial) (hash) (hash) (hash))))
+
+(define (address-purity-analysis sys)
+  (let ((F-gen (generates-address-analysis sys))
+        (F-obs (observes-address-analysis sys)))
+    (hash-⊔ F-gen F-obs set-union (set))))
+
+(define PURE "PURE")
+(define OBSERVER "OBS")
+(define PROCEDURE "PROC")
+
+(define (extend-to-applied F Ξ)
+  (for/hash ((κ (hash-keys Ξ)))
+    (let ((λ (ctx-λ κ)))
+      (values λ (hash-ref F λ (set))))))
+
+(define (F->C F)
+  (for/hash (((λ f) F))
+    (cond
+      ((set-empty? f) (values λ PURE))
+      ((set-member? f GENERATES) (values λ PROCEDURE))
+      (else (values λ OBSERVES)))))
+
+(define (print-purity-info C)
+  (for (((λ c) C))
+    (printf "~a -> ~a\n" (~a λ #:max-width 30) c)))
+
+
+#|                                     
+(define THROW (make-parameter #t))
+
+(struct benchmark-config (name mach handler))
+(define conc-config (benchmark-config "CONC" (make-machine conc-lattice conc-alloc)
+                                    (make-address-handler #f)))
+(define fa-config (benchmark-config "FA" (make-machine type-lattice mono-alloc)
+                                    (make-address-handler #f)))
+
+(define PRINT-PER-LAMBDA (make-parameter #t))
+
+(define (test . ens)  
+  (when (null? ens)
+    (set! ens '(fac fib fib-mut blur eta mj09 gcipd kcfa2 kcfa3 rotate loop2 sat collatz rsa primtest factor)))
+  (printf "Benchmarks: ~a\n" ens)
+  (define configs (list conc-config fa-config))
+  (printf "Configs: ~a\n" configs)
+  (parameterize ((PRINT-PER-LAMBDA #f))
+    (for/list ((en ens))
+      (cons en
+            (for/list ((config configs))
+              (let ((e (eval en)))
+                (printf "~a" (~a en #:min-width 15))
+                (cons (benchmark-config-name config) (purity e config))))))))
+
+(define (server-test)
+  (parameterize ((CESK-TIMELIMIT 60) (THROW #f))
+    (let ((results (apply test '(fac fib fib-mut blur eta mj09 gcipd kcfa2 kcfa3 rotate loop2 sat collatz rsa primtest factor
+                                     nqueens dderiv destruct mceval
+                                     ; regex boyer 
+                                     )))) 
+      (printf "Done.")
+      results)))
+
+
+(struct benchmark (state-count duration exit msg num-lambdas num-called num-pure num-obs num-proc))
+
+(define (purity e config)
+  (printf "~a" (~a (benchmark-config-name config) #:min-width 5 #:max-width 5))
+  (let* ((mach (benchmark-config-mach config))
+         (handler (benchmark-config-handler config))
+         (bench (benchmark-eval e mach handler))
+         (exit (benchmark-exit bench))
+         (msg (benchmark-msg bench))
+         (state-count (benchmark-state-count bench))
+         (duration (benchmark-duration bench)))
+    (printf "#~a flow-time ~a lams ~a called ~a pure ~a obs ~a proc ~a | ~a\n"
+            (~a (if (eq? exit 'ok) state-count (format ">~a" state-count)) #:min-width 7)
+            (~a duration #:min-width 7)
+            (~a (benchmark-num-lambdas bench) #:min-width 3)
+            (~a (benchmark-num-called bench) #:min-width 3)
+            (~a (benchmark-num-pure bench) #:min-width 2)
+            (~a (benchmark-num-obs bench) #:min-width 2)
+            (~a (benchmark-num-proc bench) #:min-width 2)
+            (~a msg #:max-width 72))
+    bench))
+
+(define (benchmark-eval e mach handler)
+  (define (nodes ast) (for/fold ((cs (list ast))) ((c (children ast))) (append cs (nodes c))))
+  (define (lambdas ast) (filter «lam»? (nodes ast)))
+  (with-handlers ((exn:fail? (lambda (exc) (if (THROW) (raise exc) (benchmark -1 -1 'error exc 0 0 0 0 0)))))
+    (let* ((sys (mach e))
+           (flow-duration (system-duration sys))
+           (flow-state-count (vector-length (system-states sys)))
+           (flow-exit (system-exit sys))
+           (msg (if (eq? flow-exit 'ok) (answer-value sys) (system-msg sys))))
+      (if (eq? flow-exit 'ok)
+          (let* ((initial (system-initial sys))
+                 (ast (ev-e initial))
+                 (num-lambdas (length (lambdas ast)))
+                 (Ξ (system-Ξ sys))
+                 (C (purity-analysis sys (handler sys)))
+                 (Cpop (go->pop C))
+                 (num-called (set-count (list->set (map (lambda (κ) (ctx-λ κ)) (hash-keys Ξ))))))
+            (let-values (((num-pure num-obs num-proc) (for/fold ((num-pure 0) (num-obs 0) (num-proc 0)) (((λ c) Cpop))
+                                                          (when (PRINT-PER-LAMBDA)
+                                                            (printf "~a -> ~a\n" (~a λ #:max-width 30) c))
+                                                          (cond
+                                                            ((eq? c "PURE") (values (add1 num-pure) num-obs num-proc))
+                                                            ((eq? c "PROC") (values num-pure num-obs (add1 num-proc)))
+                                                            ((eq? c "OBS") (values num-pure (add1 num-obs) num-proc))
+                                                            (else (raise c))))))
+              (benchmark flow-state-count flow-duration flow-exit msg num-lambdas num-called num-pure num-obs num-proc)))
+          (benchmark flow-state-count flow-duration flow-exit msg 0 0 0 0 0)))))
+
+
+;; Lower-bound for printing time (if smaller, prints \epsilon), in seconds
+(define TIMECUTOFF (make-parameter 1))
+(define TIMEFORMAT (make-parameter
+                    ;; Round to seconds by default: 1
+                    (lambda (time) (format "~a''" (inexact->exact (round time))))
+                    ;; Other possibility: 1.234''
+                    ;; (lambda (n) (~a time "''"))
+                    ))
+(define (display-size-tex result)
+  (define (to-states benchmark)
+    (~a (if (eq? (benchmark-exit benchmark) 'user) "$>$" "") (benchmark-state-count benchmark)))
+  
+  (printf "\\begin{tabular}{lllll} Program & Variance & Base & Summarizing & Self-adjusting \\\\ \\hline \n")
+  (for/list ((res result))
+    (match res
+      ((list res-0 res-0-summ res-0-sa res-1 res-1-summ res-1-sa)
+       ;; 0-CFA
+       (printf "\\code{~a}      & 0CFA         & ~a   & ~a     & ~a          \\\\"
+               (~a "benchmark-name res-0") 
+               (~a (to-states res-0))      
+               (~a (to-states res-0-summ))
+               (~a (to-states res-0-sa))
+               )
+       ;; 1-CFA
+       (printf "                & 1CFA         & ~a   & ~a    & ~a          \\\\[6pt]\n"
+               (~a (to-states res-1))
+               (~a (to-states res-1-summ))
+               (~a (to-states res-1-sa)) 
+               ))))
+  (printf "\\end{tabular}\n"))
+
+(define (display-time-tex result)
+  (define (to-time benchmark)
+    (if (eq? (benchmark-exit benchmark) 'user)
+        "$\\infty$"
+        (let ((duration (benchmark-duration benchmark)))
+          (if (< duration 1000)
+              "$\\epsilon$" 
+              (format "~a''" (inexact->exact (round (/ duration 1000))))))))
+  
+  (printf "\\begin{tabular}{lllll} Program & Variance & Base & Summarizing & Self-adjusting \\\\ \\hline \n")
+  (for/list ((res result))
+    (match res
+      ((list res-0 res-0-summ res-0-sa res-1 res-1-summ res-1-sa)
+       ;; 0-CFA
+       (printf "\\code{~a}      & 0CFA         & ~a   & ~a      & ~a          \\\\"
+               (~a "benchmark-name res-0") 
+               (~a (to-time res-0))      
+               (~a (to-time res-0-summ))
+               (~a (to-time res-0-sa)))
+       ;; 1-CFA
+       (printf "                & 1CFA         & ~a   & ~a      & ~a          \\\\[6pt]\n"
+               (~a (to-time res-1))
+               (~a (to-time res-1-summ))
+               (~a (to-time res-1-sa))))))
+  (printf "\\end{tabular}\n"))
+
 
 (define (mark-proc C λ)
   (hash-set C λ (set-add (hash-ref C λ) "GEN")))
@@ -284,7 +574,7 @@
           (stack-walk (set-rest ctxs) C* R*)))))
 
 (define (make-address-handler ctx-Aσ)
-  (lambda _  
+  (lambda (sys)
     (lambda (effect state ast Ξ ctx-λ C R O)
       (let* ((κ (if (ev? state) (ev-κ state) (ko-κ state)))
              (ctxs (stack-contexts κ Ξ)))
@@ -346,229 +636,6 @@
              (handle-rp-fresh a n x ctxs ctx-λ (hash-ref Fς state) ast C R O))
             (_ (values C R O))))))))
 
-(define (purity-analysis system handler ctx-λ)
-  
-  (let* ((graph (system-graph system))
-         (Ξ (system-Ξ system))
-         (γ (lattice-γ (system-lattice system)))
-         (initial (system-initial system))
-         (ast (ev-e initial)))
-
-    (define C0
-      (for/hash ((κ (hash-keys Ξ)))
-        (let* ((λ (ctx-λ κ)))
-          (values λ (set)))))    
-        
-    (define (traverse S W C R O)
-      (if (set-empty? W)
-          C
-          (let ((state (set-first W)))
-            (if (set-member? S state)
-                (traverse S (set-rest W) C R O)
-                (let* ((κ (if (ev? state) (ev-κ state) (ko-κ state)))
-                       (ctxs (stack-contexts κ Ξ)))
-                  (let succ-loop ((succs (hash-ref graph state)) (ΔW (set)) (C* C) (R* R) (O* O))
-                    (if (set-empty? succs)
-                        (let ((unchanged (and (equal? C C*) (equal? R R*) (equal? O O*))))
-                          (traverse (if unchanged (set-add S state) (set)) (set-union (set-rest W) ΔW) C* R* O*))
-                        (match-let (((cons s* E) (set-first succs)))
-                          (let effect-loop ((E E) (C** C*) (R** R*) (O** O*))
-                            (if (set-empty? E)
-                                (succ-loop (set-rest succs) (set-add ΔW s*) C** R** O**)
-                                (let-values (((C*** R*** O***) (handler (set-first E) state ast Ξ ctx-λ C** R** O**)))
-                                  (effect-loop (set-rest E) C*** R*** O***))))))))))))
-    
-    (traverse (set) (set initial) C0 (hash) (hash))))
-
-(define (flow-test . ens)
-  (when (null? ens)
-    (set! ens '(fac fib fib-mut blur eta mj09 gcipd kcfa2 kcfa3 rotate loop2 sat collatz rsa primtest factor nqueens)))
-  (define (perform name e)
-    (let* ((sys (type-mach-0 e))
-           (flow-duration (system-duration sys))
-           (flow-state-count (vector-length (system-states sys)))
-           (flow-exit (system-exit sys))
-           (flow-msg (if (eq? flow-exit 'ok) (answer-value sys) (system-msg sys))))
-      (printf "~a states ~a time ~a | ~a\n"
-              (~a name #:min-width 12)
-              (~a (if (eq? flow-exit 'ok) flow-state-count (format ">~a" flow-state-count)) #:min-width 7)
-              (~a flow-duration #:min-width 7)
-              (~a flow-msg #:max-width 72))))
-  (for-each (lambda (en) (perform en (eval en)))
-            ens))
-
-(define (server-flow-test)
-  (parameterize ((CESK-TIMELIMIT 60) (THROW #f))
-    (apply flow-test '(fac fib fib-mut blur eta mj09 gcipd kcfa2 kcfa3 rotate loop2
-                           sat collatz rsa primtest factor nqueens dderiv boyer mceval))))
-
-(define THROW (make-parameter #t))
-
-(define (state-repr s)
-  (match s
-    ((ev e ρ ι κ) (format "~a | ~a" (~a e #:max-width 20) (ctx->ctxi κ)))
-    ((ko ι κ v) (format "~a | ~a" (~a v #:max-width 20) (ctx->ctxi κ)))))
-
-#|
-(struct benchmark-config (name mach ctx-λ handler))
-(define conc-config (benchmark-config "CONC" (make-machine conc-lattice conc-alloc)
-                                    (lambda (κ) (clo-λ (full-ctx-clo κ)))
-                                    (make-address-handler (lambda (κ) (hash-keys (full-ctx-σ κ))))))
-(define fa-config (benchmark-config "FA" (make-machine type-lattice mono-alloc full-context weak-update)
-                                    (lambda (κ) (clo-λ (full-ctx-clo κ)))
-                                    (make-address-handler (lambda (κ) (hash-keys (full-ctx-σ κ))))))
-(define la-config (benchmark-config "LA" (make-machine type-lattice mono-alloc lim-context weak-update)
-                                    lim-ctx-λ
-                                    (make-address-handler (lambda (κ) (lim-ctx-Aσ κ)))))
-(define lsf-config (benchmark-config "LSF" (make-machine type-lattice mono-alloc lim2-context weak-update)
-                                     lim2-ctx-λ
-                                     (make-non-address-handler)))
-
-(define PRINT-PER-LAMBDA (make-parameter #t))
-
-(define (test . ens)  
-  (when (null? ens)
-    (set! ens '(fac fib fib-mut blur eta mj09 gcipd kcfa2 kcfa3 rotate loop2 sat collatz rsa primtest factor)))
-  (printf "Benchmarks: ~a\n" ens)
-  (define configs (list conc-config fa-config la-config lsf-config))
-  (printf "Configs: ~a\n" configs)
-  (parameterize ((PRINT-PER-LAMBDA #f))
-    (for/list ((en ens))
-      (cons en
-            (for/list ((config configs))
-              (let ((e (eval en)))
-                (printf "~a" (~a en #:min-width 15))
-                (cons (benchmark-config-name config) (purity e config))))))))
-
-(define (server-test)
-  (parameterize ((CESK-TIMELIMIT 60) (THROW #f))
-    (let ((results (apply test '(fac fib fib-mut blur eta mj09 gcipd kcfa2 kcfa3 rotate loop2 sat collatz rsa primtest factor
-                                     nqueens dderiv destruct
-                                     ; regex boyer mceval
-                                     )))) 
-      (printf "Done.")
-      results)))
-
-
-(struct benchmark (state-count duration exit msg num-lambdas num-called num-pure num-obs num-proc))
-
-(define (purity e config)
-  (printf "~a" (~a (benchmark-config-name config) #:min-width 5 #:max-width 5))
-  (let* ((mach (benchmark-config-mach config))
-         (ctx-λ (benchmark-config-ctx-λ config))
-         (handler (benchmark-config-handler config))
-         (bench (benchmark-eval e mach ctx-λ handler))
-         (exit (benchmark-exit bench))
-         (msg (benchmark-msg bench))
-         (state-count (benchmark-state-count bench))
-         (duration (benchmark-duration bench)))
-    (printf "#~a flow-time ~a lams ~a called ~a pure ~a obs ~a proc ~a | ~a\n"
-            (~a (if (eq? exit 'ok) state-count (format ">~a" state-count)) #:min-width 7)
-            (~a duration #:min-width 7)
-            (~a (benchmark-num-lambdas bench) #:min-width 3)
-            (~a (benchmark-num-called bench) #:min-width 3)
-            (~a (benchmark-num-pure bench) #:min-width 2)
-            (~a (benchmark-num-obs bench) #:min-width 2)
-            (~a (benchmark-num-proc bench) #:min-width 2)
-            (~a msg #:max-width 72))
-    bench))
-
-(define (go->pop C)
-  (for/hash (((λ c) C))
-    (cond
-      ((set-empty? c) (values λ "PURE"))
-      ((set-member? c "GEN") (values λ "PROC"))
-      (else (values λ "OBS")))))
-
-
-(define (benchmark-eval e mach ctx-λ handler)
-  (define (nodes ast) (for/fold ((cs (list ast))) ((c (children ast))) (append cs (nodes c))))
-  (define (lambdas ast) (filter «lam»? (nodes ast)))
-  (with-handlers ((exn:fail? (lambda (exc) (if (THROW) (raise exc) (benchmark -1 -1 'error exc 0 0 0 0 0)))))
-    (let* ((sys (mach e))
-           (flow-duration (system-duration sys))
-           (flow-state-count (vector-length (system-states sys)))
-           (flow-exit (system-exit sys))
-           (msg (if (eq? flow-exit 'ok) (answer-value sys) (system-msg sys))))
-      (if (eq? flow-exit 'ok)
-          (let* ((initial (system-initial sys))
-                 (ast (ev-e initial))
-                 (num-lambdas (length (lambdas ast)))
-                 (Ξ (system-Ξ sys))
-                 (C (purity-analysis sys (handler sys) ctx-λ))
-                 (Cpop (go->pop C))
-                 (num-called (set-count (list->set (map (lambda (κ) (ctx-λ κ)) (hash-keys Ξ))))))
-            (let-values (((num-pure num-obs num-proc) (for/fold ((num-pure 0) (num-obs 0) (num-proc 0)) (((λ c) Cpop))
-                                                          (when (PRINT-PER-LAMBDA)
-                                                            (printf "~a -> ~a\n" (~a λ #:max-width 30) c))
-                                                          (cond
-                                                            ((eq? c "PURE") (values (add1 num-pure) num-obs num-proc))
-                                                            ((eq? c "PROC") (values num-pure num-obs (add1 num-proc)))
-                                                            ((eq? c "OBS") (values num-pure (add1 num-obs) num-proc))
-                                                            (else (raise c))))))
-              (benchmark flow-state-count flow-duration flow-exit msg num-lambdas num-called num-pure num-obs num-proc)))
-          (benchmark flow-state-count flow-duration flow-exit msg 0 0 0 0 0)))))
-
-(define (print-purity-info C)
-  (for (((λ c) C))
-    (printf "~a -> ~a\n" (~a λ #:max-width 30) c)))
-
-;; Lower-bound for printing time (if smaller, prints \epsilon), in seconds
-(define TIMECUTOFF (make-parameter 1))
-(define TIMEFORMAT (make-parameter
-                    ;; Round to seconds by default: 1
-                    (lambda (time) (format "~a''" (inexact->exact (round time))))
-                    ;; Other possibility: 1.234''
-                    ;; (lambda (n) (~a time "''"))
-                    ))
-(define (display-size-tex result)
-  (define (to-states benchmark)
-    (~a (if (eq? (benchmark-exit benchmark) 'user) "$>$" "") (benchmark-state-count benchmark)))
-  
-  (printf "\\begin{tabular}{lllll} Program & Variance & Base & Summarizing & Self-adjusting \\\\ \\hline \n")
-  (for/list ((res result))
-    (match res
-      ((list res-0 res-0-summ res-0-sa res-1 res-1-summ res-1-sa)
-       ;; 0-CFA
-       (printf "\\code{~a}      & 0CFA         & ~a   & ~a     & ~a          \\\\"
-               (~a "benchmark-name res-0") 
-               (~a (to-states res-0))      
-               (~a (to-states res-0-summ))
-               (~a (to-states res-0-sa))
-               )
-       ;; 1-CFA
-       (printf "                & 1CFA         & ~a   & ~a    & ~a          \\\\[6pt]\n"
-               (~a (to-states res-1))
-               (~a (to-states res-1-summ))
-               (~a (to-states res-1-sa)) 
-               ))))
-  (printf "\\end{tabular}\n"))
-
-(define (display-time-tex result)
-  (define (to-time benchmark)
-    (if (eq? (benchmark-exit benchmark) 'user)
-        "$\\infty$"
-        (let ((duration (benchmark-duration benchmark)))
-          (if (< duration 1000)
-              "$\\epsilon$" 
-              (format "~a''" (inexact->exact (round (/ duration 1000))))))))
-  
-  (printf "\\begin{tabular}{lllll} Program & Variance & Base & Summarizing & Self-adjusting \\\\ \\hline \n")
-  (for/list ((res result))
-    (match res
-      ((list res-0 res-0-summ res-0-sa res-1 res-1-summ res-1-sa)
-       ;; 0-CFA
-       (printf "\\code{~a}      & 0CFA         & ~a   & ~a      & ~a          \\\\"
-               (~a "benchmark-name res-0") 
-               (~a (to-time res-0))      
-               (~a (to-time res-0-summ))
-               (~a (to-time res-0-sa)))
-       ;; 1-CFA
-       (printf "                & 1CFA         & ~a   & ~a      & ~a          \\\\[6pt]\n"
-               (~a (to-time res-1))
-               (~a (to-time res-1-summ))
-               (~a (to-time res-1-sa))))))
-  (printf "\\end{tabular}\n"))
 
 |#
 
@@ -581,18 +648,12 @@
     (for ((i (vector-length states)))
       (let ((s (vector-ref states i)))
         (fprintf dotf "~a [label=\"~a | ~a\"];\n" i i (state-repr s))))
-    (hash-for-each graph (lambda (s out)
+    (hash-for-each graph (lambda (s ts)
                            (let ((i1 (vector-member s states))
-                                 (is (set-map out (lambda (s2E) (vector-member (car s2E) states)))))
+                                 (is (set-map ts (lambda (t) (vector-member (transition-s t) states)))))
                              (for-each (lambda (i2)
                                          (fprintf dotf "~a -> ~a;\n" i1 i2)) is))))
     (fprintf dotf "}")
     (close-output-port dotf))
   
   sys)
-
-(define (graph e mach name)
-  (parameterize ((CESK-TIMELIMIT 1))
-    (generate-dot (mach e) name)))
-
-
