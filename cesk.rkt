@@ -19,12 +19,12 @@
           (vector-set! v 0 i)
           (vector-set! v i x)
           i))))
-;(define frameis (make-vector 1000))
-;(define (frame->framei frame) (index frameis frame))
+(define frameis (make-vector 1000))
+(define (frame->framei frame) (index frameis frame))
 (define ctxis (make-vector 1000))
 (define (ctx->ctxi ctx) (index ctxis ctx))
-;(define stateis (make-vector 1000))
-;(define (state->statei q) (index stateis q))
+(define stateis (make-vector 1000))
+(define (state->statei q) (index stateis q))
 ;(define storeis (make-vector 1000))
 ;(define (store->storei σ) (index storeis σ))
 
@@ -159,7 +159,7 @@
     (define σ (make-hash))
     (define σi 0)
     (define Ξ (make-hash))
-    (define poppers (make-hash))
+    (define pops (make-hash))
     
     (include "primitives.rkt")
     
@@ -218,9 +218,13 @@
             (unless (set-member? stacks stack)
               ;(printf "ADDING to ~a\n" (set-map stacks stack-to-string))
               (hash-set! Ξ κ (set-add stacks stack))
-              (for ((s (hash-ref poppers κ (set))))
-                (set-remove! visited s)
-                (set! todo (set-add todo s))))
+              (for ((s (hash-ref pops κ (set))))
+                (match s
+                  ((ko v ι κ)
+                   (let ((s* (ko v (car stack) (cdr stack))))
+                     (hash-set! graph s (set-add (hash-ref graph s (set)) (transition s* (set))))
+                     (set! todo (set-add todo s*))))))
+              )
             (hash-set! Ξ κ (set stack)))))
     
     (define (alloc-literal! e)
@@ -263,13 +267,15 @@
          (apply-letrec-kont x e ρ ι κ v E))
         (_ (set (transition (ko v ι κ) E)))))
     
-    ;(define (print-state q)
-    ;  (match q
-    ;   ((ev e ρ σ ι κ m) (printf "EV ~a\nρ ~a σ ~a\nι ~a κ ~a frames ~a\n" (~a e #:max-width 40) ρ (store->storei σ) (map frame->framei ι) (ctx->ctxi κ) (set-map (stack-frames ι κ Ξ) frame->framei)))
-    ;    ((ko ι κ v σ m) (printf "KO ~a σ ~a\nι ~a κ ~a frames ~a\n" v (store->storei σ) (map frame->framei ι) (ctx->ctxi κ) (set-map (stack-frames ι κ Ξ) frame->framei)))))
+    (define (print-state q)
+      (match q
+       ((ev e ρ ι κ) (printf "EV ~a\nρ ~a σ ~a\nι ~a κ ~a frames ~a\n" (~a e #:max-width 40) ρ σi (map frame->framei ι) (ctx->ctxi κ) (set-map (stack-frames ι κ Ξ) frame->framei)))
+        ((ko v ι κ) (printf "KO ~a σ ~a\nι ~a κ ~a frames ~a\n" v σi (map frame->framei ι) (ctx->ctxi κ) (set-map (stack-frames ι κ Ξ) frame->framei)))))
     
     (define (step q)
-      ;(check-safety q Ξ)
+      ;(printf "exploring ~a\n" (state->statei q))
+      ;(print-state q)
+      ;(read)
       (match q
         ((ev (? ae? ae) ρ ι κ)
          (let-values (((v E) (eval-atom ae ρ)))
@@ -351,7 +357,7 @@
                             (G (caddr ικG))
                             (succ* (apply-local-kont ι κ v (set))))
                        (for ((κ G))
-                         (hash-set! poppers κ (set-add (hash-ref poppers κ (set)) q)))
+                         (hash-set! pops κ (set-add (hash-ref pops κ (set)) q)))
                        (loop (set-rest ικGs)
                              (set-union succ succ*))))))))
         )) ; end step
@@ -383,7 +389,9 @@
                         (set-add! visited q)
                         (set-add! states q)
                         (let* ((ts (step q))
-                               (new-states (for/set ((t ts)) (transition-s t)))
+                               (new-states (for/set ((t ts))
+                                             ;(printf "-> ~a\n" (state->statei (transition-s t)))
+                                             (transition-s t)))
                                (existing (hash-ref graph q (set)))
                                (updated (set-union existing ts)))
                           (hash-set! graph q updated)
@@ -447,6 +455,29 @@ explore)
   (do-eval e type-mach-0))
 (define (type-eval-1 e)
   (do-eval e type-mach-1))
+
+(define (state-repr s)
+  (match s
+    ((ev e ρ ι κ) (format "~a | ~a" (~a e #:max-width 20) (ctx->ctxi κ)))
+    ((ko v ι κ) (format "~a | ~a" (~a v #:max-width 20) (ctx->ctxi κ)))))
+
+(define (generate-dot sys name)  
+  (let* ((graph (system-graph sys))
+         (states (system-states sys))
+         (dotf (open-output-file (format "~a.dot" name) #:exists 'replace)))
+    (fprintf dotf "digraph G {\n")
+    (for ((i (vector-length states)))
+      (let ((s (vector-ref states i)))
+        (fprintf dotf "~a [label=\"~a | ~a\"];\n" i i (state-repr s))))
+    (hash-for-each graph (lambda (s ts)
+                           (let ((i1 (vector-member s states))
+                                 (is (set-map ts (lambda (t) (vector-member (transition-s t) states)))))
+                             (for-each (lambda (i2)
+                                         (fprintf dotf "~a -> ~a;\n" i1 i2)) is))))
+    (fprintf dotf "}")
+    (close-output-port dotf))
+  sys)
+
 
 (define (flow-test . ens)
   (when (null? ens)

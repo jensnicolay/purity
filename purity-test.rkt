@@ -16,9 +16,10 @@
     
 (define (conc-purity-test)
   (define (test e expected)
-      (let ((C (conc-address-test-handler e)))
-        (unless (equal? (make-hash expected) C)
-          (printf "error ~a CONC\n~a ~a\n" e expected C))))
+    (printf "~a\n" e)
+    (let ((C (conc-address-test-handler e)))
+      (unless (equal? (make-hash expected) C)
+        (printf "error ~a CONC\n~a ~a\n" e expected C))))
 
   (test fac '((2 . "PURE")))
   (test fib '((2 . "PURE")))

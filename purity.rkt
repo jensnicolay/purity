@@ -114,11 +114,6 @@
        (set-member? fresh decl)))
     (_ #f)))
 
-(define (state-repr s)
-  (match s
-    ((ev e ρ ι κ) (format "~a | ~a" (~a e #:max-width 20) (ctx->ctxi κ)))
-    ((ko v ι κ) (format "~a | ~a" (~a v #:max-width 20) (ctx->ctxi κ)))))
-
 (define (state-κ s)
   (match s
     ((ev _ _ _ κ) κ)
@@ -638,22 +633,3 @@
 
 
 |#
-
-(define (generate-dot sys name)
-  
-  (let* ((graph (system-graph sys))
-         (states (system-states sys))
-         (dotf (open-output-file (format "~a.dot" name) #:exists 'replace)))
-    (fprintf dotf "digraph G {\n")
-    (for ((i (vector-length states)))
-      (let ((s (vector-ref states i)))
-        (fprintf dotf "~a [label=\"~a | ~a\"];\n" i i (state-repr s))))
-    (hash-for-each graph (lambda (s ts)
-                           (let ((i1 (vector-member s states))
-                                 (is (set-map ts (lambda (t) (vector-member (transition-s t) states)))))
-                             (for-each (lambda (i2)
-                                         (fprintf dotf "~a -> ~a;\n" i1 i2)) is))))
-    (fprintf dotf "}")
-    (close-output-port dotf))
-  
-  sys)
