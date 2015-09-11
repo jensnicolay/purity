@@ -185,12 +185,18 @@
         (for/fold ((F F)) ((λ-o λ-os))
           (add-observer λ-o F))))
            
-    (define (handle-w a R O)
+    (define (handle-wv a R O)
       (let ((λ-rs (hash-ref R a (set))))
         (for/fold ((O O)) ((λ-r λ-rs))
           (hash-set O a (set-add (hash-ref O a (set)) λ-r)))))
 
-    (define (handle-r a F R O s)
+    (define (handle-wp a n R O)
+      (let* ((res (cons a n))
+             (λ-rs (hash-ref R res (set))))
+        (for/fold ((O O)) ((λ-r λ-rs))
+          (hash-set O res (set-add (hash-ref O res (set)) λ-r)))))
+
+    (define (handle-rv a F R O s)
       (for/fold ((F F) (R R)) ((κ (stack-contexts (state-κ s) Ξ)))
         (let ((A (hash-ref call-states κ)))
           (if (set-member? A a)
@@ -199,17 +205,15 @@
                         (add-read-dep a λ R)))
                 (values F R)))))
 
-    (define (handle-wv a R O)
-      (handle-w a R O))
-
-    (define (handle-wp a n R O)
-      (handle-w (cons a n) R O))
-    
-    (define (handle-rv a F R O s)
-      (handle-r a F R O s))
-
     (define (handle-rp a n F R O s)
-      (handle-r (cons a n) F R O s))
+      (for/fold ((F F) (R R)) ((κ (stack-contexts (state-κ s) Ξ)))
+        (let ((A (hash-ref call-states κ)))
+          (if (set-member? A a)
+              (let ((λ (ctx-λ κ))
+                    (res (cons a n)))
+                (values (add-observers res F O)
+                        (add-read-dep res λ R)))
+                (values F R)))))
 
     (define (traverse-graph S W F R O)
       (if (set-empty? W)

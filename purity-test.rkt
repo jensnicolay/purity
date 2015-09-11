@@ -16,7 +16,6 @@
     
 (define (conc-purity-test)
   (define (test e expected)
-    (printf "~a\n" e)
     (let ((C (conc-address-test-handler e)))
       (unless (equal? (make-hash expected) C)
         (printf "error ~a CONC\n~a ~a\n" e expected C))))
@@ -72,10 +71,10 @@
   (test treenode1 '((2 . "PURE") (19 . "PURE")))
   (test '(let ((f (lambda () (cons 1 2)))) (f)) '((2 . "PURE")))
   (test '(let ((f (lambda () (cons 1 2)))) (let ((p (f))) (set-car! p 9))) '((2 . "PURE")))
+  (test '(let ((g (lambda () (let ((a 3)) a)))) (let ((f (lambda (h) (h)))) (letrec ((l (lambda (n) (let ((c (zero? n))) (if c 'done (let ((u (f g))) (let ((nn (- n 1))) (l nn)))))))) (l 4)))) '((2 . "PURE") (9 . "PURE") (15 . "PURE")))
+  (test '(let ((g (lambda (p) (set-cdr! p 3)))) (letrec ((f (lambda (n) (let ((c (zero? n))) (if c 'done (let ((o (cons 1 2))) (let ((u (g o))) (let ((v (cdr o))) (let ((nn (- n 1))) (f nn)))))))))) (f 4))) '((2 . "PROC") (10 . "PURE"))) 
 
   #|
-  (test '(let ((g (lambda () (let ((a 3)) a)))) (let ((f (lambda (h) (h)))) (letrec ((l (lambda () (let ((u (f g))) (l))))) (l)))) '((2 . "PURE") (9 . "PURE") (15 . "PURE")))
-  (test '(let ((g (lambda (p) (set-cdr! p 3)))) (letrec ((f (lambda () (let ((o (cons 1 2))) (let ((u (g o))) (let ((v (cdr o))) (f))))))) (f))) '((2 . "PROC") (10 . "PURE"))) 
   (test '(letrec ((f (lambda () (let ((z #f)) (let ((g (lambda () (let ((u (set! z #t))) (f))))) (g)))))) (f)) '((2 . "PURE") (8 . "PROC")))
   (test '(letrec ((f (lambda () (let ((z #f)) (let ((g (lambda () (set! z #t)))) (let ((u (g))) (f))))))) (f)) '((2 . "PURE") (8 . "PROC")))
   (test '(letrec ((f (lambda (n) (let ((m (- n 1))) (f m))))) (f 123)) '((2 . "PURE")))
@@ -99,3 +98,11 @@
   )
 
 (conc-purity-test)
+;(define pp '(let ((o (cons 1 2))) (let ((f (lambda () (cdr o)))) (let ((u (f))) (let ((v (set-cdr! o 3))) (f))))))
+;(define sys (conc-mach pp))
+;(observes-address-analysis sys)
+;(generate-dot (conc-mach pp) "pp")
+;(define ppp '(let ((n #t)) (letrec ((f (lambda () (if n (let ((u (set! n #f))) (f)) 'done)))) (f))))
+;(generate-dot (conc-mach ppp) "ppp")
+;(define pppp '(let ((n 10)) (letrec ((f (lambda () (let ((c (zero? n))) (if c 'done (let ((nn (- n 1))) (let ((u (set! n nn))) (f)))))))) (f))))
+;(generate-dot (conc-mach pppp) "pppp")
