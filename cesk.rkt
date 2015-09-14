@@ -69,7 +69,7 @@
   #:property prop:custom-write (lambda (v p w?)
                                  (fprintf p "<sys #~a ~a ~a>" (vector-length (system-states v)) (system-exit v) (~a (system-msg v) #:max-width 70))))
 
-(struct ctx (e λ ρ) #:transparent)
+(struct ctx (e λ ρ*) #:transparent)
 (struct transition (s E) #:transparent)
 
 (struct wv (a x) #:transparent)
@@ -145,7 +145,7 @@
   (for/fold ((A (set))) ((φ (stack-frames ι κ Ξ)))
     (set-union A (touches φ))))
 
-(define (make-machine lattice alloc)
+(define (make-machine lattice alloc kalloc)
 
   (define α (lattice-α lattice))
   (define γ (lattice-γ lattice))
@@ -159,6 +159,7 @@
     (define σ (make-hash))
     (define σi 0)
     (define Ξ (make-hash))
+    (define Ξi 0)
     ;(define pops (make-hash))
     
     (include "primitives.rkt")
@@ -223,9 +224,9 @@
               ;    ((ko v ι κ)
               ;     (let ((s* (ko v (car stack) (cdr stack))))
               ;       (hash-set! graph s (set-add (hash-ref graph s (set)) (transition s* (set))))
-              ;       ;(printf "adding ~a -> ~a\n" (state->statei s) (state->statei s*))
+                     ;(printf "adding ~a -> ~a\n" (state->statei s) (state->statei s*))
               ;      (set! todo (set-add todo s*))))))
-              (set! σi (add1 σi))
+              (set! Ξi (add1 Ξi))
               )
             (hash-set! Ξ κ (set stack)))))
     
@@ -253,7 +254,7 @@
         (_ (error "cannot handle ae" ae))))
     
     (define (apply-let-kont x e ρ ι κ v E)
-      (let* ((a (alloc x (and κ (ctx-e κ))))
+      (let* ((a (alloc x κ))
              (ρ* (env-bind ρ («id»-x x) a)))
         (store-alloc! a v)
         (set (transition (ev e ρ* ι κ) E))))
@@ -302,7 +303,7 @@
                (apply-let-kont x e1 ρ ι κ v E))
              (set (transition (ev e0 ρ (cons (letk x e1 ρ) ι) κ) (set)))))
         ((ev («letrec» _ x e0 e1) ρ ι κ)
-         (let* ((a (alloc x (and κ (ctx-e κ))))
+         (let* ((a (alloc x κ))
                 (ρ* (env-bind ρ («id»-x x) a)))
            (store-alloc! a ⊥)
            (if (ae? e0)
@@ -327,7 +328,7 @@
                         (define (bind-loop x vs ρ*)
                           (match x
                             ('()
-                             (let ((κ* (ctx e λ ρ*)))
+                             (let ((κ* (kalloc e λ ρ*)))
                                (stack-alloc! κ* (cons ι κ))
                                (set-add succ (transition (ev e0 ρ* '() κ*) E))))
                             ((cons x xs)
@@ -386,7 +387,7 @@
                   (set! todo (set-rest todo))
                   (if (set-member? visited q)
                       (explore-loop)
-                      (let ((old-σi σi))
+                      (let ((old-i (+ σi Ξi)))
                         ;(printf "q ~a\n" (state->statei q))
                         (set-add! visited q)
                         (set-add! states q)
@@ -398,7 +399,7 @@
                                (updated (set-union existing ts)))
                           (hash-set! graph q updated)
                           (set! todo (set-union new-states todo))
-                          (when (> σi old-σi)
+                          (when (> (+ σi Ξi) old-i)
                             (set-clear! visited))
                           (explore-loop)))))))))
                               
@@ -436,14 +437,15 @@ explore)
   x)
 
 (define (poly-alloc x ctx)
-  (cons x ctx))
-;  (cons x (if ctx
-;              (clo-λ (ctx-clo ctx))
-;              ctx)))
+  (cons x (and ctx (ctx-e ctx))))
 ;;
-(define conc-mach (make-machine conc-lattice conc-alloc))
-(define type-mach-0 (make-machine type-lattice mono-alloc))
-(define type-mach-1 (make-machine type-lattice poly-alloc))
+
+(define conc-kalloc (lambda (e λ ρ*) (ctx #f λ (conc-alloc))))
+(define free-kalloc (lambda (e λ ρ*) (ctx #f λ ρ*))) ; no 1-cfa (no e)
+
+(define conc-mach (make-machine conc-lattice conc-alloc conc-kalloc))
+(define type-mach-0 (make-machine type-lattice mono-alloc free-kalloc))
+(define type-mach-1 (make-machine type-lattice poly-alloc free-kalloc)) ;TODO!!!!
 
 (define (do-eval e mach)
   (let ((sys (mach e)))
@@ -479,7 +481,6 @@ explore)
     (fprintf dotf "}")
     (close-output-port dotf))
   sys)
-
 
 (define (flow-test . ens)
   (when (null? ens)

@@ -88,6 +88,22 @@
                                  #f)))))))
      ,e))
 
+(define (add-assoc e)
+  `(letrec ((assoc (lambda (x l)
+                     (let ((c (null? l)))
+                       (if c
+                           #f
+                           (let ((binding (car l)))
+                             (let ((key (car binding)))
+                               (let ((m (equal? key x)))
+                                 (if m
+                                     binding
+                                     (let ((rest (cdr l)))
+                                       (assoc x rest)))))))))))
+    ,e))
+
+
+
 (define p1 '(let ((c (cons 1 #f))) (car c)))
 (define p2 '(let ((c (cons 1 #f))) (cdr c)))
 (define p3 '(let ((u '(1 2 3))) (let ((v (cdr u))) (car v))))
@@ -133,6 +149,7 @@
 (define collatz (file->value "test/collatz.scm"))
 (define scm2java (add-list? (file->value "test/scm2java.scm")))
 (define mceval (add-length (add-cars (add-map (file->value "test/mceval.scm")))))
+(define mceval2 (add-equal? (add-cars (add-assoc (add-map (file->value "test/mceval2.scm"))))))
 (define boyer (add-equal? (add-cars (file->value "test/boyer.scm"))))
 (define ack (add-equal? (file->value "test/ack.scm")))
 (define dderiv (add-equal? (add-cars (add-map (file->value "test/dderiv.scm")))))
