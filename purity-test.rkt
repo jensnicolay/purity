@@ -115,7 +115,26 @@
 
 
 (define abstract-tests
-  (list (cons 'fac (cons fac '((2 . "PURE"))))))
+  (list (cons 'a1 (cons '(letrec ((f (lambda () (let ((z #f)) (let ((g (lambda () (let ((u (set! z #t))) (f))))) (g)))))) (f)) '((2 . "PURE") (8 . "PROC"))))
+        (cons 'a2 (cons '(letrec ((f (lambda () (let ((z #f)) (let ((g (lambda () (set! z #t)))) (let ((u (g))) (f))))))) (f)) '((2 . "PURE") (8 . "PROC"))))
+        (cons 'a3 (cons '(letrec ((f (lambda (n) (let ((m (- n 1))) (f m))))) (f 123)) '((2 . "PURE"))))
+        (cons 'a4 (cons '(letrec ((f (lambda (n) (let ((m (- n 1))) (let ((u (set! n m))) (f n)))))) (f 123)) '((2 . "PURE"))))
+        (cons 'a5 (cons '(letrec ((f (lambda (n) (let ((u (set! n 333))) (f n))))) (f 123)) '((2 . "PURE"))))
+        (cons 'a6 (cons '(letrec ((f (lambda (n) (let ((u (set! n 333))) (f n))))) (f 123)) '((2 . "PURE"))))
+        (cons 'a7 (cons '(letrec ((f (lambda () (let ((o (cons 1 2))) (let ((u (set-car! o 3))) (f)))))) (f)) '((2 . "PURE"))))
+        (cons 'a8 (cons '(letrec ((f (lambda () (let ((o (cons 1 2))) (let ((g (lambda () (set-car! o 3)))) (let ((u (g))) (let ((v (car o))) (f)))))))) (f)) '((2 . "PURE") (11 . "PROC"))))
+        (cons 'a9 (cons '(let ((g (lambda (p) (set-cdr! p 3)))) (letrec ((f (lambda () (let ((o (cons 1 2))) (let ((u (g o))) (let ((v (cdr o))) (f))))))) (f))) '((2 . "PROC") (10 . "PURE"))))
+        (cons 'a10 (cons '(let ((g (lambda (p) (set-cdr! p 3) ))) (let ((f (lambda (h) (let ((o (cons 1 2))) (let ((u (h o))) (cdr o)))))) (letrec ((l (lambda () (let ((v (f g))) (l))))) (l)))) '((2 . "PROC") (10 . "PURE") (28 . "PURE"))))
+        (cons 'a11 (cons '(let ((g (lambda () (let ((a 3)) a)))) (let ((f (lambda (h) (h)))) (letrec ((l (lambda () (let ((u (f g))) (l))))) (l)))) '((2 . "PURE") (9 . "PURE") (15 . "PURE"))))
+        (cons 'a12 (cons '(letrec ((f (lambda (n) (let ((p (- n 1))) (f p))))) (f 123)) '((2 . "PURE"))))
+        (cons 'a13 (cons '(letrec ((f (lambda () (let ((o (cons 1 2))) (let ((u (set-car! o 3))) (f)))))) (f)) '((2 . "PURE"))))
+        (cons 'a14 (cons '(letrec ((f (lambda (p) (let ((pp (cons 1 2))) (let ((u (set-car! pp p))) (f pp)))))) (f 3)) '((2 . "PURE"))))
+        (cons 'a15 (cons '(letrec ((f (lambda (p) (let ((o (cons 1 p))) (let ((u (set-car! o 3))) (f o)))))) (f 2)) '((2 . "PURE"))))
+        (cons 'a16 (cons '(letrec ((f (lambda () (let ((o (cons 1 2))) (let ((u (set-car! o 3))) (let ((v (f))) o)))))) (f)) '((2 . "PURE"))))
+        (cons 'a17 (cons '(let ((o (cons 1 2))) (letrec ((f (lambda () (let ((p (cons 1 2))) (let ((u (set-cdr! p 3))) (let ((v (set! p o))) (let ((w (set-cdr! p 4))) (f)))))))) (f))) '((8 . "PROC"))))
+        (cons 'a19 (cons '(let ((o (cons 1 2))) (letrec ((f (lambda () (let ((p (cons 1 2))) (let ((u (set-cdr! p 3))) (let ((p o)) (let ((w (set-cdr! p 4))) (f)))))))) (f))) '((8 . "PROC"))))
+        (cons 'a20 (cons '(let ((o (cons 1 2))) (letrec ((f (lambda () (let ((p o)) (let ((pp (cons 1 2))) (let ((v (set! p pp))) (let ((w (set-cdr! p 4))) (f)))))))) (f))) '((8 . "PURE"))))
+        (cons 'a21 (cons '(let ((o (cons 1 2))) (letrec ((f (lambda () (let ((p o)) (let ((pp (cons 1 2))) (let ((p pp)) (let ((w (set-cdr! p 4))) (f)))))))) (f))) '((8 . "PURE"))))))        
 
 (printf "(conc-purity-test)\n")
 (conc-purity-test)
