@@ -139,19 +139,6 @@
 (define GENERATES "GEN")
 (define OBSERVES "OBS")
 
-(define (address-observable-effect? call-states)
-  (lambda (eff κ)
-    (let ((A (hash-ref call-states κ)))
-      (match eff
-        ((wv a _)
-         (set-member? A a))
-        ((wp a _ _)
-         (set-member? A a))
-        ((rv a _)
-         (set-member? A a))
-        ((rp a _ _)
-         (set-member? A a))))))
-
 (define (traverse-graph graph initial Ξ observable-effect?)
 
   (define (add-read-dep a λ R)
@@ -225,9 +212,47 @@
   
   (traverse-graph* (set) (set initial) (hash) (hash) (hash)))
 
+(define (address-observable-effect? call-states)
+  (lambda (eff κ)
+    (let ((A (hash-ref call-states κ)))
+      (match eff
+        ((wv a _)
+         (set-member? A a))
+        ((wp a _ _)
+         (set-member? A a))
+        ((rv a _)
+         (set-member? A a))
+        ((rp a _ _)
+         (set-member? A a))))))
+
+(define (scope-address-observable-effect? ast call-states)
+  (lambda (eff κ)
+      (match eff
+        ((wv _ x)
+         (let ((decl (get-declaration («id»-x x) x ast))
+               (λ (ctx-λ κ)))
+           (outer-scope-declaration? decl λ ast)))
+        ((wp a _ _)
+         (let ((A (hash-ref call-states κ)))
+           (set-member? A a)))
+        ((rv _ x)
+         (let ((decl (get-declaration («id»-x x) x ast))
+               (λ (ctx-λ κ)))
+           (outer-scope-declaration? decl λ ast)))
+        ((rp a _ _)
+         (let ((A (hash-ref call-states κ)))
+           (set-member? A a))))))
+
 (define (address-purity-analysis sys)
   (let* ((call-states (call-state-analysis sys))
-         (observable-effect? (address-observable-effect? call-states)))
+        (observable-effect? (address-observable-effect? call-states)))
+    (traverse-graph (system-graph sys) (system-initial sys) (system-Ξ sys) observable-effect?)))
+    
+(define (scope-address-purity-analysis sys)
+  (let* ((call-states (call-state-analysis sys))
+         (initial (system-initial sys))
+         (ast (ev-e initial))
+         (observable-effect? (scope-address-observable-effect? ast call-states)))
     (traverse-graph (system-graph sys) (system-initial sys) (system-Ξ sys) observable-effect?)))
     
 (define PURE "PURE")
@@ -259,8 +284,8 @@
 (define (full-address-purity-benchmark sys)
   (purity-benchmark sys address-purity-analysis))
 
-;(define (scope-address-purity-benchmark sys)
- ; (purity-benchmark sys scope-address-purity-analysis))
+(define (scope-address-purity-benchmark sys)
+  (purity-benchmark sys scope-address-purity-analysis))
 
 
 (define FLOW-TIME "flow-time")
@@ -317,19 +342,22 @@
 (define THROW (make-parameter #t))
 (define PRINT-PER-LAMBDA (make-parameter #t))
 
-(struct config (name handler))
-
 (define purity-result #f)
 
 (define (purity-test . ens)
   (when (null? ens)
-    (set! ens '(fac fib fib-mut blur eta mj09 gcipd kcfa2 kcfa3 rotate loop2 sat collatz rsa primtest factor)))
-  (define configs (list (config 'fa full-address-purity-benchmark)
+    (set! ens '(fib fib-mut blur eta mj09 gcipd kcfa2 kcfa3 rotate loop2 sat collatz rsa primtest factor
+                    purity1 purity2 purity3 purity4 purity5 purity6 purity7 purity8 purity9 purity10 purity11 purity12 purity13
+                    purity14 purity15 purity16 purity17 purity18
+                    treenode1 helloset! hellomemoset!)))
+  (define configs (list (cons 'fa full-address-purity-benchmark)
+                        (cons 'sa scope-address-purity-benchmark)
                         ))
   (define machs (list (cons 'conc conc-mach) (cons 'type type-mach-0)))
   (set! purity-result
   (parameterize ((PRINT-PER-LAMBDA #f))
     (for/list ((en ens))
+      (newline)
       (let* ((e (eval en)))
         (cons en
               (for/list ((machc machs))
@@ -338,16 +366,17 @@
                        (sys (mach e)))
                   (cons mach-name
                   (for/list ((config configs))
-                    (printf "~a ~a ~a" (~a en #:min-width 14) (~a mach-name #:min-width 4) (~a (config-name config) #:min-width 5))
-                    (let ((result ((config-handler config) sys)))
+                    (printf "~a ~a ~a" (~a en #:min-width 14) (~a mach-name #:min-width 4) (~a (car config) #:min-width 5))
+                    (let ((result ((cdr config) sys)))
                       (print-purity-summary result)
-                (cons (config-name config) result)))))))))))
+                (cons (car config) result)))))))))))
   (printf "Results in purity-result\n"))
 
 (define (server-purity-test)
   (parameterize ((CESK-TIMELIMIT 60) (THROW #f))
-    (let ((results (apply purity-test '(fac fib fib-mut blur eta mj09 gcipd kcfa2 kcfa3 rotate loop2 sat collatz rsa primtest factor
-                                     nqueens dderiv destruct mceval
+    (let ((results (apply purity-test '(fib fib-mut
+                                        treenode1
+                                        nqueens dderiv destruct mceval
                                      ; regex boyer 
                                      )))) 
       (printf "Done.")
