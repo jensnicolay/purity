@@ -7,18 +7,21 @@
 (require "test.rkt")
 (require "purity.rkt")
 
-(define (conc-address-test-handler e)
-  (let* ((sys (conc-mach e))
-         (F (extend-to-applied (address-purity-analysis sys) (system-Ξ sys)))
-         (C (F->C F))
-         (C* (make-hash (hash-map C (lambda (k v) (cons («lam»-l k) v))))))
-    C*))
-    
+(define (make-test-handler mach analysis)
+  (lambda (e)
+    (let* ((sys (mach e))
+           (F (extend-to-applied (analysis sys) (system-Ξ sys)))
+           (C (F->C F))
+           (C* (make-hash (hash-map C (lambda (k v) (cons («lam»-l k) v))))))
+      C*)))
+  
 (define (conc-purity-test)
   (define (test e expected)
-    (let ((C (conc-address-test-handler e)))
-      (unless (equal? (make-hash expected) C)
-        (printf "error ~a CONC\n~a ~a\n" e expected C))))
+    (for ((handler (list (make-test-handler conc-mach address-purity-analysis)
+                         (make-test-handler conc-mach scope-address-purity-analysis))))
+      (let ((C (handler e)))
+        (unless (equal? (make-hash expected) C)
+          (printf "error ~a CONC\n~a ~a\n" e expected C)))))
 
   (test fac '((2 . "PURE")))
   (test fib '((2 . "PURE")))
@@ -92,4 +95,6 @@
   (test '(let ((g (lambda (p) (set-cdr! p 3) ))) (let ((f (lambda (h) (let ((o (cons 1 2))) (let ((u (h o))) (cdr o)))))) (letrec ((l (lambda (n) (let ((c (zero? n))) (if c 'done (let ((v (f g))) (let ((nn (- n 1))) (l nn)))))))) (l 4)))) '((2 . "PROC") (10 . "PURE") (28 . "PURE")))
   )
 
+(printf "(conc-purity-test)\n")
 (conc-purity-test)
+(printf "All done.\n")
