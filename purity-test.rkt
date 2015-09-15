@@ -16,6 +16,8 @@
       C*)))
 
 (define (conc-purity-test)
+  (define total 0)
+  (define fail 0)
   (for* ((test common-tests)
          (test-handler (list (cons 'conc-fa (make-test-handler conc-mach address-purity-analysis))
                         (cons 'conc-sa (make-test-handler conc-mach scope-address-purity-analysis)))))
@@ -25,10 +27,15 @@
              (handler-name (car test-handler))
              (handler (cdr test-handler))
              (C (handler e)))
+        (set! total (add1 total))
         (unless (equal? (make-hash expected) C)
-          (printf "error ~a ~a\nexpected ~a actual ~a\n" test-name handler-name expected C)))))
+          (set! fail (add1 fail))
+          (printf "error ~a ~a\nexpected ~a actual ~a\n" test-name handler-name expected C))))
+  (printf "total ~a fail ~a\n" total fail))
 
 (define (abst-purity-test)
+  (define total 0)
+  (define fail 0)
   (for* ((test (append common-tests abstract-tests))
          (test-handler (list (cons 'type-fa (make-test-handler type-mach-0 address-purity-analysis))
                         (cons 'type-sa (make-test-handler type-mach-0 scope-address-purity-analysis)))))
@@ -38,8 +45,11 @@
              (handler-name (car test-handler))
              (handler (cdr test-handler))
              (C (handler e)))
+        (set! total (add1 total))
         (unless (equal? (make-hash expected) C)
-          (printf "error ~a ~a\nexpected ~a actual ~a\n" test-name handler-name expected C)))))
+          (set! fail (add1 fail))
+          (printf "error ~a ~a\nexpected ~a actual ~a\n" test-name handler-name expected C))))
+    (printf "total ~a fail ~a\n" total fail))
 
 (define common-tests
   (list (cons 'fac (cons fac '((2 . "PURE"))))

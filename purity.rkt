@@ -136,14 +136,15 @@
 
     (for/fold ((call-states (hash))) (((s ts) graph))
       (match s
-        ((ev (? «app»? e) ρ σi ι κ _)
+        ((ev (? «app»? e) ρ σi ι κ Ξi)
          (for/fold ((call-states call-states)) ((t ts))
            (match t
              ((transition (ev _ _ _ '() κ* _) _)
               (let* ((A-existing (hash-ref call-states κ* (set)))
                      (σ (vector-ref σ σi))
-                     ;(A-updated (set-union A-existing (reachable (s-referenced s Ξ) σ γ))))
-                     (A-updated (set-union A-existing (list->set (hash-keys σ)))))
+                     (Ξ (vector-ref Ξ Ξi))
+                     (A-updated (set-union A-existing (reachable (s-referenced s Ξ) σ γ))))
+                     ;(A-updated (set-union A-existing (list->set (hash-keys σ)))))
                 (hash-set call-states κ* A-updated)))
              (_ call-states))))
         (_ call-states)))))
