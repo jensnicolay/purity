@@ -70,17 +70,17 @@
     
     (define (handle-state state E fresh)
       (match state
-        ((ev («set!» _ x ae) ρ ι κ)
+        ((ev («set!» _ x ae) ρ _ ι κ _)
          (let ((decl (get-declaration («id»-x x) x ast)))
            (if (fresh? ae fresh ast)
                (set-add fresh decl)
                (set-remove fresh decl))))
-        ((ev («let» _ x e0 e1) ρ ι κ)
+        ((ev («let» _ x e0 e1) ρ _ ι κ _)
          (let ((decl (get-declaration («id»-x x) x ast)))
            (if (fresh? e0 fresh ast)
                (set-add fresh decl)
                (set-remove fresh decl))))
-        ((ko v (cons (letk x e ρ) ι) κ)
+        ((ko v _ (cons (letk x e ρ) ι) κ _)
          (let ((decl (get-declaration («id»-x x) x ast)))
            (if (set-member? E (fr))
                (set-add fresh decl)
@@ -115,8 +115,18 @@
 
 (define (state-κ s)
   (match s
-    ((ev _ _ _ κ) κ)
-    ((ko _ _ κ) κ)))
+    ((ev _ _ _ _ κ _) κ)
+    ((ko _ _ _ κ _) κ)))
+
+(define (state-σ s σ)
+  (match s
+    ((ev _ _ σi _ _ _) (vector-ref σ σi))
+    ((ko _ σi _ _ _) (vector-ref σ σi))))
+
+(define (state-Ξ s Ξ)
+  (match s
+    ((ev _ _ _ _ _ Ξi) (vector-ref Ξ Ξi))
+    ((ko _ _ _ _ Ξi) (vector-ref Ξ Ξi))))
 
 (define (call-state-analysis sys)
   (let* ((graph (system-graph sys))
@@ -126,12 +136,14 @@
 
     (for/fold ((call-states (hash))) (((s ts) graph))
       (match s
-        ((ev (? «app»? e) ρ ι κ)
+        ((ev (? «app»? e) ρ σi ι κ _)
          (for/fold ((call-states call-states)) ((t ts))
            (match t
-             ((transition (ev _ _ '() κ*) _)
+             ((transition (ev _ _ _ '() κ* _) _)
               (let* ((A-existing (hash-ref call-states κ* (set)))
-                     (A-updated (set-union A-existing (reachable (s-referenced s Ξ) σ γ))))
+                     (σ (vector-ref σ σi))
+                     ;(A-updated (set-union A-existing (reachable (s-referenced s Ξ) σ γ))))
+                     (A-updated (set-union A-existing (list->set (hash-keys σ)))))
                 (hash-set call-states κ* A-updated)))
              (_ call-states))))
         (_ call-states)))))
@@ -169,7 +181,7 @@
                                         (let ((λ-rs (hash-ref R a (set))))
                                           (let ((O (for/fold ((O O)) ((λ-r λ-rs))
                                                       (hash-set O a (set-add (hash-ref O a (set)) λ-r)))))
-                                            (let ((F (for/fold ((F F)) ((κ (stack-contexts (state-κ s) Ξ)))
+                                            (let ((F (for/fold ((F F)) ((κ (stack-contexts (state-κ s) (state-Ξ s Ξ))))
                                                        (if (observable-effect? eff κ)
                                                            (let ((λ (ctx-λ κ)))
                                                              (hash-set F λ (set-add (hash-ref F λ (set)) GENERATES)))
@@ -180,7 +192,7 @@
                                               (λ-rs (hash-ref R res (set))))
                                           (let ((O (for/fold ((O O)) ((λ-r λ-rs))
                                                      (hash-set O res (set-add (hash-ref O res (set)) λ-r)))))
-                                            (let ((F (for/fold ((F F)) ((κ (stack-contexts (state-κ s) Ξ)))
+                                            (let ((F (for/fold ((F F)) ((κ (stack-contexts (state-κ s) (state-Ξ s Ξ))))
                                                        (if (observable-effect? eff κ)
                                                            (let ((λ (ctx-λ κ)))
                                                              (hash-set F λ (set-add (hash-ref F λ (set)) GENERATES)))
@@ -188,7 +200,7 @@
                                               (values W F R O)))))
                                        ((rv a _)
                                         (let-values (((F R)
-                                                      (for/fold ((F F) (R R)) ((κ (stack-contexts (state-κ s) Ξ)))
+                                                      (for/fold ((F F) (R R)) ((κ (stack-contexts (state-κ s) (state-Ξ s Ξ))))
                                                         (if (observable-effect? eff κ)
                                                             (let ((λ (ctx-λ κ)))
                                                               (values (add-observers a F O)
@@ -198,7 +210,7 @@
                                        ((rp a n _)
                                         (let ((res (cons a n)))
                                           (let-values (((F R)
-                                                        (for/fold ((F F) (R R)) ((κ (stack-contexts (state-κ s) Ξ)))
+                                                        (for/fold ((F F) (R R)) ((κ (stack-contexts (state-κ s) (state-Ξ s Ξ))))
                                                           (if (observable-effect? eff κ)
                                                               (let ((λ (ctx-λ κ)))
                                                                 (values (add-observers res F O)
@@ -260,7 +272,7 @@
 (define PROCEDURE "PROC")
 
 (define (extend-to-applied F Ξ)
-  (for/hash ((κ (hash-keys Ξ)))
+  (for/hash ((κ (hash-keys (vector-ref Ξ (sub1 (vector-length Ξ))))))
     (let ((λ (ctx-λ κ)))
       (values λ (hash-ref F λ (set))))))
 
@@ -315,7 +327,7 @@
           (for (((k v) count-summary))
             (hash-set! summary k v))
           (hash-set! summary NUM-LAMBDAS (length (lambdas ast)))
-          (hash-set! summary NUM-CALLED (set-count (list->set (map (lambda (κ) (ctx-λ κ)) (hash-keys Ξ)))))))
+          (hash-set! summary NUM-CALLED (set-count (list->set (hash-keys F))))))
       summary)))
 
 (define (print-purity-summary summary)
