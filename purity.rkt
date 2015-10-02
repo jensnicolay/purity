@@ -9,9 +9,9 @@
 (provide (all-defined-out))
 
 ;;
-(define (outer-scope-declaration? decl e ast)
+(define (outer-scope-declaration? decl e parent)
   (let up ((e e))
-    (let ((p (parent e ast)))
+    (let ((p (parent e)))
       (match p
         (#f #f)
         ((«lam» _ x _)
@@ -38,9 +38,9 @@
       (for/or ((e* (children e)))
         (inner-scope-declaration? decl e*))))
 
-(define (get-declaration name e ast)
+(define (get-declaration name e parent)
   (let up ((e e))
-    (let ((p (parent e ast)))
+    (let ((p (parent e)))
       (match p
         (#f #f)
         ((«lam» _ x _)
@@ -62,55 +62,74 @@
              (up p)))
         (_ (up p))))))
 
-(define (fresh-analysis system)
-  (let* ((graph (system-graph system))
-         (Ξ (system-Ξ system))
-         (initial (system-initial system))
-         (ast (ev-e initial)))
-    
-    (define (handle-state state E fresh)
-      (match state
-        ((ev («set!» _ x ae) ρ _ ι κ _)
-         (let ((decl (get-declaration («id»-x x) x ast)))
-           (if (fresh? ae fresh ast)
-               (set-add fresh decl)
-               (set-remove fresh decl))))
-        ((ev («let» _ x e0 e1) ρ _ ι κ _)
-         (let ((decl (get-declaration («id»-x x) x ast)))
-           (if (fresh? e0 fresh ast)
-               (set-add fresh decl)
-               (set-remove fresh decl))))
-        ((ko v _ (cons (letk x e ρ) ι) κ _)
-         (let ((decl (get-declaration («id»-x x) x ast)))
-           (if (set-member? E (fr))
-               (set-add fresh decl)
-               ;(set-remove fresh decl)))) ; can never overrule ev let
-               fresh)))
-        (_ fresh)))
-    
-    (define (traverse S W Fκ Fς)
-      (if (set-empty? W)
-          Fς
-          (let* ((sE (set-first W))
-                 (state (car sE))
-                 (E (cdr sE)))
-            (if (set-member? S state)
-                (traverse S (set-rest W) Fκ Fς)
-                (let* ((κ (if (ev? state) (ev-κ state) (ko-κ state)))
-                       (fresh (hash-ref Fκ κ (set)))
-                       (fresh* (handle-state state E fresh))
-                       (Fκ* (hash-set Fκ κ fresh*))
-                       (Fς* (hash-set Fς state Fκ))
-                       (ΔW (hash-ref graph state)))
-                  (traverse (set-add S state) (set-union (set-rest W) ΔW) Fκ* Fς*))))))
-    
-    (traverse (set) (set (cons initial (set))) (hash) (hash))))
+(define FRESH "fresh")
+(define UNFRESH "unfresh")
 
-(define (fresh? e fresh ast)
+(define (fresh-analysis sys ⊥ ⊔)
+  (let* ((graph (system-graph sys))
+         (Ξ (system-Ξ sys))
+         (initial (system-initial sys))
+         (ast (ev-e initial))
+         (parent (make-parent ast)))
+
+    (define (add-fresh Fs decl)
+      (hash-set Fs decl (⊔ (hash-ref Fs decl ⊥) (set FRESH))))
+      
+    (define (add-unfresh Fs decl)
+      (hash-set Fs decl (⊔ (hash-ref Fs decl ⊥) (set UNFRESH))))
+      
+    (define (handle-state s E F sF)
+      (match s
+        ((ev («set!» _ x ae) ρ _ ι κ _)
+         (let* ((decl (get-declaration («id»-x x) x parent))
+                (Fκ (hash-ref F κ (hash)))
+                (Fκ* (if (fresh? ae Fκ ast ⊥)
+                         (add-fresh Fκ decl)
+                         (add-unfresh Fκ decl))))
+           (values (hash-set F κ Fκ*) (hash-set sF s Fκ*))))
+        ;((ev («let» _ x e0 e1) ρ _ ι κ _)
+        ; (let ((decl (get-declaration («id»-x x) x parent)))
+        ;   (if (fresh? e0 F ast)
+        ;       (add-fresh F decl)
+        ;       (add-unfresh F decl))))
+        ((ko v _ (cons (letk x e ρ) ι) κ _)
+         (let* ((decl (get-declaration («id»-x x) x parent))
+                (Fκ (hash-ref F κ (hash)))
+                (Fκ* (if (set-member? E (fr))
+                         (add-fresh Fκ decl)
+                         (add-unfresh Fκ decl))))
+           (values (hash-set F κ Fκ*) (hash-set sF s Fκ*))))
+        (_ (let ((Fκ (hash-ref F (state-κ s) (hash))))
+             (values F (hash-set sF s Fκ))))))
+
+    (define (traverse-graph* S W F sF)
+      (if (set-empty? W)
+          sF
+          (let* ((t (set-first W)))
+            (if (set-member? S t)
+                (traverse-graph* S (set-rest W) F sF)
+                (let* ((s (transition-s t))
+                       (E (transition-E t)))
+                  (let-values (((F* sF*) (handle-state s E F sF)))
+                    (let* ((W* (set-union (set-rest W) (hash-ref graph s (set))))
+                           (unchanged (equal? F F*))
+                           (S* (if unchanged (set-add S t) (set))))
+                    (traverse-graph* S* W* F* sF*))))))))
+
+    (traverse-graph* (set) (set (transition initial (set))) (hash) (hash))))
+
+(define (print-fresh-info sF)
+  (for (((s Fκ) sF))
+    (printf "~a ~a\n" (state->statei s) (state-repr s))
+    (for (((decl FU) Fκ))
+      (printf "\t~a -> ~a\n" decl FU))))
+                  
+(define (fresh? e Fκ parent ⊥)
   (match e
     ((«id» _ x)
-     (let ((decl (get-declaration x e ast)))
-       (set-member? fresh decl)))
+     (let* ((decl (get-declaration x e parent))
+            (freshness (hash-ref Fκ decl ⊥)))
+       (equal? freshness (set FRESH))))
     (_ #f)))
 
 (define (state-κ s)
@@ -238,20 +257,20 @@
         ((rp a _ _)
          (set-member? A a))))))
 
-(define (scope-address-observable-effect? ast call-states)
+(define (scope-address-observable-effect? parent call-states)
   (lambda (eff κ)
       (match eff
         ((wv _ x)
-         (let ((decl (get-declaration («id»-x x) x ast))
+         (let ((decl (get-declaration («id»-x x) x parent))
                (λ (ctx-λ κ)))
-           (outer-scope-declaration? decl λ ast)))
+           (and (not (inner-scope-declaration? decl λ)) (outer-scope-declaration? decl λ parent)))) ; inner-scope is optimization
         ((wp a _ _)
          (let ((A (hash-ref call-states κ)))
            (set-member? A a)))
         ((rv _ x)
-         (let ((decl (get-declaration («id»-x x) x ast))
+         (let ((decl (get-declaration («id»-x x) x parent))
                (λ (ctx-λ κ)))
-           (outer-scope-declaration? decl λ ast)))
+           (outer-scope-declaration? decl λ parent)))
         ((rp a _ _)
          (let ((A (hash-ref call-states κ)))
            (set-member? A a))))))
@@ -265,7 +284,8 @@
   (let* ((call-states (call-state-analysis sys))
          (initial (system-initial sys))
          (ast (ev-e initial))
-         (observable-effect? (scope-address-observable-effect? ast call-states)))
+         (parent (make-parent ast))
+         (observable-effect? (scope-address-observable-effect? parent call-states)))
     (traverse-graph (system-graph sys) (system-initial sys) (system-Ξ sys) observable-effect?)))
     
 (define PURE "PURE")
@@ -392,9 +412,26 @@
                                         nqueens dderiv destruct mceval
                                      ; regex boyer 
                                      )))) 
-      (printf "Done.")
+      (printf "Done.\n")
       results)))
 
+(define t1 '(letrec ((f (lambda () (let ((p (cons 1 2))) (let ((u (set-car! p 3))) (f)))))) (f)))
+(define sys1 (type-mach-0 t1))
+(generate-dot (system-graph sys1) "t1")
+
+
+(define t2 '(let ((f (lambda (q) (let ((p (cons 1 2))) (set! p q))))) (let ((r (cons 3 4))) (f r))))
+(define sys2 (type-mach-0 t2))
+(generate-dot (system-graph sys2) "t2")
+
+
+(define t3 '(letrec ((f (lambda (n) (let ((c (zero? n))) (if c 'done (let ((p (cons 1 2))) (let ((u (set-car! p 3))) (let ((nn (- n 1))) (f nn))))))))) (f 4)))
+(define sys3 (type-mach-0 t3))
+(generate-dot (system-graph sys3) "t3")
+
+(define sys-eta (type-mach-0 eta))
+
+(print-fresh-info (fresh-analysis sys1 (set) set-union))
 
 #|
 ;; Lower-bound for printing time (if smaller, prints \epsilon), in seconds

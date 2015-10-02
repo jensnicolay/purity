@@ -118,7 +118,7 @@
     ((«id» _ _) (set))
     ((«lit» _ _) (set))
     (_ (error "cannot handle expression" e))))
-  
+
 
 (define (parent e ast)
   (let ((cs (children ast)))
@@ -129,5 +129,23 @@
               #f
               (let ((p (parent e (set-first cs))))
                 (or p (loop (set-rest cs)))))))))
+
+
+(define (parent-map ast)
+  (define (traverse-ast S W)
+    (if (set-empty? W)
+        S
+        (let* ((e (set-first W))
+               (E* (children e))
+               (S* (for/fold ((S S)) ((e* E*))
+                     (hash-set S e* e)))
+               (W* (set-union (set-rest W) E*)))
+          (traverse-ast S* W*))))
+  (traverse-ast (hash) (set ast)))
+
+(define (make-parent ast)
+  (let ((P (parent-map ast)))
+    (lambda (e)
+      (hash-ref P e #f))))
 
 

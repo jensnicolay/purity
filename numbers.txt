@@ -1,0 +1,468 @@
+******************** Server experiments
+fac          CFA  #96      flow-time 22      called 1   pure 1  obs 0  proc 0  | 40320
+fac          FA   #25      flow-time 6       called 1   pure 1  obs 0  proc 0  | #<set: NUM>
+fac          LA   #25      flow-time 5       called 1   pure 1  obs 0  proc 0  | #<set: NUM>
+fac          LSF  #25      flow-time 5       called 1   pure 1  obs 0  proc 0  | #<set: NUM>
+fib          CFA  #701     flow-time 158     called 1   pure 1  obs 0  proc 0  | 21
+fib          FA   #83      flow-time 75      called 1   pure 1  obs 0  proc 0  | #<set: NUM>
+fib          LA   #67      flow-time 36      called 1   pure 1  obs 0  proc 0  | #<set: NUM>
+fib          LSF  #67      flow-time 35      called 1   pure 1  obs 0  proc 0  | #<set: NUM>
+fib-mut      CFA  #188     flow-time 39      called 2   pure 1  obs 0  proc 1  | 21
+fib-mut      FA   #51      flow-time 19      called 2   pure 1  obs 0  proc 1  | #<set: NUM>
+fib-mut      LA   #51      flow-time 14      called 2   pure 1  obs 0  proc 1  | #<set: NUM>
+fib-mut      LSF  #51      flow-time 14      called 2   pure 1  obs 0  proc 1  | #<set: NUM>
+blur         CFA  #43      flow-time 8       called 3   pure 3  obs 0  proc 0  | #t
+blur         FA   #73      flow-time 34      called 3   pure 3  obs 0  proc 0  | #<set: BOOL>
+blur         LA   #69      flow-time 34      called 3   pure 3  obs 0  proc 0  | #<set: BOOL>
+blur         LSF  #69      flow-time 28      called 3   pure 3  obs 0  proc 0  | #<set: BOOL>
+eta          CFA  #26      flow-time 2       called 4   pure 4  obs 0  proc 0  | #f
+eta          FA   #26      flow-time 3       called 4   pure 4  obs 0  proc 0  | #<set: BOOL>
+eta          LA   #30      flow-time 4       called 4   pure 4  obs 0  proc 0  | #<set: BOOL>
+eta          LSF  #30      flow-time 4       called 4   pure 4  obs 0  proc 0  | #<set: BOOL>
+mj09         CFA  #29      flow-time 3       called 4   pure 4  obs 0  proc 0  | 2
+mj09         FA   #26      flow-time 8       called 4   pure 4  obs 0  proc 0  | #<set: NUM>
+mj09         LA   #19      flow-time 4       called 4   pure 4  obs 0  proc 0  | #<set: NUM>
+mj09         LSF  #19      flow-time 3       called 4   pure 4  obs 0  proc 0  | #<set: NUM>
+gcipd        CFA  #91      flow-time 23      called 3   pure 3  obs 0  proc 0  | 36
+gcipd        FA   #67      flow-time 35      called 3   pure 3  obs 0  proc 0  | #<set: NUM>
+gcipd        LA   #67      flow-time 26      called 3   pure 3  obs 0  proc 0  | #<set: NUM>
+gcipd        LSF  #67      flow-time 25      called 3   pure 3  obs 0  proc 0  | #<set: NUM>
+kcfa2        CFA  #41      flow-time 3       called 3   pure 3  obs 0  proc 0  | #f
+kcfa2        FA   #37      flow-time 8       called 3   pure 3  obs 0  proc 0  | #<set: BOOL>
+kcfa2        LA   #33      flow-time 7       called 3   pure 3  obs 0  proc 0  | #<set: BOOL>
+kcfa2        LSF  #33      flow-time 5       called 3   pure 3  obs 0  proc 0  | #<set: BOOL>
+kcfa3        CFA  #61      flow-time 5       called 4   pure 4  obs 0  proc 0  | #f
+kcfa3        FA   #61      flow-time 9       called 4   pure 4  obs 0  proc 0  | #<set: BOOL>
+kcfa3        LA   #61      flow-time 6       called 4   pure 4  obs 0  proc 0  | #<set: BOOL>
+kcfa3        LSF  #61      flow-time 6       called 4   pure 4  obs 0  proc 0  | #<set: BOOL>
+rotate       CFA  #336     flow-time 49      called 1   pure 1  obs 0  proc 0  | hallo
+rotate       FA   #41      flow-time 10      called 1   pure 1  obs 0  proc 0  | #<set: NUM STR BOOL>
+rotate       LA   #32      flow-time 5       called 1   pure 1  obs 0  proc 0  | #<set: NUM STR BOOL>
+rotate       LSF  #32      flow-time 5       called 1   pure 1  obs 0  proc 0  | #<set: NUM STR BOOL>
+loop2        CFA  #1348    flow-time 307     called 3   pure 3  obs 0  proc 0  | 550
+loop2        FA   #47      flow-time 37      called 3   pure 3  obs 0  proc 0  | #<set: NUM>
+loop2        LA   #47      flow-time 33      called 3   pure 3  obs 0  proc 0  | #<set: NUM>
+loop2        LSF  #26      flow-time 11      called 3   pure 3  obs 0  proc 0  | #<set: NUM>
+sat          CFA  #77      flow-time 17      called 7   pure 7  obs 0  proc 0  | #t
+sat          FA   #250     flow-time 811     called 7   pure 7  obs 0  proc 0  | #<set: BOOL>
+sat          LA   #227     flow-time 421     called 7   pure 7  obs 0  proc 0  | #<set: BOOL>
+sat          LSF  #176     flow-time 105     called 7   pure 7  obs 0  proc 0  | #<set: BOOL>
+collatz      CFA  #777     flow-time 292     called 5   pure 5  obs 0  proc 0  | 5
+collatz      FA   #464     flow-time 1291    called 5   pure 5  obs 0  proc 0  | #<set: NUM>
+collatz      LA   #436     flow-time 707     called 5   pure 5  obs 0  proc 0  | #<set: NUM>
+collatz      LSF  #436     flow-time 773     called 5   pure 5  obs 0  proc 0  | #<set: NUM>
+rsa          CFA  #512     flow-time 518     called 9   pure 9  obs 0  proc 0  | #t
+rsa          FA   #429     flow-time 2254    called 9   pure 9  obs 0  proc 0  | #<set: BOOL>
+rsa          LA   #377     flow-time 1362    called 9   pure 9  obs 0  proc 0  | #<set: BOOL>
+rsa          LSF  #377     flow-time 932     called 9   pure 9  obs 0  proc 0  | #<set: BOOL>
+primtest     CFA  #738     flow-time 430     called 4   pure 4  obs 0  proc 0  | 1
+primtest     FA   #304     flow-time 1542    called 5   pure 5  obs 0  proc 0  | #<set: NUM>
+primtest     LA   #278     flow-time 852     called 5   pure 5  obs 0  proc 0  | #<set: NUM>
+primtest     LSF  #230     flow-time 639     called 5   pure 5  obs 0  proc 0  | #<set: NUM>
+factor       CFA  #117     flow-time 39      called 7   pure 7  obs 0  proc 0  | #(struct:addr 107)
+factor       FA   #468     flow-time 802     called 7   pure 7  obs 0  proc 0  | #<set: () #(struct:addr %cons)>
+factor       LA   #441     flow-time 325     called 7   pure 7  obs 0  proc 0  | #<set: () #(struct:addr %cons)>
+factor       LSF  #301     flow-time 127     called 7   pure 7  obs 0  proc 0  | #<set: () #(struct:addr %cons)>
+nqueens      CFA  #2622    flow-time 2138    called 6   pure 6  obs 0  proc 0  | 2
+nqueens      FA   #3979    flow-time 49825   called 6   pure 6  obs 0  proc 0  | #<set: NUM>
+nqueens      LA   #3060    flow-time 3790    called 6   pure 6  obs 0  proc 0  | #<set: NUM>
+nqueens      LSF  #2304    flow-time 3112    called 6   pure 6  obs 0  proc 0  | #<set: NUM>
+dderiv       CFA  #2846    flow-time 5226    called 10  pure 9  obs 0  proc 1  | #t
+dderiv       FA   #12169   flow-time 102300  called 10  pure 5  obs 4  proc 1  | #<set: BOOL>
+dderiv       LA   #12109   flow-time 42561   called 10  pure 5  obs 4  proc 1  | #<set: BOOL>
+dderiv       LSF  #10151   flow-time 15516   called 10  pure 7  obs 2  proc 1  | #<set: BOOL>
+destruct     CFA  #>1743000 flow-time 3600670 called 0   pure 0  obs 0  proc 0  | time out
+destruct     FA   #7100    flow-time 243488  called 10  pure 3  obs 0  proc 7  | #<set: SYM>
+destruct     LA   #7499    flow-time 6844    called 10  pure 3  obs 0  proc 7  | #<set: SYM>
+destruct     LSF  #5392    flow-time 4553    called 10  pure 1  obs 1  proc 8  | #<set: SYM>
+
+fac          states 25      ctxs 2       time 6       | #<set: NUM>
+fib          states 83      ctxs 5       time 57      | #<set: NUM>
+fib-mut      states 51      ctxs 3       time 11      | #<set: NUM>
+blur         states 73      ctxs 14      time 647     | #<set: BOOL>
+eta          states 26      ctxs 6       time 2       | #<set: BOOL>
+mj09         states 26      ctxs 6       time 15      | #<set: NUM>
+gcipd        states 67      ctxs 6       time 27      | #<set: NUM>
+kcfa2        states 37      ctxs 12      time 4       | #<set: BOOL>
+kcfa3        states 61      ctxs 22      time 6       | #<set: BOOL>
+rotate       states 41      ctxs 4       time 7       | #<set: NUM STR BOOL>
+loop2        states 47      ctxs 5       time 25      | #<set: NUM>
+sat          states 250     ctxs 65      time 1727    | #<set: BOOL>
+collatz      states 464     ctxs 26      time 747     | #<set: NUM>
+rsa          states 429     ctxs 28      time 1598    | #<set: BOOL>
+primtest     states 304     ctxs 14      time 947     | #<set: NUM>
+factor       states 468     ctxs 26      time 500     | #<set: () #(struct:addr %cons)>
+nqueens      states 3979    ctxs 110     time 41303   | #<set: NUM>
+
+**** server
+fac          states 14      time 3       | #<set: NUM>
+fib          states 19      time 1       | #<set: NUM>
+fib-mut      states 29      time 2       | #<set: NUM>
+blur         states 32      time 4       | #<set: BOOL>
+eta          states 21      time 2       | #<set: BOOL>
+mj09         states 19      time 1       | #<set: NUM>
+gcipd        states 41      time 4       | #<set: NUM>
+kcfa2        states 15      time 0       | #<set: BOOL>
+kcfa3        states 17      time 1       | #<set: BOOL>
+rotate       states 16      time 2       | #<set: NUM STR BOOL>
+loop2        states 26      time 2       | #<set: NUM>
+sat          states 36      time 17      | #<set: BOOL>
+collatz      states 76      time 5       | #<set: NUM>
+rsa          states 136     time 26      | #<set: BOOL>
+primtest     states 146     time 14      | #<set: NUM>
+factor       states 93      time 45      | #<set: #(struct:addr (cons v acc)) #(struct:addr (cons 2 _two-list5)) ()
+nqueens      states 125     time 59      | #<set: NUM>
+dderiv       states 339     time 856     | #<set: BOOL>
+boyer        states 5409    time 21765789 | #<set: BOOL>
+mceval       states 992     time 26525   | #<set: #<prim2> #<prim2> #<prim2> #(struct:addr (cons _p2 _p4)) #(struct
+
+fac          states 14      time 2       | #<set: NUM>
+fib          states 19      time 0       | #<set: NUM>
+fib-mut      states 29      time 1       | #<set: NUM>
+blur         states 32      time 5       | #<set: BOOL>
+eta          states 21      time 1       | #<set: BOOL>
+mj09         states 19      time 1       | #<set: NUM>
+gcipd        states 41      time 2       | #<set: NUM>
+kcfa2        states 15      time 0       | #<set: BOOL>
+kcfa3        states 17      time 1       | #<set: BOOL>
+rotate       states 16      time 1       | #<set: NUM STR BOOL>
+loop2        states 26      time 2       | #<set: NUM>
+sat          states 36      time 2       | #<set: BOOL>
+collatz      states 76      time 4       | #<set: NUM>
+rsa          states 136     time 18      | #<set: BOOL>
+primtest     states 146     time 9       | #<set: NUM>
+factor       states 91      time 15      | #<set: #(struct:addr (cons v acc)) #(struct:addr (cons 2 _two-list5)) ()
+nqueens      states 129     time 61      | #<set: NUM>
+dderiv       states 343     time 1517    | #<set: BOOL>
+mceval       states 1097    time 38628   | #<set: #<prim2> #<prim2> #<prim2> #(struct:addr (cons _p2 _p4)) #(struct
+
+
+
+
+
+(print-purity-info (address-purity-analysis (type-mach-0 dderiv)))
+(lambda (f l) (let ((_p0 (pair -> #<set: OBS>
+(lambda (_key1 _table2) (letre -> #<set: OBS>
+(lambda (_x4) (let ((_p32 (nul -> #<set: OBS>
+(lambda (_key18 _key29) (let ( -> #<set: OBS>
+(lambda (_key113 _key214 _val1 -> #<set: GEN OBS>
+(lambda (_a19) (let ((_p45 (pa -> #<set: OBS>
+(lambda (_a22) (let ((_p49 (cd -> #<set: OBS>
+(lambda (_a24) (let ((_p51 (cd -> #<set: OBS>
+(lambda (_a26) (let ((_p56 (cd -> #<set: OBS>
+(lambda (_a27) (let ((_p53 (_d -> #<set: OBS>
+(lambda (_a29) (let ((_p61 (ca -> #<set: OBS>
+> (print-purity-info (address-purity-analysis (conc-mach dderiv)))
+(lambda (_key113 _key214 _val1 -> #<set: GEN OBS>
+> (print-purity-info (address-purity-analysis (conc-mach destruct)))
+(lambda (l) (let ((_p0 (null?  -> #<set: OBS>
+(lambda (_x8 _y9) (let ((_p38  -> #<set: GEN OBS>
+(lambda (_a11 _b12) (let ((_p3 -> #<set: GEN>
+(lambda (_i21) (let ((_p46 (=  -> #<set: GEN OBS>
+(lambda (_l23) (let ((_p49 (nu -> #<set: GEN OBS>
+(lambda (_l128 _l229) (let ((_ -> #<set: GEN OBS>
+(lambda (_j31 _a32) (let ((_p6 -> #<set: GEN OBS>
+(lambda (_j35 _a36) (let ((_p7 -> #<set: GEN>
+>  (print-purity-info (address-purity-analysis (conc-mach mceval)))
+(lambda (_frame111) (car _fram -> #<set: OBS>
+(lambda (_frame113) (cdr _fram -> #<set: OBS>
+(lambda (_var115 _val116 _fram -> #<set: GEN OBS>
+(lambda (_var142 _val143 _env1 -> #<set: GEN OBS>
+(lambda (_vars147 _vals148) (l -> #<set: GEN OBS>
+
+
+
+****server
+fac          states 26      time 3       | #<set: NUM>
+fib          states 55      time 3       | #<set: NUM>
+fib-mut      states 52      time 3       | #<set: NUM>
+blur         states 71      time 7       | #<set: BOOL>
+eta          states 30      time 1       | #<set: BOOL>
+mj09         states 28      time 1       | #<set: NUM>
+gcipd        states 81      time 4       | #<set: NUM>
+kcfa2        states 30      time 1       | #<set: BOOL>
+kcfa3        states 32      time 2       | #<set: BOOL>
+rotate       states 24      time 1       | #<set: NUM STR BOOL>
+loop2        states 48      time 3       | #<set: NUM>
+sat          states 56      time 12      | #<set: BOOL>
+collatz      states 181     time 11      | #<set: NUM>
+rsa          states 269     time 37      | #<set: BOOL>
+primtest     states 254     time 25      | #<set: NUM>
+factor       states 182     time 37      | #<set: #(struct:addr (cons v acc)) #(struct:addr (cons 2 _two-list5)) ()
+nqueens      states 285     time 70      | #<set: NUM>
+dderiv       states 820     time 2732    | #<set: BOOL>
+mceval       states 3793    time 911187  | #<set: #<prim2> #<prim2> #<prim2> #(struct:addr (cons _p2 _p4)) #(struct
+boyer        states 4635    time 2928045 | #<set: BOOL>
+
+
+fac          states 14      time 2       | #<set: NUM>
+fib          states 19      time 2       | #<set: NUM>
+fib-mut      states 29      time 2       | #<set: NUM>
+blur         states 32      time 4       | #<set: BOOL>
+eta          states 21      time 2       | #<set: BOOL>
+mj09         states 19      time 0       | #<set: NUM>
+gcipd        states 41      time 5       | #<set: NUM>
+kcfa2        states 15      time 1       | #<set: BOOL>
+kcfa3        states 17      time 1       | #<set: BOOL>
+rotate       states 16      time 1       | #<set: NUM STR BOOL>
+loop2        states 26      time 3       | #<set: NUM>
+sat          states 36      time 3       | #<set: BOOL>
+collatz      states 76      time 11      | #<set: NUM>
+rsa          states 136     time 18      | #<set: BOOL>
+primtest     states 146     time 25      | #<set: NUM>
+factor       states 92      time 17      | #<set: #(struct:addr (cons v acc)) #(struct:addr (cons 2 _two-list5)) ()
+nqueens      states 126     time 100     | #<set: NUM>
+
+
+**** server
+fac            conc fa   #96      flow-time 5       lams 1   called 1   pure 1  obs 0  proc 0  | 40320
+fac            type fa   #14      flow-time 1       lams 1   called 1   pure 1  obs 0  proc 0  | #<set: NUM>
+fib            conc fa   #701     flow-time 19      lams 1   called 1   pure 1  obs 0  proc 0  | 21
+fib            type fa   #19      flow-time 2       lams 1   called 1   pure 1  obs 0  proc 0  | #<set: NUM>
+fib-mut        conc fa   #188     flow-time 7       lams 2   called 2   pure 1  obs 0  proc 1  | 21
+fib-mut        type fa   #29      flow-time 3       lams 2   called 2   pure 1  obs 0  proc 1  | #<set: NUM>
+blur           conc fa   #43      flow-time 1       lams 3   called 3   pure 3  obs 0  proc 0  | #t
+blur           type fa   #32      flow-time 5       lams 3   called 3   pure 3  obs 0  proc 0  | #<set: BOOL>
+eta            conc fa   #26      flow-time 1       lams 4   called 4   pure 4  obs 0  proc 0  | #f
+eta            type fa   #21      flow-time 2       lams 4   called 4   pure 4  obs 0  proc 0  | #<set: BOOL>
+mj09           conc fa   #29      flow-time 0       lams 4   called 4   pure 4  obs 0  proc 0  | 2
+mj09           type fa   #19      flow-time 1       lams 4   called 4   pure 4  obs 0  proc 0  | #<set: NUM>
+gcipd          conc fa   #91      flow-time 3       lams 3   called 3   pure 3  obs 0  proc 0  | 36
+gcipd          type fa   #41      flow-time 5       lams 3   called 3   pure 3  obs 0  proc 0  | #<set: NUM>
+kcfa2          conc fa   #41      flow-time 1       lams 3   called 3   pure 3  obs 0  proc 0  | #f
+kcfa2          type fa   #15      flow-time 2       lams 3   called 3   pure 3  obs 0  proc 0  | #<set: BOOL>
+kcfa3          conc fa   #61      flow-time 1       lams 4   called 4   pure 4  obs 0  proc 0  | #f
+kcfa3          type fa   #17      flow-time 1       lams 4   called 4   pure 4  obs 0  proc 0  | #<set: BOOL>
+rotate         conc fa   #336     flow-time 10      lams 1   called 1   pure 1  obs 0  proc 0  | hallo
+rotate         type fa   #16      flow-time 1       lams 1   called 1   pure 1  obs 0  proc 0  | #<set: NUM STR BOOL>
+loop2          conc fa   #1348    flow-time 49      lams 3   called 3   pure 3  obs 0  proc 0  | 550
+loop2          type fa   #26      flow-time 5       lams 3   called 3   pure 3  obs 0  proc 0  | #<set: NUM>
+sat            conc fa   #77      flow-time 2       lams 7   called 7   pure 7  obs 0  proc 0  | #t
+sat            type fa   #36      flow-time 3       lams 7   called 7   pure 7  obs 0  proc 0  | #<set: BOOL>
+collatz        conc fa   #777     flow-time 26      lams 5   called 5   pure 5  obs 0  proc 0  | 5
+collatz        type fa   #76      flow-time 12      lams 5   called 5   pure 5  obs 0  proc 0  | #<set: NUM>
+rsa            conc fa   #512     flow-time 30      lams 9   called 9   pure 9  obs 0  proc 0  | #t
+rsa            type fa   #136     flow-time 44      lams 9   called 9   pure 9  obs 0  proc 0  | #<set: BOOL>
+primtest       conc fa   #738     flow-time 43      lams 5   called 4   pure 4  obs 0  proc 0  | 1
+primtest       type fa   #146     flow-time 45      lams 5   called 5   pure 5  obs 0  proc 0  | #<set: NUM>
+factor         conc fa   #117     flow-time 6       lams 7   called 7   pure 7  obs 0  proc 0  | #(struct:addr 116)
+factor         type fa   #92      flow-time 27      lams 7   called 7   pure 7  obs 0  proc 0  | #<set: #(struct:addr (cons v acc)) #(struct:addr (cons 2 _two-list5)) ()
+nqueens        conc fa   #2622    flow-time 127     lams 6   called 6   pure 6  obs 0  proc 0  | 2
+nqueens        type fa   #125     flow-time 65      lams 6   called 6   pure 6  obs 0  proc 0  | #<set: NUM>
+dderiv         conc fa   #2846    flow-time 146     lams 20  called 10  pure 9  obs 0  proc 1  | #t
+dderiv         type fa   #355     flow-time 1446    lams 20  called 14  pure 5  obs 8  proc 1  | #<set: BOOL>
+destruct       conc fa   #2251    flow-time 137     lams 11  called 11  pure 3  obs 1  proc 7  | #(struct:addr 124)
+destruct       type fa   #226     flow-time 186     lams 11  called 11  pure 3  obs 1  proc 7  | #<set: #(struct:addr (cons #(struct:«quo» 105 ()) _a19)) ()>
+mceval         conc fa   #306836  flow-time 48482   lams 86  called 71  pure 59 obs 2  proc 10 | 55
+mceval         type fa   #1238    flow-time 195160  lams 86  called 84  pure 12 obs 59 proc 13 | #<set: #<prim2> #<prim2> #<prim2> #(struct:addr (cons _p2 _p4)) #(struct
+
+
+***** server global store in state
+fac          states 24      time 12      | #<set: NUM>
+fib          states 52      time 22      | #<set: NUM>
+fib-mut      states 58      time 24      | #<set: NUM>
+blur         states 89      time 41      | #<set: BOOL>
+eta          states 41      time 21      | #<set: BOOL>
+mj09         states 45      time 17      | #<set: NUM>
+gcipd        states 137     time 70      | #<set: NUM>
+kcfa2        states 35      time 13      | #<set: BOOL>
+kcfa3        states 40      time 15      | #<set: BOOL>
+rotate       states 32      time 11      | #<set: NUM STR BOOL>
+loop2        states 60      time 26      | #<set: NUM>
+sat          states 108     time 61      | #<set: BOOL>
+collatz      states 343     time 188     | #<set: NUM>
+rsa          states 440     time 446     | #<set: BOOL>
+primtest     states 764     time 603     | #<set: NUM>
+factor       states 295     time 224     | #<set: #(struct:addr (cons v acc)) #(struct:addr (cons 2 _two-list5)) ()
+nqueens      states 797     time 683     | #<set: NUM>
+dderiv       states 4706    time 32816   | #<set: BOOL>
+mceval       states 29515   time 2057656 | #<set: #<prim2> #<prim2> #<prim2> #(struct:addr (cons _p2 _p4)) #(struct
+boyer        states >20000  time 4818299 | time out
+
+**** server global store timest in state (also +1 on adding new address)
+fac          states 31      time 4       | #<set: NUM>
+fib          states 61      time 3       | #<set: NUM>
+fib-mut      states 58      time 3       | #<set: NUM>
+blur         states 93      time 7       | #<set: BOOL>
+eta          states 41      time 2       | #<set: BOOL>
+mj09         states 48      time 2       | #<set: NUM>
+gcipd        states 91      time 7       | #<set: NUM>
+kcfa2        states 34      time 1       | #<set: BOOL>
+kcfa3        states 41      time 2       | #<set: BOOL>
+rotate       states 32      time 2       | #<set: NUM STR BOOL>
+loop2        states 59      time 4       | #<set: NUM>
+sat          states 104     time 8       | #<set: BOOL>
+collatz      states 222     time 16      | #<set: NUM>
+rsa          states 513     time 65      | #<set: BOOL>
+primtest     states 744     time 78      | #<set: NUM>
+factor       states 237     time 24      | #<set: #(struct:addr (cons v acc)) #(struct:addr (cons 2 _two-list5)) ()
+nqueens      states 758     time 76      | #<set: NUM>
+dderiv       states 4802    time 827     | #<set: BOOL>
+mceval       states 83888   time 200316  | #<set: #<prim2> #<prim2> #<prim2> #(struct:addr (cons _p2 _p4)) #(struct
+
+
+**** server global store ts in state no +1 on new a
+fac          states 14      time 3       | #<set: NUM>
+fib          states 19      time 3       | #<set: NUM>
+fib-mut      states 29      time 3       | #<set: NUM>
+blur         states 55      time 6       | #<set: BOOL>
+eta          states 39      time 2       | #<set: BOOL>
+mj09         states 19      time 1       | #<set: NUM>
+gcipd        states 60      time 7       | #<set: NUM>
+kcfa2        states 15      time 2       | #<set: BOOL>
+kcfa3        states 17      time 2       | #<set: BOOL>
+rotate       states 32      time 2       | #<set: NUM STR BOOL>
+loop2        states 33      time 4       | #<set: NUM>
+sat          states 48      time 5       | #<set: BOOL>
+collatz      states 76      time 15      | #<set: NUM>
+rsa          states 208     time 48      | #<set: BOOL>
+primtest     states 146     time 31      | #<set: NUM>
+factor       states 234     time 24      | #<set: #(struct:addr (cons v acc)) #(struct:addr (cons 2 _two-list5)) ()
+nqueens      states 629     time 69      | #<set: NUM>
+dderiv       states 4066    time 812     | #<set: BOOL>
+mceval       states 86121   time 211640  | #<set: #<prim2> #<prim2> #<prim2> #(struct:addr (cons _p2 _p4)) #(struct
+
+
+**** server store and kstore ts in state with always +1 (but not keeping intermediate stores)
+fac          states 25      time 3       | #<set: NUM>
+fib          states 44      time 2       | #<set: NUM>
+fib-mut      states 51      time 3       | #<set: NUM>
+blur         states 88      time 5       | #<set: BOOL>
+eta          states 57      time 2       | #<set: BOOL>
+mj09         states 33      time 1       | #<set: NUM>
+gcipd        states 111     time 5       | #<set: NUM>
+kcfa2        states 38      time 1       | #<set: BOOL>
+kcfa3        states 44      time 2       | #<set: BOOL>
+rotate       states 32      time 2       | #<set: NUM STR BOOL>
+loop2        states 51      time 3       | #<set: NUM>
+sat          states 81      time 5       | #<set: BOOL>
+collatz      states 209     time 13      | #<set: NUM>
+rsa          states 391     time 47      | #<set: BOOL>
+primtest     states 334     time 30      | #<set: NUM>
+factor       states 265     time 26      | #<set: #(struct:addr (cons v acc)) #(struct:addr (cons 2 _two-list5)) ()
+nqueens      states 762     time 78      | #<set: NUM>
+dderiv       states 4567    time 788     | #<set: BOOL>
+mceval       states 51354   time 37638   | #<set: #<prim2> #<prim2> #<prim2> #(struct:addr (cons _p2 _p4)) #(struct
+
+**** server store and kstore ts in state with always +1 and keeping intermediate stores
+fac          states 31      time 3       | #<set: NUM>
+fib          states 51      time 3       | #<set: NUM>
+fib-mut      states 58      time 3       | #<set: NUM>
+blur         states 109     time 6       | #<set: BOOL>
+eta          states 46      time 1       | #<set: BOOL>
+mj09         states 46      time 2       | #<set: NUM>
+gcipd        states 179     time 9       | #<set: NUM>
+kcfa2        states 38      time 2       | #<set: BOOL>
+kcfa3        states 52      time 2       | #<set: BOOL>
+rotate       states 32      time 2       | #<set: NUM STR BOOL>
+loop2        states 60      time 4       | #<set: NUM>
+sat          states 106     time 6       | #<set: BOOL>
+collatz      states 245     time 15      | #<set: NUM>
+rsa          states 490     time 55      | #<set: BOOL>
+primtest     states 536     time 51      | #<set: NUM>
+factor       states 239     time 23      | #<set: #(struct:addr (cons v acc)) #(struct:addr (cons 2 _two-list5)) ()
+nqueens      states 554     time 49      | #<set: NUM>
+dderiv       states 5173    time 875     | #<set: BOOL>
+mceval       states 72881   time 122121  | #<set: #<prim2> #<prim2> #<prim2> #(struct:addr (cons _p2 _p4)) #(struct
+
+store and kstore ts in state with always +1 and keeping intermediate stores
+fac          states 33      time 27      σi 7    Ξi 3    | #<set: NUM>
+fib          states 54      time 12      σi 9    Ξi 4    | #<set: NUM>
+fib-mut      states 63      time 13      σi 16   Ξi 4    | #<set: NUM>
+blur         states 91      time 14      σi 20   Ξi 10   | #<set: BOOL>
+eta          states 50      time 11      σi 12   Ξi 8    | #<set: BOOL>
+mj09         states 49      time 10      σi 11   Ξi 6    | #<set: NUM>
+gcipd        states 194     time 17      σi 22   Ξi 9    | #<set: NUM>
+kcfa2        states 38      time 11      σi 11   Ξi 7    | #<set: BOOL>
+kcfa3        states 44      time 10      σi 14   Ξi 8    | #<set: BOOL>
+rotate       states 32      time 10      σi 15   Ξi 3    | #<set: NUM STR BOOL>
+loop2        states 79      time 12      σi 16   Ξi 6    | #<set: NUM>
+sat          states 89      time 14      σi 24   Ξi 15   | #<set: BOOL>
+collatz      states 251     time 22      σi 38   Ξi 10   | #<set: NUM>
+rsa          states 498     time 51      σi 77   Ξi 16   | #<set: BOOL>
+primtest     states 541     time 48      σi 59   Ξi 10   | #<set: NUM>
+factor       states 313     time 34      σi 63   Ξi 11   | #<set: #(struct:addr (cons v acc)) #(struct:addr (cons 2 _two-list5)) ()
+nqueens      states 910     time 81      σi 84   Ξi 12   | #<set: NUM>
+
+purity-test without reachability
+(conc-purity-test)
+total 140 fail 0
+(abst-purity-test)
+total 180 fail 52
+All done.
+
+purity-test with reachability (narrowing store to reach. addrs)
+(conc-purity-test)
+total 140 fail 0
+(abst-purity-test)
+total 180 fail 22
+All done.
+
+(define (traceify graph initial)
+
+  (define (traverse-graph S W)
+    (if (set-empty? W)
+        S
+        (let* ((sT (set-first W))
+               (s (car sT))
+               (T (cdr sT)))
+          (if (set-member? T s)
+              (traverse-graph (set-add S T) (set-rest W))
+              (let ((T* (set-add T s))
+                    (ts (hash-ref graph s (set))))
+                (let-values (((S* W*) (for/fold ((W (set-rest W)) (T T)) ((t ts))
+                                        (let ((s* (transition-s t)))
+                                          (values (set-add W (cons s* S*)) (hash-set T s (set-add (hash-ref T s (set)) t)))))))
+                  (traverse-graph W* T*)))))))
+  (traverse-graph (set (cons initial (set))) (hash)))
+                                    
+(define (traceify-sys sys name)
+  (let* ((graph (system-graph sys))
+         (initial (system-initial sys)))
+    (generate-dot (traceify graph initial) name)))
+    
+
+
+function f() { this.x = 10 } // impure function
+new f();                     // pure application
+f();                         // impure application
+
+
+
+***** server numbers (fixed AST parent with parent map): still no fresh!
+fib            conc fa   #701     flow-time 20      lams 1   called 1   pure 1  obs 0  proc 0  | 21
+fib            conc sa   #701     flow-time 20      lams 1   called 1   pure 1  obs 0  proc 0  | 21
+fib            type fa   #54      flow-time 3       lams 1   called 1   pure 1  obs 0  proc 0  | #<set: NUM>
+fib            type sa   #54      flow-time 3       lams 1   called 1   pure 1  obs 0  proc 0  | #<set: NUM>
+
+fib-mut        conc fa   #188     flow-time 8       lams 2   called 2   pure 1  obs 0  proc 1  | 21
+fib-mut        conc sa   #188     flow-time 8       lams 2   called 2   pure 1  obs 0  proc 1  | 21
+fib-mut        type fa   #63      flow-time 4       lams 2   called 2   pure 1  obs 0  proc 1  | #<set: NUM>
+fib-mut        type sa   #63      flow-time 4       lams 2   called 2   pure 1  obs 0  proc 1  | #<set: NUM>
+
+treenode1      conc fa   #59      flow-time 2       lams 2   called 2   pure 2  obs 0  proc 0  | undefined
+treenode1      conc sa   #59      flow-time 2       lams 2   called 2   pure 2  obs 0  proc 0  | undefined
+treenode1      type fa   #64      flow-time 3       lams 2   called 2   pure 1  obs 0  proc 1  | #<set: SYM>
+treenode1      type sa   #64      flow-time 3       lams 2   called 2   pure 2  obs 0  proc 0  | #<set: SYM>
+
+nqueens        conc fa   #2622    flow-time 136     lams 6   called 6   pure 6  obs 0  proc 0  | 2
+nqueens        conc sa   #2622    flow-time 136     lams 6   called 6   pure 6  obs 0  proc 0  | 2
+nqueens        type fa   #910     flow-time 97      lams 6   called 6   pure 6  obs 0  proc 0  | #<set: NUM>
+nqueens        type sa   #910     flow-time 97      lams 6   called 6   pure 6  obs 0  proc 0  | #<set: NUM>
+
+dderiv         conc fa   #2846    flow-time 147     lams 20  called 10  pure 9  obs 0  proc 1  | #t
+dderiv         conc sa   #2846    flow-time 147     lams 20  called 10  pure 9  obs 0  proc 1  | #t
+dderiv         type fa   #5725    flow-time 1012    lams 20  called 14  pure 5  obs 8  proc 1  | #<set: BOOL>
+dderiv         type sa   #5725    flow-time 1012    lams 20  called 14  pure 5  obs 8  proc 1  | #<set: BOOL>
+
+destruct       conc fa   #2251    flow-time 145     lams 11  called 11  pure 3  obs 1  proc 7  | #(struct:addr 124)
+destruct       conc sa   #2251    flow-time 145     lams 11  called 11  pure 3  obs 1  proc 7  | #(struct:addr 124)
+destruct       type fa   #1440    flow-time 199     lams 11  called 11  pure 3  obs 1  proc 7  | #<set: #(struct:addr (cons #(struct:«quo» 105 ()) _a19)) ()>
+destruct       type sa   #1440    flow-time 199     lams 11  called 11  pure 3  obs 1  proc 7  | #<set: #(struct:addr (cons #(struct:«quo» 105 ()) _a19)) ()>
+
+mceval         conc fa   #116426  flow-time 20826   lams 86  called 71  pure 59 obs 2  proc 10 | 21
+mceval         conc sa   #116426  flow-time 20826   lams 86  called 71  pure 59 obs 2  proc 10 | 21
+mceval         type fa   #50234   flow-time 54701   lams 86  called 84  pure 12 obs 59 proc 13 | #<set: #<prim2> #<prim2> #<prim2> #(struct:addr (cons _p2 _p4)) #(struct
+mceval         type sa   #50234   flow-time 54701   lams 86  called 84  pure 12 obs 59 proc 13 | #<set: #<prim2> #<prim2> #<prim2> #(struct:addr (cons _p2 _p4)) #(struct
+
+
