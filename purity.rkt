@@ -80,13 +80,16 @@
       
     (define (handle-state s E F sF)
       (match s
-        ((ev («set!» _ x ae) ρ _ ι κ _)
+        ((ev («set!» _ x ae) ρ _ ι κ Ξi)
          (let* ((decl (get-declaration («id»-x x) x parent))
-                (Fκ (hash-ref F κ (hash)))
-                (Fκ* (if (fresh? ae Fκ ast ⊥)
-                         (add-fresh Fκ decl)
-                         (add-unfresh Fκ decl))))
-           (values (hash-set F κ Fκ*) (hash-set sF s Fκ*))))
+                (ctxs (set-add (stack-contexts κ (vector-ref Ξ Ξi)) #f)) ; hack: adding top-level ctx '#f'
+                (F* (for/fold ((F F)) ((κ ctxs))
+                      (let* ((Fκ (hash-ref F κ (hash)))
+                             (Fκ* (if (fresh? ae Fκ parent ⊥)
+                                     (add-fresh Fκ decl)
+                                     (add-unfresh Fκ decl))))
+                        (hash-set F κ Fκ*)))))
+           (values F* (hash-set sF s F*))))
         ;((ev («let» _ x e0 e1) ρ _ ι κ _)
         ; (let ((decl (get-declaration («id»-x x) x parent)))
         ;   (if (fresh? e0 F ast)
@@ -97,10 +100,11 @@
                 (Fκ (hash-ref F κ (hash)))
                 (Fκ* (if (set-member? E (fr))
                          (add-fresh Fκ decl)
-                         (add-unfresh Fκ decl))))
-           (values (hash-set F κ Fκ*) (hash-set sF s Fκ*))))
+                         (add-unfresh Fκ decl)))
+                (F* (hash-set F κ Fκ*))) 
+           (values F* (hash-set sF s F*))))
         (_ (let ((Fκ (hash-ref F (state-κ s) (hash))))
-             (values F (hash-set sF s Fκ))))))
+             (values F (hash-set sF s F))))))
 
     (define (traverse-graph* S W F sF)
       (if (set-empty? W)
@@ -119,10 +123,13 @@
     (traverse-graph* (set) (set (transition initial (set))) (hash) (hash))))
 
 (define (print-fresh-info sF)
-  (for (((s Fκ) sF))
-    (printf "~a ~a\n" (state->statei s) (state-repr s))
-    (for (((decl FU) Fκ))
-      (printf "\t~a -> ~a\n" decl FU))))
+    (for (((s F) sF))
+      (printf "~a ~a\n" (state->statei s) (state-repr s))
+      (for (((κ Fκ) F))
+        (printf "\t~a ~a\n" (ctx->ctxi κ) (~a κ #:max-width 30))
+        (for (((decl FU) Fκ))
+          (printf "\t\t~a -> ~a\n" decl FU)))
+      (newline)))
                   
 (define (fresh? e Fκ parent ⊥)
   (match e
@@ -202,7 +209,7 @@
                                           (let ((O (for/fold ((O O)) ((λ-r λ-rs))
                                                       (hash-set O a (set-add (hash-ref O a (set)) λ-r)))))
                                             (let ((F (for/fold ((F F)) ((κ (stack-contexts (state-κ s) (state-Ξ s Ξ))))
-                                                       (if (observable-effect? eff κ)
+                                                       (if (observable-effect? eff κ s)
                                                            (let ((λ (ctx-λ κ)))
                                                              (hash-set F λ (set-add (hash-ref F λ (set)) GENERATES)))
                                                            F))))
@@ -213,7 +220,7 @@
                                           (let ((O (for/fold ((O O)) ((λ-r λ-rs))
                                                      (hash-set O res (set-add (hash-ref O res (set)) λ-r)))))
                                             (let ((F (for/fold ((F F)) ((κ (stack-contexts (state-κ s) (state-Ξ s Ξ))))
-                                                       (if (observable-effect? eff κ)
+                                                       (if (observable-effect? eff κ s)
                                                            (let ((λ (ctx-λ κ)))
                                                              (hash-set F λ (set-add (hash-ref F λ (set)) GENERATES)))
                                                            F))))
@@ -221,7 +228,7 @@
                                        ((rv a _)
                                         (let-values (((F R)
                                                       (for/fold ((F F) (R R)) ((κ (stack-contexts (state-κ s) (state-Ξ s Ξ))))
-                                                        (if (observable-effect? eff κ)
+                                                        (if (observable-effect? eff κ s)
                                                             (let ((λ (ctx-λ κ)))
                                                               (values (add-observers a F O)
                                                                       (add-read-dep a λ R)))
@@ -231,7 +238,7 @@
                                         (let ((res (cons a n)))
                                           (let-values (((F R)
                                                         (for/fold ((F F) (R R)) ((κ (stack-contexts (state-κ s) (state-Ξ s Ξ))))
-                                                          (if (observable-effect? eff κ)
+                                                          (if (observable-effect? eff κ s)
                                                               (let ((λ (ctx-λ κ)))
                                                                 (values (add-observers res F O)
                                                                         (add-read-dep res λ R)))
@@ -244,8 +251,8 @@
   
   (traverse-graph* (set) (set initial) (hash) (hash) (hash)))
 
-(define (address-observable-effect? call-states)
-  (lambda (eff κ)
+(define (a-observable-effect? call-states)
+  (lambda (eff κ _)
     (let ((A (hash-ref call-states κ)))
       (match eff
         ((wv a _)
@@ -257,8 +264,8 @@
         ((rp a _ _)
          (set-member? A a))))))
 
-(define (scope-address-observable-effect? parent call-states)
-  (lambda (eff κ)
+(define (sa-observable-effect? parent call-states)
+  (lambda (eff κ _)
       (match eff
         ((wv _ x)
          (let ((decl (get-declaration («id»-x x) x parent))
@@ -275,17 +282,53 @@
          (let ((A (hash-ref call-states κ)))
            (set-member? A a))))))
 
-(define (address-purity-analysis sys)
+(define (sfa-observable-effect? parent call-states fresh?)
+  (lambda (eff κ s)
+    (match eff
+      ((wv _ x)
+       (let ((decl (get-declaration («id»-x x) x parent))
+             (λ (ctx-λ κ)))
+         (and (not (inner-scope-declaration? decl λ)) (outer-scope-declaration? decl λ parent)))) ; inner-scope is optimization
+      ((wp a _ x)
+       (and (not (fresh? x s κ))
+            (let ((A (hash-ref call-states κ)))
+              (set-member? A a))))
+      ((rv _ x)
+       (let ((decl (get-declaration («id»-x x) x parent))
+             (λ (ctx-λ κ)))
+         (outer-scope-declaration? decl λ parent)))
+      ((rp a _ x)
+       (and (not (fresh? x s κ))
+            (let ((A (hash-ref call-states κ)))
+              (set-member? A a)))))))
+
+(define (a-purity-analysis sys)
   (let* ((call-states (call-state-analysis sys))
-        (observable-effect? (address-observable-effect? call-states)))
+         (observable-effect? (a-observable-effect? call-states)))
     (traverse-graph (system-graph sys) (system-initial sys) (system-Ξ sys) observable-effect?)))
     
-(define (scope-address-purity-analysis sys)
+(define (sa-purity-analysis sys)
   (let* ((call-states (call-state-analysis sys))
          (initial (system-initial sys))
          (ast (ev-e initial))
          (parent (make-parent ast))
-         (observable-effect? (scope-address-observable-effect? parent call-states)))
+         (observable-effect? (sa-observable-effect? parent call-states)))
+    (traverse-graph (system-graph sys) (system-initial sys) (system-Ξ sys) observable-effect?)))
+    
+(define (sfa-purity-analysis sys)
+  (let* ((call-states (call-state-analysis sys))
+         (lattice (system-lattice sys))
+         (⊥ (lattice-⊥ lattice))
+         (⊔ (lattice-⊔ lattice))
+         (sF (fresh-analysis sys ⊥ ⊔))
+         (initial (system-initial sys))
+         (ast (ev-e initial))
+         (parent (make-parent ast))
+         (fresh? (lambda (s κ x)
+                   (let* ((F (hash-ref sF s (hash)))
+                          (Fκ (hash-ref F κ (hash))))
+                   (fresh? x Fκ parent ⊥))))
+         (observable-effect? (sfa-observable-effect? parent call-states fresh?)))
     (traverse-graph (system-graph sys) (system-initial sys) (system-Ξ sys) observable-effect?)))
     
 (define PURE "PURE")
@@ -314,12 +357,14 @@
       (printf "~a -> ~a\n" (~a λ #:max-width 30) c))
     (hash-set summary c (add1 (hash-ref summary c 0)))))
 
-(define (full-address-purity-benchmark sys)
-  (purity-benchmark sys address-purity-analysis))
+(define (a-purity-benchmark sys)
+  (purity-benchmark sys a-purity-analysis))
 
-(define (scope-address-purity-benchmark sys)
-  (purity-benchmark sys scope-address-purity-analysis))
+(define (sa-purity-benchmark sys)
+  (purity-benchmark sys sa-purity-analysis))
 
+(define (sfa-purity-benchmark sys)
+  (purity-benchmark sys sfa-purity-analysis))
 
 (define FLOW-TIME "flow-time")
 (define STATE-COUNT "state-count")
@@ -382,9 +427,11 @@
     (set! ens '(fib fib-mut blur eta mj09 gcipd kcfa2 kcfa3 rotate loop2 sat collatz rsa primtest factor
                     purity1 purity2 purity3 purity4 purity5 purity6 purity7 purity8 purity9 purity10 purity11 purity12 purity13
                     purity14 purity15 purity16 purity17 purity18
+                    fresh1
                     treenode1 helloset! hellomemoset!)))
-  (define configs (list (cons 'fa full-address-purity-benchmark)
-                        (cons 'sa scope-address-purity-benchmark)
+  (define configs (list (cons 'a a-purity-benchmark)
+                        (cons 'sa sa-purity-benchmark)
+                        (cons 'sfa sfa-purity-benchmark)
                         ))
   (define machs (list (cons 'conc conc-mach) (cons 'type type-mach-0)))
   (set! purity-result
@@ -415,6 +462,7 @@
       (printf "Done.\n")
       results)))
 
+#|
 (define t1 '(letrec ((f (lambda () (let ((p (cons 1 2))) (let ((u (set-car! p 3))) (f)))))) (f)))
 (define sys1 (type-mach-0 t1))
 (generate-dot (system-graph sys1) "t1")
@@ -425,13 +473,14 @@
 (generate-dot (system-graph sys2) "t2")
 
 
-(define t3 '(letrec ((f (lambda (n) (let ((c (zero? n))) (if c 'done (let ((p (cons 1 2))) (let ((u (set-car! p 3))) (let ((nn (- n 1))) (f nn))))))))) (f 4)))
+(define t3 '(let ((z (cons 1 2))) (let ((f (lambda () (let ((o (cons 3 4))) (let ((g (lambda () (set! o z)))) (let ((u (g))) (set-car! o 5))))))) (f))))
 (define sys3 (type-mach-0 t3))
 (generate-dot (system-graph sys3) "t3")
 
 (define sys-eta (type-mach-0 eta))
 
-(print-fresh-info (fresh-analysis sys1 (set) set-union))
+(print-fresh-info (fresh-analysis sys3 (set) set-union))
+|#
 
 #|
 ;; Lower-bound for printing time (if smaller, prints \epsilon), in seconds

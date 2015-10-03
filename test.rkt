@@ -185,3 +185,5 @@
 (define purity16 '(let ((o (cons 1 2))) (letrec ((f (lambda (n) (let ((c (zero? n))) (if c 'done (let ((p (cons 1 2))) (let ((u (set-cdr! p 3))) (let ((v (set! p o))) (let ((w (set-cdr! p 4))) (let ((nn (- n 1))) (f nn))))))))))) (f 4))))
 (define purity17 '(let ((o (cons 1 2))) (letrec ((f (lambda (n) (let ((c (zero? n))) (if c 'done (let ((p o)) (let ((pp (cons 1 2))) (let ((v (set! p pp))) (let ((w (set-cdr! p 4))) (let ((nn (- n 1))) (f nn))))))))))) (f 4))))
 (define purity18 '(let ((g (lambda (p) (set-cdr! p 3) ))) (let ((f (lambda (h) (let ((o (cons 1 2))) (let ((u (h o))) (cdr o)))))) (letrec ((l (lambda (n) (let ((c (zero? n))) (if c 'done (let ((v (f g))) (let ((nn (- n 1))) (l nn)))))))) (l 4)))))
+
+(define fresh1 '(let ((z (cons 1 2))) (let ((f (lambda () (let ((o (cons 3 4))) (let ((g (lambda () (set! o z)))) (let ((u (g))) (set-car! o 5))))))) (f))))
