@@ -43,13 +43,14 @@
                (for/fold ((E (set))) ((w (γ (car rands))))
                  (match w
                    ((addr a)
-                    (for ((ww (γ (store-lookup σ a))))
+                    (for/fold ((E E)) ((ww (γ (store-lookup σ a))))
                       (match ww
-                        ((cons _ v-cdr) (store-update! a (α (cons (cadr rands) v-cdr))))
-                        (_ #f)))
-                    (set-add E (wp a "car" (car («app»-aes e)))))
+                        ((cons _ v-cdr)
+                         (store-update! a (α (cons (cadr rands) v-cdr)))
+                         (set-add E (wp a "car" (car («app»-aes e)))))
+                        (_ E))))
                    (_ E)))))
-          (set (list (α 'undefined) E)))
+          (if (set-empty? E) (set) (set (list (α 'undefined) E))))
         (set)))
 
 (define (prim-set-cdr! e rands ι κ Ξ)
@@ -58,13 +59,14 @@
              (for/fold ((E (set))) ((w (γ (car rands))))
                (match w
                  ((addr a)
-                  (for ((ww (γ (store-lookup σ a))))
+                  (for/fold ((E E)) ((ww (γ (store-lookup σ a))))
                     (match ww
-                      ((cons v-car _) (store-update! a (α (cons v-car (cadr rands)))))
-                      (_ #f)))
-                  (set-add E (wp a "cdr" (car («app»-aes e)))))
+                      ((cons v-car _)
+                       (store-update! a (α (cons v-car (cadr rands))))
+                       (set-add E (wp a "cdr" (car («app»-aes e)))))
+                      (_ E))))
                  (_ E)))))
-        (set (list (α 'undefined) E)))
+        (if (set-empty? E) (set) (set (list (α 'undefined) E))))
       (set)))
 
   (define (prim-pair e rands ι κ Ξ)
