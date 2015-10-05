@@ -466,3 +466,72 @@ mceval         type fa   #50234   flow-time 54701   lams 86  called 84  pure 12 
 mceval         type sa   #50234   flow-time 54701   lams 86  called 84  pure 12 obs 59 proc 13 | #<set: #<prim2> #<prim2> #<prim2> #(struct:addr (cons _p2 _p4)) #(struct
 
 
+***** server latest freshness
+fib            conc a    #701     flow-time 23      lams 1   called 1   pure 1  obs 0  proc 0  | 21
+fib            conc sa   #701     flow-time 23      lams 1   called 1   pure 1  obs 0  proc 0  | 21
+fib            conc sfa  #701     flow-time 23      lams 1   called 1   pure 1  obs 0  proc 0  | 21
+fib            type a    #54      flow-time 3       lams 1   called 1   pure 1  obs 0  proc 0  | #<set: NUM>
+fib            type sa   #54      flow-time 3       lams 1   called 1   pure 1  obs 0  proc 0  | #<set: NUM>
+fib            type sfa  #54      flow-time 3       lams 1   called 1   pure 1  obs 0  proc 0  | #<set: NUM>
+  
+fib-mut        conc a    #188     flow-time 7       lams 2   called 2   pure 1  obs 0  proc 1  | 21
+fib-mut        conc sa   #188     flow-time 7       lams 2   called 2   pure 1  obs 0  proc 1  | 21
+fib-mut        conc sfa  #188     flow-time 7       lams 2   called 2   pure 1  obs 0  proc 1  | 21
+fib-mut        type a    #63      flow-time 4       lams 2   called 2   pure 1  obs 0  proc 1  | #<set: NUM>
+fib-mut        type sa   #63      flow-time 4       lams 2   called 2   pure 1  obs 0  proc 1  | #<set: NUM>
+fib-mut        type sfa  #63      flow-time 4       lams 2   called 2   pure 1  obs 0  proc 1  | #<set: NUM>
+  
+treenode1      conc a    #59      flow-time 3       lams 2   called 2   pure 2  obs 0  proc 0  | undefined
+treenode1      conc sa   #59      flow-time 3       lams 2   called 2   pure 2  obs 0  proc 0  | undefined
+treenode1      conc sfa  #59      flow-time 3       lams 2   called 2   pure 2  obs 0  proc 0  | undefined
+treenode1      type a    #64      flow-time 4       lams 2   called 2   pure 1  obs 0  proc 1  | #<set: SYM>
+treenode1      type sa   #64      flow-time 4       lams 2   called 2   pure 2  obs 0  proc 0  | #<set: SYM>
+treenode1      type sfa  #64      flow-time 4       lams 2   called 2   pure 2  obs 0  proc 0  | #<set: SYM>
+  
+nqueens        conc a    #2622    flow-time 129     lams 6   called 6   pure 6  obs 0  proc 0  | 2
+nqueens        conc sa   #2622    flow-time 129     lams 6   called 6   pure 6  obs 0  proc 0  | 2
+nqueens        conc sfa  #2622    flow-time 129     lams 6   called 6   pure 6  obs 0  proc 0  | 2
+nqueens        type a    #910     flow-time 96      lams 6   called 6   pure 6  obs 0  proc 0  | #<set: NUM>
+nqueens        type sa   #910     flow-time 96      lams 6   called 6   pure 6  obs 0  proc 0  | #<set: NUM>
+nqueens        type sfa  #910     flow-time 96      lams 6   called 6   pure 6  obs 0  proc 0  | #<set: NUM>
+  
+dderiv         conc a    #2846    flow-time 149     lams 20  called 10  pure 9  obs 0  proc 1  | #t
+dderiv         conc sa   #2846    flow-time 149     lams 20  called 10  pure 9  obs 0  proc 1  | #t
+dderiv         conc sfa  #2846    flow-time 149     lams 20  called 10  pure 9  obs 0  proc 1  | #t
+dderiv         type a    #4784    flow-time 831     lams 20  called 14  pure 5  obs 8  proc 1  | #<set: BOOL>
+dderiv         type sa   #4784    flow-time 831     lams 20  called 14  pure 5  obs 8  proc 1  | #<set: BOOL>
+dderiv         type sfa  #4784    flow-time 831     lams 20  called 14  pure 5  obs 8  proc 1  | #<set: BOOL>
+  
+destruct       conc a    #2251    flow-time 142     lams 11  called 11  pure 3  obs 1  proc 7  | #(struct:addr 124)
+destruct       conc sa   #2251    flow-time 142     lams 11  called 11  pure 3  obs 1  proc 7  | #(struct:addr 124)
+destruct       conc sfa  #2251    flow-time 142     lams 11  called 11  pure 3  obs 1  proc 7  | #(struct:addr 124)
+destruct       type a    #1440    flow-time 198     lams 11  called 11  pure 3  obs 1  proc 7  | #<set: #(struct:addr (cons #(struct:«quo» 105 ()) _a19)) ()>
+destruct       type sa   #1440    flow-time 198     lams 11  called 11  pure 3  obs 1  proc 7  | #<set: #(struct:addr (cons #(struct:«quo» 105 ()) _a19)) ()>
+destruct       type sfa  #1440    flow-time 198     lams 11  called 11  pure 3  obs 1  proc 7  | #<set: #(struct:addr (cons #(struct:«quo» 105 ()) _a19)) ()>
+  
+mceval         conc a    #116426  flow-time 20451   lams 86  called 71  pure 59 obs 2  proc 10 | 21
+mceval         conc sa   #116426  flow-time 20451   lams 86  called 71  pure 59 obs 2  proc 10 | 21
+mceval         conc sfa  #116426  flow-time 20451   lams 86  called 71  pure 59 obs 2  proc 10 | 21
+mceval         type a    #49860   flow-time 45029   lams 86  called 84  pure 12 obs 59 proc 13 | #<set: #<prim2> #<prim2> #<prim2> #(struct:addr (cons _p2 _p4)) #(struct
+mceval         type sa   #49860   flow-time 45029   lams 86  called 84  pure 12 obs 59 proc 13 | #<set: #<prim2> #<prim2> #<prim2> #(struct:addr (cons _p2 _p4)) #(struct
+mceval         type sfa  #49860   flow-time 45029   lams 86  called 84  pure 12 obs 59 proc 13 | #<set: #<prim2> #<prim2> #<prim2> #(struct:addr (cons _p2 _p4)) #(struct
+
+
+          ((ev («let» _ x (? ae? ae) e1) ρ _ ι κ _) ; only on ae!
+           (let* ((decl (get-declaration («id»-x x) x parent))
+                  (Fκ (hash-ref F κ (hash)))
+                  (Fκ* (if (fresh? ae Fκ parent ⊥)
+                           (add-fresh Fκ decl)
+                           (add-unfresh Fκ decl)))
+                  (F* (hash-set F κ Fκ*)))
+             (values F* (hash-set sF s F*))))
+             
+          ((ko v _ (cons (letk x e ρ) ι) κ _) ; when e0 in let is not ae, letk is used
+              (let* ((decl (get-declaration («id»-x x) x parent))
+                     (Fκ (hash-ref F κ (hash)))
+                     (Fκ* (if (set-member? E (fr))
+                              (add-fresh Fκ decl)
+                              (add-unfresh Fκ decl)))
+                     (F* (hash-set F κ Fκ*))) 
+                (values F* (hash-set sF s F*))))
+             

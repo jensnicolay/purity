@@ -163,7 +163,7 @@
 (define sound6 (file->value "test/sound6.scm"))
 (define sound7 (file->value "test/sound7.scm"))
 (define sound8 (file->value "test/sound8.scm"))
-(define treenode1 '(let ((tree-node (lambda (l) (let ((this (cons 1 2))) (let ((a this)) (set-car! a l)))))) 
+(define treenode1 '(let ((tree-node (lambda (l) (let ((this (cons 1 2))) (let ((a this)) (let ((uu (set-car! a l))) a))))))
            (letrec ((f (lambda (levels) (let ((left #f)) (let ((c (<= levels 1))) (let ((u (if c (set! left 'null) (let ((n (- levels 1))) (let ((ll (f n))) (set! left ll)))))) (tree-node left)))))))
              (f 3))))
 (define destruct (add-length (file->value "test/destruct.scm")))
@@ -187,3 +187,4 @@
 (define purity18 '(let ((g (lambda (p) (set-cdr! p 3) ))) (let ((f (lambda (h) (let ((o (cons 1 2))) (let ((u (h o))) (cdr o)))))) (letrec ((l (lambda (n) (let ((c (zero? n))) (if c 'done (let ((v (f g))) (let ((nn (- n 1))) (l nn)))))))) (l 4)))))
 
 (define fresh1 '(let ((z (cons 1 2))) (let ((f (lambda () (let ((o (cons 3 4))) (let ((g (lambda () (set! o z)))) (let ((u (g))) (set-car! o 5))))))) (f))))
+(define fresh2 '(let ((f (lambda (p) (let ((u (if p (set-car! p 3) (let ((pp (cons 4 5))) (set! p pp))))) p)))) (let ((o (f #f))) (f o))))

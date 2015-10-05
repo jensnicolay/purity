@@ -92,26 +92,36 @@
         (match s
           ((ev («set!» _ x ae) ρ _ ι κ Ξi)
            (let* ((decl (get-declaration («id»-x x) x parent))
-                  (ctxs (set-add (stack-contexts κ (vector-ref Ξ Ξi)) #f)) ; hack: adding top-level ctx '#f'
+                  (ctxs (set-add (stack-contexts κ (vector-ref Ξ Ξi)) #f)) ; adding top-level ctx '#f', because freshness also deals with top-level stuff
                   (F* (for/fold ((F F)) ((κ ctxs))
-                        (let* ((Fκ (hash-ref F κ (hash)))
-                               (Fκ* (if (fresh? ae Fκ parent ⊥)
-                                        (add-fresh Fκ decl)
-                                        (add-unfresh Fκ decl))))
-                          (hash-set F κ Fκ*)))))
+                        (let ((Fκ (hash-ref F κ (hash))))
+                              (let ((Fκ* (if (fresh? ae Fκ parent ⊥)
+                                             (add-fresh Fκ decl)
+                                             (add-unfresh Fκ decl))))
+                                (hash-set F κ Fκ*))
+                              ))))
              (values F* (hash-set sF s F*))))
-          ;((ev («let» _ x e0 e1) ρ _ ι κ _)
-          ; (let ((decl (get-declaration («id»-x x) x parent)))
-          ;   (if (fresh? e0 F ast)
-          ;       (add-fresh F decl)
-          ;       (add-unfresh F decl))))
-          ((ko v _ (cons (letk x e ρ) ι) κ _)
+          ((ev («let» _ x (? ae? ae) e1) ρ _ ι κ Ξi) ; only on ae!
            (let* ((decl (get-declaration («id»-x x) x parent))
-                  (Fκ (hash-ref F κ (hash)))
-                  (Fκ* (if (set-member? E (fr))
-                           (add-fresh Fκ decl)
-                           (add-unfresh Fκ decl)))
-                  (F* (hash-set F κ Fκ*))) 
+                  (ctxs (set-add (stack-contexts κ (vector-ref Ξ Ξi)) #f)) ; adding top-level ctx '#f', because freshness also deals with top-level stuff
+                  (F* (for/fold ((F F)) ((κ ctxs))
+                        (let ((Fκ (hash-ref F κ (hash))))
+                              (let ((Fκ* (if (fresh? ae Fκ parent ⊥)
+                                             (add-fresh Fκ decl)
+                                             (add-unfresh Fκ decl))))
+                                (hash-set F κ Fκ*))
+                              ))))
+             (values F* (hash-set sF s F*))))
+          ((ko v _ (cons (letk x e ρ) ι) κ Ξi) ; when e0 in let is not ae, letk is used
+           (let* ((decl (get-declaration («id»-x x) x parent))
+                  (ctxs (set-add (stack-contexts κ (vector-ref Ξ Ξi)) #f)) ; adding top-level ctx '#f', because freshness also deals with top-level stuff
+                  (F* (for/fold ((F F)) ((κ ctxs))
+                        (let ((Fκ (hash-ref F κ (hash))))
+                              (let ((Fκ* (if (set-member? E (fr))
+                                             (add-fresh Fκ decl)
+                                             (add-unfresh Fκ decl))))
+                                (hash-set F κ Fκ*))
+                              ))))
              (values F* (hash-set sF s F*))))
           (_ (let ((Fκ (hash-ref F (state-κ s) (hash))))
                (values F (hash-set sF s F)))))))
@@ -200,6 +210,13 @@
     (let ((λ-os (hash-ref O a (set))))
       (for/fold ((F F)) ((λ-o λ-os))
         (add-observer λ-o F))))
+
+  (define (observable-effect2? eff κ s)
+    (let ((o? (observable-effect? eff κ s)))
+      (when o?
+        (printf "observable ~a κ ~a s ~a\n" eff (ctx->ctxi κ) (state->statei s)))
+      o?))
+          
   
   (define (traverse-graph* S W F R O)
     (if (set-empty? W)
@@ -280,7 +297,7 @@
         ((wv _ x)
          (let ((decl (get-declaration («id»-x x) x parent))
                (λ (ctx-λ κ)))
-           (and (not (inner-scope-declaration? decl λ)) (outer-scope-declaration? decl λ parent)))) ; inner-scope is optimization
+           (outer-scope-declaration? decl λ parent)))
         ((wp a _ _)
          (let ((A (hash-ref call-states κ)))
            (set-member? A a)))
@@ -298,19 +315,21 @@
       ((wv _ x)
        (let ((decl (get-declaration («id»-x x) x parent))
              (λ (ctx-λ κ)))
-         (and (not (inner-scope-declaration? decl λ)) (outer-scope-declaration? decl λ parent)))) ; inner-scope is optimization
+         (outer-scope-declaration? decl λ parent)))
       ((wp a _ x)
-       (and (not (fresh? x s κ))
-            (let ((A (hash-ref call-states κ)))
+       (if (fresh? x s κ)
+           #f
+           (let ((A (hash-ref call-states κ)))
               (set-member? A a))))
       ((rv _ x)
        (let ((decl (get-declaration («id»-x x) x parent))
              (λ (ctx-λ κ)))
          (outer-scope-declaration? decl λ parent)))
       ((rp a _ x)
-       (and (not (fresh? x s κ))
-            (let ((A (hash-ref call-states κ)))
-              (set-member? A a)))))))
+       (if (fresh? x s κ)
+           #f
+           (let ((A (hash-ref call-states κ)))
+             (set-member? A a)))))))
 
 (define (a-purity-analysis sys)
   (let* ((call-states (call-state-analysis sys))
@@ -337,7 +356,7 @@
          (fresh? (lambda (x s κ)
                    (let* ((F (hash-ref sF s (hash)))
                           (Fκ (hash-ref F κ (hash))))
-                   (fresh? x Fκ parent ⊥))))
+                     (fresh? x Fκ parent ⊥))))
          (observable-effect? (sfa-observable-effect? parent call-states fresh?)))
     (traverse-graph (system-graph sys) (system-initial sys) (system-Ξ sys) observable-effect?)))
     
@@ -437,7 +456,7 @@
     (set! ens '(fib fib-mut blur eta mj09 gcipd kcfa2 kcfa3 rotate loop2 sat collatz rsa primtest factor
                     purity1 purity2 purity3 purity4 purity5 purity6 purity7 purity8 purity9 purity10 purity11 purity12 purity13
                     purity14 purity15 purity16 purity17 purity18
-                    fresh1
+                    fresh1 fresh2
                     treenode1 helloset! hellomemoset!)))
   (define configs (list (cons 'a a-purity-benchmark)
                         (cons 'sa sa-purity-benchmark)
@@ -471,14 +490,14 @@
                                      )))) 
       (printf "Done.\n")
       results)))
-
-
 #|
-(define t1 '(let ((f (lambda (p) (let ((u (if p (set-car! p 3) (let ((pp (cons 4 5))) (set! p pp))))) p)))) (let ((o (f #f))) (f o))))
+
+(define t1 treenode1)
 (define sys1 (type-mach-0 t1))
 (generate-dot (system-graph sys1) "t1")
 (print-fresh-info (fresh-analysis sys1 (set) set-union))
 (print-purity-info (sfa-purity-analysis sys1))
+
 
 (define t2 '(let ((f (lambda (q) (let ((p (cons 1 2))) (set! p q))))) (let ((r (cons 3 4))) (f r))))
 (define sys2 (type-mach-0 t2))
