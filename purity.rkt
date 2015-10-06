@@ -300,21 +300,16 @@
         ((wv a x)
          (let ((decl (get-declaration («id»-x x) x parent))
                (λ (ctx-λ κ)))
-           (let ((scope-o? (if (inner-scope-declaration? decl λ)
-                               #f
-                               (set-member? (hash-ref call-states κ) a)))
-                 (address-o? (set-member? (hash-ref call-states κ) a)))
-             (when (not (eq? scope-o? address-o?))
-               (printf "disagree ~a ~a a ~a scope ~a s ~a\n" eff (ctx->ctxi κ) address-o? scope-o? (state-repr _s)))
-             scope-o?)))
+           (not (inner-scope-declaration? decl λ))))
+             ;(when (not (eq? scope-o? address-o?))
+             ;  (printf "disagree ~a ~a a ~a scope ~a s ~a\n" eff (ctx->ctxi κ) address-o? scope-o? (state-repr _s)))
         ((wp a _ _)
          (let ((A (hash-ref call-states κ)))
            (set-member? A a)))
         ((rv a x)
          (let ((decl (get-declaration («id»-x x) x parent))
                (λ (ctx-λ κ)))
-           (and (not (inner-scope-declaration? decl λ))
-                (set-member? (hash-ref call-states κ) a))))
+           (not (inner-scope-declaration? decl λ))))
         ((rp a _ _)
          (let ((A (hash-ref call-states κ)))
            (set-member? A a))))))
@@ -325,8 +320,7 @@
       ((wv a x)
        (let ((decl (get-declaration («id»-x x) x parent))
              (λ (ctx-λ κ)))
-         (and (not (inner-scope-declaration? decl λ))
-              (set-member? (hash-ref call-states κ) a))))
+         (not (inner-scope-declaration? decl λ))))
       ((wp a _ x)
        (if (fresh? x s κ)
            #f
@@ -335,8 +329,7 @@
       ((rv a x)
        (let ((decl (get-declaration («id»-x x) x parent))
              (λ (ctx-λ κ)))
-         (and (not (inner-scope-declaration? decl λ))
-              (set-member? (hash-ref call-states κ) a))))
+         (not (inner-scope-declaration? decl λ))))
       ((rp a _ x)
        (if (fresh? x s κ)
            #f
@@ -502,14 +495,6 @@
       (printf "Done.\n")
       results)))
 
-(define t3 '(let ((f (lambda (h) (h)))) (let ((z #t)) (let ((g (lambda () (set! z #f)))) (f g)))))
-(define sys3 (conc-mach t3))
-(generate-dot (system-graph sys3) "t3")
-(parameterize ((PRINT-PER-LAMBDA #t))
-  (print-purity-info (a-purity-analysis sys3))
-  (newline)
-  (print-purity-info (sa-purity-analysis sys3)))
-
 
 #|
 
@@ -526,6 +511,14 @@
   (print-purity-info (a-purity-analysis sys2))
   (newline)
   (print-purity-info (sa-purity-analysis sys2)))
+
+(define t3 '(let ((f (lambda (h) (h)))) (let ((z #t)) (let ((g (lambda () (set! z #f)))) (f g)))))
+(define sys3 (conc-mach t3))
+(generate-dot (system-graph sys3) "t3")
+(parameterize ((PRINT-PER-LAMBDA #t))
+  (print-purity-info (a-purity-analysis sys3))
+  (newline)
+  (print-purity-info (sa-purity-analysis sys3)))
 
 
 ;; Lower-bound for printing time (if smaller, prints \epsilon), in seconds
