@@ -102,7 +102,7 @@
         (cons 35 (cons '(let ((f (lambda (p) (let ((u (if p (set-car! p 3) (let ((pp (cons 4 5))) (set! p pp))))) p)))) (let ((o (f #f))) (f o))) '((2 . "PROC"))))
         (cons 36 (cons '(let ((f (lambda () (let ((x 10)) (let ((g (lambda () x))) (let ((u x)) (let ((v (g))) (let ((w (set! x 11))) (g))))))))) (f)) '((2 . "PURE") (8 . "OBS"))))
         (cons 37 (cons '(let ((f (lambda () (let ((o (cons 1 2))) (let ((g (lambda () (car o)))) (let ((u (car o))) (let ((v (g))) (let ((w (set-car! o 3))) (g))))))))) (f)) '((2 . "PURE") (11 . "OBS"))))
-        (cons 38 (cons treenode1 '((2 . "PURE") (19 . "PURE"))))
+        (cons 38 (cons treenode1 '((2 . "PURE") (22 . "PURE"))))
         (cons 39 (cons '(let ((f (lambda () (cons 1 2)))) (f)) '((2 . "PURE"))))
         (cons 40 (cons '(let ((f (lambda () (cons 1 2)))) (let ((p (f))) (set-car! p 9))) '((2 . "PURE"))))
         (cons 41 (cons '(let ((g (lambda () (let ((a 3)) a)))) (let ((f (lambda (h) (h)))) (letrec ((l (lambda (n) (let ((c (zero? n))) (if c 'done (let ((u (f g))) (let ((nn (- n 1))) (l nn)))))))) (l 4)))) '((2 . "PURE") (9 . "PURE") (15 . "PURE"))))

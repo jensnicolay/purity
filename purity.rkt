@@ -490,14 +490,15 @@
                                      )))) 
       (printf "Done.\n")
       results)))
-#|
 
-(define t1 treenode1)
+
+
+#|
+(define t1 '(let ((o (cons 1 2))) (letrec ((f (lambda (n) (let ((c (zero? n))) (if c 'done (let ((p o)) (let ((pp (cons 1 2))) (let ((v (set! p pp))) (let ((w (set-cdr! p 4))) (let ((nn (- n 1))) (f nn))))))))))) (f 4))))
 (define sys1 (type-mach-0 t1))
 (generate-dot (system-graph sys1) "t1")
 (print-fresh-info (fresh-analysis sys1 (set) set-union))
 (print-purity-info (sfa-purity-analysis sys1))
-
 
 (define t2 '(let ((f (lambda (q) (let ((p (cons 1 2))) (set! p q))))) (let ((r (cons 3 4))) (f r))))
 (define sys2 (type-mach-0 t2))
