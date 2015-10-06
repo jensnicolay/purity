@@ -38,6 +38,9 @@
       (for/or ((e* (children e)))
         (inner-scope-declaration? decl e*))))
 
+(define (free-variable? decl e)
+  (set-member? (free e) decl))
+
 (define (get-declaration name e parent)
   (let up ((e e))
     (let ((p (parent e)))
@@ -292,19 +295,26 @@
          (set-member? A a))))))
 
 (define (sa-observable-effect? parent call-states)
-  (lambda (eff κ _)
+  (lambda (eff κ _s)
       (match eff
-        ((wv _ x)
+        ((wv a x)
          (let ((decl (get-declaration («id»-x x) x parent))
                (λ (ctx-λ κ)))
-           (outer-scope-declaration? decl λ parent)))
+           (let ((scope-o? (if (inner-scope-declaration? decl λ)
+                               #f
+                               (set-member? (hash-ref call-states κ) a)))
+                 (address-o? (set-member? (hash-ref call-states κ) a)))
+             (when (not (eq? scope-o? address-o?))
+               (printf "disagree ~a ~a a ~a scope ~a s ~a\n" eff (ctx->ctxi κ) address-o? scope-o? (state-repr _s)))
+             scope-o?)))
         ((wp a _ _)
          (let ((A (hash-ref call-states κ)))
            (set-member? A a)))
-        ((rv _ x)
+        ((rv a x)
          (let ((decl (get-declaration («id»-x x) x parent))
                (λ (ctx-λ κ)))
-           (outer-scope-declaration? decl λ parent)))
+           (and (not (inner-scope-declaration? decl λ))
+                (set-member? (hash-ref call-states κ) a))))
         ((rp a _ _)
          (let ((A (hash-ref call-states κ)))
            (set-member? A a))))))
@@ -312,19 +322,21 @@
 (define (sfa-observable-effect? parent call-states fresh?)
   (lambda (eff κ s)
     (match eff
-      ((wv _ x)
+      ((wv a x)
        (let ((decl (get-declaration («id»-x x) x parent))
              (λ (ctx-λ κ)))
-         (outer-scope-declaration? decl λ parent)))
+         (and (not (inner-scope-declaration? decl λ))
+              (set-member? (hash-ref call-states κ) a))))
       ((wp a _ x)
        (if (fresh? x s κ)
            #f
            (let ((A (hash-ref call-states κ)))
               (set-member? A a))))
-      ((rv _ x)
+      ((rv a x)
        (let ((decl (get-declaration («id»-x x) x parent))
              (λ (ctx-λ κ)))
-         (outer-scope-declaration? decl λ parent)))
+         (and (not (inner-scope-declaration? decl λ))
+              (set-member? (hash-ref call-states κ) a))))
       ((rp a _ x)
        (if (fresh? x s κ)
            #f
@@ -447,7 +459,7 @@
   
 
 (define THROW (make-parameter #t))
-(define PRINT-PER-LAMBDA (make-parameter #t))
+(define PRINT-PER-LAMBDA (make-parameter #f))
 
 (define purity-result #f)
 
@@ -464,7 +476,6 @@
                         ))
   (define machs (list (cons 'conc conc-mach) (cons 'type type-mach-0)))
   (set! purity-result
-  (parameterize ((PRINT-PER-LAMBDA #f))
     (for/list ((en ens))
       (newline)
       (let* ((e (eval en)))
@@ -478,7 +489,7 @@
                     (printf "~a ~a ~a" (~a en #:min-width 14) (~a mach-name #:min-width 4) (~a (car config) #:min-width 5))
                     (let ((result ((cdr config) sys)))
                       (print-purity-summary result)
-                (cons (car config) result)))))))))))
+                (cons (car config) result))))))))))
   (printf "Results in purity-result\n"))
 
 (define (server-purity-test)
@@ -491,30 +502,32 @@
       (printf "Done.\n")
       results)))
 
+(define t3 '(let ((f (lambda (h) (h)))) (let ((z #t)) (let ((g (lambda () (set! z #f)))) (f g)))))
+(define sys3 (conc-mach t3))
+(generate-dot (system-graph sys3) "t3")
+(parameterize ((PRINT-PER-LAMBDA #t))
+  (print-purity-info (a-purity-analysis sys3))
+  (newline)
+  (print-purity-info (sa-purity-analysis sys3)))
 
 
 #|
-(define t1 '(let ((o (cons 1 2))) (letrec ((f (lambda (n) (let ((c (zero? n))) (if c 'done (let ((p o)) (let ((pp (cons 1 2))) (let ((v (set! p pp))) (let ((w (set-cdr! p 4))) (let ((nn (- n 1))) (f nn))))))))))) (f 4))))
+
+(define t1 (add-map '(let ((env '())) (let ((eval (lambda () (map (lambda (x) (set! env 123)) '(4))))) (eval)))))
 (define sys1 (type-mach-0 t1))
 (generate-dot (system-graph sys1) "t1")
 (print-fresh-info (fresh-analysis sys1 (set) set-union))
 (print-purity-info (sfa-purity-analysis sys1))
 
-(define t2 '(let ((f (lambda (q) (let ((p (cons 1 2))) (set! p q))))) (let ((r (cons 3 4))) (f r))))
-(define sys2 (type-mach-0 t2))
-(generate-dot (system-graph sys2) "t2")
+
+(define t2 mceval2) 
+(define sys2 (conc-mach t2))
+(parameterize ((PRINT-PER-LAMBDA #t))
+  (print-purity-info (a-purity-analysis sys2))
+  (newline)
+  (print-purity-info (sa-purity-analysis sys2)))
 
 
-(define t3 '(let ((z (cons 1 2))) (let ((f (lambda () (let ((o (cons 3 4))) (let ((g (lambda () (set! o z)))) (let ((u (g))) (set-car! o 5))))))) (f))))
-(define sys3 (type-mach-0 t3))
-(generate-dot (system-graph sys3) "t3")
-
-(define sys-eta (type-mach-0 eta))
-
-
-|#
-
-#|
 ;; Lower-bound for printing time (if smaller, prints \epsilon), in seconds
 (define TIMECUTOFF (make-parameter 1))
 (define TIMEFORMAT (make-parameter

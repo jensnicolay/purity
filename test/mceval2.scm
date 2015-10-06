@@ -42,8 +42,8 @@
                                                                                (let ((e1 (caddr e)))
                                                                                  (let ((v (evaluate e0)))
                                                                                    (let ((binding (cons x v)))
-                                                                                     (let ((extended (cons binding env)))
-                                                                                       (let ((u (set! env extended)))
+                                                                                     (let ((extended1 (cons binding env)))
+                                                                                       (let ((u (set! env extended1)))
                                                                                          (evaluate e1))))))))) ;end let
                                                                          (let ((c-set!? (eq? first 'set!)))
                                                                            (if c-set!?
@@ -72,18 +72,18 @@
                                                                                                      (let ((static (cdr rator)))
                                                                                                        (let ((params (cadr lam)))
                                                                                                          (let ((e0 (caddr lam)))
-                                                                                                           (let ((restore-env env))
+                                                                                                           (let ((restore-env2 env))
                                                                                                              (letrec ((bind (lambda (params rands)
                                                                                                                               (let ((c-null? (null? params)))
                                                                                                                                 (if c-null?
                                                                                                                                     (let ((v (evaluate e0)))
-                                                                                                                                      (let ((u (set! env restore-env)))
+                                                                                                                                      (let ((u (set! env restore-env2)))
                                                                                                                                         v))
                                                                                                                                     (let ((var (car params)))
                                                                                                                                       (let ((value (car rands)))
                                                                                                                                         (let ((binding (cons var value)))
-                                                                                                                                          (let ((extended (cons binding static)))
-                                                                                                                                            (let ((u (set! env extended)))
+                                                                                                                                          (let ((extended2 (cons binding static)))
+                                                                                                                                            (let ((u (set! env extended2)))
                                                                                                                                               (let ((params2 (cdr params)))
                                                                                                                                                 (let ((rands2 (cdr rands)))
                                                                                                                                                   (bind params2 rands2)))))))))))))
@@ -91,6 +91,6 @@
                                                                                                    (rator rands))))))) ;end app
                                                                                      ))))))))) ;end pair
                                                            e)))))))
-                            (let ((program '(let ((fib #f)) (let ((u (set! fib (lambda (n) (if (< n 2) n (+ (fib (- n 1)) (fib (- n 2)))))))) (fib 10)))))
+                            (let ((program '(let ((fib #f)) (let ((u (set! fib (lambda (n) (if (< n 2) n (+ (fib (- n 1)) (fib (- n 2)))))))) (fib 3)))))
                               (evaluate program)
                             )))))))))))))))
