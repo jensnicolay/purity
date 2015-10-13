@@ -534,4 +534,12 @@ mceval         type sfa  #49860   flow-time 45029   lams 86  called 84  pure 12 
                               (add-unfresh Fκ decl)))
                      (F* (hash-set F κ Fκ*))) 
                 (values F* (hash-set sF s F*))))
+                
+                
+                
+scope outer->free+a backup
+                
+
+                
+                
              

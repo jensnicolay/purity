@@ -1,7 +1,7 @@
 #lang racket
 (provide (all-defined-out))
 
-(struct lattice (α γ ⊥ ⊔ true? false? eq? global))
+(struct lattice (α γ ⊥ ⊔ ⊑ true? false? eq? global))
 
 (struct prim2 (name proc) #:methods gen:equal+hash ((define equal-proc (lambda (s1 s2 requal?)
                                                                          (equal? (prim2-name s1) (prim2-name s2))))
@@ -22,11 +22,15 @@
 (define (conc-⊔ current new) ; ordered!
   new)
 
+(define conc-⊑ eq?)
+
 (define (conc-true? v)
   v)
 
 (define (conc-false? v)
   (not v))
+
+(define conc-eq? eq?)
 
 (define conc-global
   `(("=" . ,(conc-α (prim2 "=" =)))
@@ -77,10 +81,7 @@
     ("number?" . ,(conc-α (prim2 "number?" number?)))
     ("%random" . ,(conc-α (prim2 "%random" %random)))))
 
-(define (conc-eq? v1 v2)
-  (eq? v1 v2))
-
-(define conc-lattice (lattice conc-α conc-γ conc-⊥ conc-⊔ conc-true? conc-false? conc-eq? conc-global))
+(define conc-lattice (lattice conc-α conc-γ conc-⊥ conc-⊔ conc-⊑ conc-true? conc-false? conc-eq? conc-global))
 ;;
 
 ;; type lattice
@@ -116,11 +117,16 @@
 
 (define type-⊔ set-union)
 
+(define type-⊑ subset?)
+
 (define (type-true? v)
   #t)
 
 (define (type-false? v)
   #t)
+
+(define (type-eq? v1 v2)
+  (set BOOL))
 
 (define type-global
   (let ((->bool
@@ -182,10 +188,7 @@
       ("char-numeric?" . ,(type-α (prim2 "char-numeric?" ->bool)))
       ("char=?" . ,(type-α (prim2 "char=?" ->bool))))))
 
-(define (type-eq? v1 v2)
-  (set BOOL))
-
-(define type-lattice (lattice type-α type-γ type-⊥ type-⊔ type-true? type-false? type-eq? type-global))
+(define type-lattice (lattice type-α type-γ type-⊥ type-⊔ type-⊑ type-true? type-false? type-eq? type-global))
 ;;
 
 ;; points-to lattice
@@ -261,4 +264,4 @@
       ("char-numeric?" . ,(pt-α (prim2 "char-numeric?" ->prim)))
       ("char=?" . ,(pt-α (prim2 "char=?" ->prim))))))
 
-(define pt-lattice (lattice pt-α type-γ type-⊥ type-⊔ type-true? type-false? pt-eq? pt-global))
+(define pt-lattice (lattice pt-α type-γ type-⊥ type-⊔ type-⊑ type-true? type-false? pt-eq? pt-global))
