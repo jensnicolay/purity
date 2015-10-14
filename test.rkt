@@ -191,4 +191,4 @@
 
 (define fresh1 '(let ((z (cons 1 2))) (let ((f (lambda () (let ((o (cons 3 4))) (let ((g (lambda () (set! o z)))) (let ((u (g))) (set-car! o 5))))))) (f))))
 (define fresh2 '(let ((f (lambda (p) (let ((u (if p (set-car! p 3) (let ((pp (cons 4 5))) (set! p pp))))) p)))) (let ((o (f #f))) (f o))))
-(define grid (file->value "test/grid.scm"))
+(define grid (add-equal? (file->value "test/grid.scm")))

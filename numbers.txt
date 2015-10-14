@@ -537,9 +537,347 @@ mceval         type sfa  #49860   flow-time 45029   lams 86  called 84  pure 12 
                 
                 
                 
-scope outer->free+a backup
-                
+#################################
+20151011 pre- ev(e0,,,,(letk x e1 _):iota,,)
+> (purity-test)
 
-                
+fib            conc a    #701     flow-time 12      lams 1   called 1   pure 1  obs 0  proc 0  | 21
+fib            conc sa   #701     flow-time 12      lams 1   called 1   pure 1  obs 0  proc 0  | 21
+fib            conc sfa  #701     flow-time 12      lams 1   called 1   pure 1  obs 0  proc 0  | 21
+fib            type a    #54      flow-time 1       lams 1   called 1   pure 1  obs 0  proc 0  | #<set: NUM>
+fib            type sa   #54      flow-time 1       lams 1   called 1   pure 1  obs 0  proc 0  | #<set: NUM>
+fib            type sfa  #54      flow-time 1       lams 1   called 1   pure 1  obs 0  proc 0  | #<set: NUM>
+
+fib-mut        conc a    #188     flow-time 4       lams 2   called 2   pure 1  obs 0  proc 1  | 21
+fib-mut        conc sa   #188     flow-time 4       lams 2   called 2   pure 1  obs 0  proc 1  | 21
+fib-mut        conc sfa  #188     flow-time 4       lams 2   called 2   pure 1  obs 0  proc 1  | 21
+fib-mut        type a    #63      flow-time 3       lams 2   called 2   pure 1  obs 0  proc 1  | #<set: NUM>
+fib-mut        type sa   #63      flow-time 3       lams 2   called 2   pure 1  obs 0  proc 1  | #<set: NUM>
+fib-mut        type sfa  #63      flow-time 3       lams 2   called 2   pure 1  obs 0  proc 1  | #<set: NUM>
+
+blur           conc a    #43      flow-time 1       lams 3   called 3   pure 3  obs 0  proc 0  | #t
+blur           conc sa   #43      flow-time 1       lams 3   called 3   pure 3  obs 0  proc 0  | #t
+blur           conc sfa  #43      flow-time 1       lams 3   called 3   pure 3  obs 0  proc 0  | #t
+blur           type a    #91      flow-time 17      lams 3   called 3   pure 3  obs 0  proc 0  | #<set: BOOL>
+blur           type sa   #91      flow-time 17      lams 3   called 3   pure 3  obs 0  proc 0  | #<set: BOOL>
+blur           type sfa  #91      flow-time 17      lams 3   called 3   pure 3  obs 0  proc 0  | #<set: BOOL>
+
+eta            conc a    #26      flow-time 0       lams 4   called 4   pure 4  obs 0  proc 0  | #f
+eta            conc sa   #26      flow-time 0       lams 4   called 4   pure 4  obs 0  proc 0  | #f
+eta            conc sfa  #26      flow-time 0       lams 4   called 4   pure 4  obs 0  proc 0  | #f
+eta            type a    #50      flow-time 1       lams 4   called 4   pure 4  obs 0  proc 0  | #<set: BOOL>
+eta            type sa   #50      flow-time 1       lams 4   called 4   pure 4  obs 0  proc 0  | #<set: BOOL>
+eta            type sfa  #50      flow-time 1       lams 4   called 4   pure 4  obs 0  proc 0  | #<set: BOOL>
+
+mj09           conc a    #29      flow-time 1       lams 4   called 4   pure 4  obs 0  proc 0  | 2
+mj09           conc sa   #29      flow-time 1       lams 4   called 4   pure 4  obs 0  proc 0  | 2
+mj09           conc sfa  #29      flow-time 1       lams 4   called 4   pure 4  obs 0  proc 0  | 2
+mj09           type a    #49      flow-time 1       lams 4   called 4   pure 4  obs 0  proc 0  | #<set: NUM>
+mj09           type sa   #49      flow-time 1       lams 4   called 4   pure 4  obs 0  proc 0  | #<set: NUM>
+mj09           type sfa  #49      flow-time 1       lams 4   called 4   pure 4  obs 0  proc 0  | #<set: NUM>
+
+gcipd          conc a    #91      flow-time 2       lams 3   called 3   pure 3  obs 0  proc 0  | 36
+gcipd          conc sa   #91      flow-time 2       lams 3   called 3   pure 3  obs 0  proc 0  | 36
+gcipd          conc sfa  #91      flow-time 2       lams 3   called 3   pure 3  obs 0  proc 0  | 36
+gcipd          type a    #194     flow-time 7       lams 3   called 3   pure 3  obs 0  proc 0  | #<set: NUM>
+gcipd          type sa   #194     flow-time 7       lams 3   called 3   pure 3  obs 0  proc 0  | #<set: NUM>
+gcipd          type sfa  #194     flow-time 7       lams 3   called 3   pure 3  obs 0  proc 0  | #<set: NUM>
+
+kcfa2          conc a    #41      flow-time 0       lams 3   called 3   pure 3  obs 0  proc 0  | #f
+kcfa2          conc sa   #41      flow-time 0       lams 3   called 3   pure 3  obs 0  proc 0  | #f
+kcfa2          conc sfa  #41      flow-time 0       lams 3   called 3   pure 3  obs 0  proc 0  | #f
+kcfa2          type a    #38      flow-time 0       lams 3   called 3   pure 3  obs 0  proc 0  | #<set: BOOL>
+kcfa2          type sa   #38      flow-time 0       lams 3   called 3   pure 3  obs 0  proc 0  | #<set: BOOL>
+kcfa2          type sfa  #38      flow-time 0       lams 3   called 3   pure 3  obs 0  proc 0  | #<set: BOOL>
+
+kcfa3          conc a    #61      flow-time 1       lams 4   called 4   pure 4  obs 0  proc 0  | #f
+kcfa3          conc sa   #61      flow-time 1       lams 4   called 4   pure 4  obs 0  proc 0  | #f
+kcfa3          conc sfa  #61      flow-time 1       lams 4   called 4   pure 4  obs 0  proc 0  | #f
+kcfa3          type a    #44      flow-time 1       lams 4   called 4   pure 4  obs 0  proc 0  | #<set: BOOL>
+kcfa3          type sa   #44      flow-time 1       lams 4   called 4   pure 4  obs 0  proc 0  | #<set: BOOL>
+kcfa3          type sfa  #44      flow-time 1       lams 4   called 4   pure 4  obs 0  proc 0  | #<set: BOOL>
+
+rotate         conc a    #336     flow-time 7       lams 1   called 1   pure 1  obs 0  proc 0  | hallo
+rotate         conc sa   #336     flow-time 7       lams 1   called 1   pure 1  obs 0  proc 0  | hallo
+rotate         conc sfa  #336     flow-time 7       lams 1   called 1   pure 1  obs 0  proc 0  | hallo
+rotate         type a    #32      flow-time 1       lams 1   called 1   pure 1  obs 0  proc 0  | #<set: NUM STR BOOL>
+rotate         type sa   #32      flow-time 1       lams 1   called 1   pure 1  obs 0  proc 0  | #<set: NUM STR BOOL>
+rotate         type sfa  #32      flow-time 1       lams 1   called 1   pure 1  obs 0  proc 0  | #<set: NUM STR BOOL>
+
+loop2          conc a    #1348    flow-time 26      lams 3   called 3   pure 3  obs 0  proc 0  | 550
+loop2          conc sa   #1348    flow-time 26      lams 3   called 3   pure 3  obs 0  proc 0  | 550
+loop2          conc sfa  #1348    flow-time 26      lams 3   called 3   pure 3  obs 0  proc 0  | 550
+loop2          type a    #79      flow-time 3       lams 3   called 3   pure 3  obs 0  proc 0  | #<set: NUM>
+loop2          type sa   #79      flow-time 3       lams 3   called 3   pure 3  obs 0  proc 0  | #<set: NUM>
+loop2          type sfa  #79      flow-time 3       lams 3   called 3   pure 3  obs 0  proc 0  | #<set: NUM>
+
+sat            conc a    #77      flow-time 1       lams 7   called 7   pure 7  obs 0  proc 0  | #t
+sat            conc sa   #77      flow-time 1       lams 7   called 7   pure 7  obs 0  proc 0  | #t
+sat            conc sfa  #77      flow-time 1       lams 7   called 7   pure 7  obs 0  proc 0  | #t
+sat            type a    #89      flow-time 3       lams 7   called 7   pure 7  obs 0  proc 0  | #<set: BOOL>
+sat            type sa   #89      flow-time 3       lams 7   called 7   pure 7  obs 0  proc 0  | #<set: BOOL>
+sat            type sfa  #89      flow-time 3       lams 7   called 7   pure 7  obs 0  proc 0  | #<set: BOOL>
+
+collatz        conc a    #777     flow-time 15      lams 5   called 5   pure 5  obs 0  proc 0  | 5
+collatz        conc sa   #777     flow-time 15      lams 5   called 5   pure 5  obs 0  proc 0  | 5
+collatz        conc sfa  #777     flow-time 15      lams 5   called 5   pure 5  obs 0  proc 0  | 5
+collatz        type a    #251     flow-time 9       lams 5   called 5   pure 5  obs 0  proc 0  | #<set: NUM>
+collatz        type sa   #251     flow-time 9       lams 5   called 5   pure 5  obs 0  proc 0  | #<set: NUM>
+collatz        type sfa  #251     flow-time 9       lams 5   called 5   pure 5  obs 0  proc 0  | #<set: NUM>
+
+rsa            conc a    #512     flow-time 16      lams 9   called 9   pure 9  obs 0  proc 0  | #t
+rsa            conc sa   #512     flow-time 16      lams 9   called 9   pure 9  obs 0  proc 0  | #t
+rsa            conc sfa  #512     flow-time 16      lams 9   called 9   pure 9  obs 0  proc 0  | #t
+rsa            type a    #498     flow-time 34      lams 9   called 9   pure 9  obs 0  proc 0  | #<set: BOOL>
+rsa            type sa   #498     flow-time 34      lams 9   called 9   pure 9  obs 0  proc 0  | #<set: BOOL>
+rsa            type sfa  #498     flow-time 34      lams 9   called 9   pure 9  obs 0  proc 0  | #<set: BOOL>
+
+primtest       conc a    #738     flow-time 24      lams 5   called 4   pure 4  obs 0  proc 0  | 1
+primtest       conc sa   #738     flow-time 24      lams 5   called 4   pure 4  obs 0  proc 0  | 1
+primtest       conc sfa  #738     flow-time 24      lams 5   called 4   pure 4  obs 0  proc 0  | 1
+primtest       type a    #541     flow-time 33      lams 5   called 5   pure 5  obs 0  proc 0  | #<set: NUM>
+primtest       type sa   #541     flow-time 33      lams 5   called 5   pure 5  obs 0  proc 0  | #<set: NUM>
+primtest       type sfa  #541     flow-time 33      lams 5   called 5   pure 5  obs 0  proc 0  | #<set: NUM>
+
+factor         conc a    #117     flow-time 3       lams 7   called 7   pure 7  obs 0  proc 0  | #(struct:addr 116)
+factor         conc sa   #117     flow-time 3       lams 7   called 7   pure 7  obs 0  proc 0  | #(struct:addr 116)
+factor         conc sfa  #117     flow-time 3       lams 7   called 7   pure 7  obs 0  proc 0  | #(struct:addr 116)
+factor         type a    #313     flow-time 16      lams 7   called 7   pure 7  obs 0  proc 0  | #<set: #(struct:addr (cons v acc)) #(struct:addr (cons 2 _two-list5)) ()
+factor         type sa   #313     flow-time 16      lams 7   called 7   pure 7  obs 0  proc 0  | #<set: #(struct:addr (cons v acc)) #(struct:addr (cons 2 _two-list5)) ()
+factor         type sfa  #313     flow-time 16      lams 7   called 7   pure 7  obs 0  proc 0  | #<set: #(struct:addr (cons v acc)) #(struct:addr (cons 2 _two-list5)) ()
+
+purity1        conc a    #10      flow-time 0       lams 3   called 3   pure 0  obs 0  proc 3  | #t
+purity1        conc sa   #10      flow-time 0       lams 3   called 3   pure 0  obs 0  proc 3  | #t
+purity1        conc sfa  #10      flow-time 0       lams 3   called 3   pure 0  obs 0  proc 3  | #t
+purity1        type a    #10      flow-time 0       lams 3   called 3   pure 0  obs 0  proc 3  | #<set: BOOL>
+purity1        type sa   #10      flow-time 0       lams 3   called 3   pure 0  obs 0  proc 3  | #<set: BOOL>
+purity1        type sfa  #10      flow-time 0       lams 3   called 3   pure 0  obs 0  proc 3  | #<set: BOOL>
+
+purity2        conc a    #10      flow-time 0       lams 3   called 3   pure 1  obs 0  proc 2  | #t
+purity2        conc sa   #10      flow-time 0       lams 3   called 3   pure 1  obs 0  proc 2  | #t
+purity2        conc sfa  #10      flow-time 0       lams 3   called 3   pure 1  obs 0  proc 2  | #t
+purity2        type a    #10      flow-time 0       lams 3   called 3   pure 1  obs 0  proc 2  | #<set: BOOL>
+purity2        type sa   #10      flow-time 0       lams 3   called 3   pure 1  obs 0  proc 2  | #<set: BOOL>
+purity2        type sfa  #10      flow-time 0       lams 3   called 3   pure 1  obs 0  proc 2  | #<set: BOOL>
+
+purity3        conc a    #13      flow-time 0       lams 1   called 1   pure 0  obs 1  proc 0  | #t
+purity3        conc sa   #13      flow-time 0       lams 1   called 1   pure 0  obs 1  proc 0  | #t
+purity3        conc sfa  #13      flow-time 0       lams 1   called 1   pure 0  obs 1  proc 0  | #t
+purity3        type a    #17      flow-time 0       lams 1   called 1   pure 0  obs 1  proc 0  | #<set: BOOL>
+purity3        type sa   #17      flow-time 0       lams 1   called 1   pure 0  obs 1  proc 0  | #<set: BOOL>
+purity3        type sfa  #17      flow-time 0       lams 1   called 1   pure 0  obs 1  proc 0  | #<set: BOOL>
+
+purity4        conc a    #15      flow-time 0       lams 2   called 2   pure 1  obs 1  proc 0  | 5
+purity4        conc sa   #15      flow-time 0       lams 2   called 2   pure 1  obs 1  proc 0  | 5
+purity4        conc sfa  #15      flow-time 0       lams 2   called 2   pure 1  obs 1  proc 0  | 5
+purity4        type a    #19      flow-time 0       lams 2   called 2   pure 1  obs 1  proc 0  | #<set: NUM>
+purity4        type sa   #19      flow-time 0       lams 2   called 2   pure 1  obs 1  proc 0  | #<set: NUM>
+purity4        type sfa  #19      flow-time 0       lams 2   called 2   pure 1  obs 1  proc 0  | #<set: NUM>
+
+purity5        conc a    #13      flow-time 0       lams 2   called 2   pure 1  obs 0  proc 1  | 3
+purity5        conc sa   #13      flow-time 0       lams 2   called 2   pure 1  obs 0  proc 1  | 3
+purity5        conc sfa  #13      flow-time 0       lams 2   called 2   pure 1  obs 0  proc 1  | 3
+purity5        type a    #13      flow-time 0       lams 2   called 2   pure 1  obs 0  proc 1  | #<set: NUM>
+purity5        type sa   #13      flow-time 0       lams 2   called 2   pure 1  obs 0  proc 1  | #<set: NUM>
+purity5        type sfa  #13      flow-time 0       lams 2   called 2   pure 1  obs 0  proc 1  | #<set: NUM>
+
+purity6        conc a    #13      flow-time 0       lams 2   called 2   pure 1  obs 0  proc 1  | 3
+purity6        conc sa   #13      flow-time 0       lams 2   called 2   pure 1  obs 0  proc 1  | 3
+purity6        conc sfa  #13      flow-time 0       lams 2   called 2   pure 1  obs 0  proc 1  | 3
+purity6        type a    #13      flow-time 0       lams 2   called 2   pure 1  obs 0  proc 1  | #<set: NUM>
+purity6        type sa   #13      flow-time 0       lams 2   called 2   pure 1  obs 0  proc 1  | #<set: NUM>
+purity6        type sfa  #13      flow-time 0       lams 2   called 2   pure 1  obs 0  proc 1  | #<set: NUM>
+
+purity7        conc a    #13      flow-time 0       lams 2   called 2   pure 1  obs 0  proc 1  | 3
+purity7        conc sa   #13      flow-time 0       lams 2   called 2   pure 1  obs 0  proc 1  | 3
+purity7        conc sfa  #13      flow-time 0       lams 2   called 2   pure 1  obs 0  proc 1  | 3
+purity7        type a    #13      flow-time 0       lams 2   called 2   pure 1  obs 0  proc 1  | #<set: NUM>
+purity7        type sa   #13      flow-time 0       lams 2   called 2   pure 1  obs 0  proc 1  | #<set: NUM>
+purity7        type sfa  #13      flow-time 0       lams 2   called 2   pure 1  obs 0  proc 1  | #<set: NUM>
+
+purity8        conc a    #15      flow-time 1       lams 1   called 1   pure 0  obs 1  proc 0  | 3
+purity8        conc sa   #15      flow-time 1       lams 1   called 1   pure 0  obs 1  proc 0  | 3
+purity8        conc sfa  #15      flow-time 1       lams 1   called 1   pure 0  obs 1  proc 0  | 3
+purity8        type a    #19      flow-time 0       lams 1   called 1   pure 0  obs 1  proc 0  | #<set: NUM>
+purity8        type sa   #19      flow-time 0       lams 1   called 1   pure 0  obs 1  proc 0  | #<set: NUM>
+purity8        type sfa  #19      flow-time 0       lams 1   called 1   pure 0  obs 1  proc 0  | #<set: NUM>
+
+purity9        conc a    #15      flow-time 0       lams 2   called 2   pure 1  obs 1  proc 0  | 5
+purity9        conc sa   #15      flow-time 0       lams 2   called 2   pure 1  obs 1  proc 0  | 5
+purity9        conc sfa  #15      flow-time 0       lams 2   called 2   pure 1  obs 1  proc 0  | 5
+purity9        type a    #19      flow-time 1       lams 2   called 2   pure 1  obs 1  proc 0  | #<set: NUM>
+purity9        type sa   #19      flow-time 1       lams 2   called 2   pure 1  obs 1  proc 0  | #<set: NUM>
+purity9        type sfa  #19      flow-time 1       lams 2   called 2   pure 1  obs 1  proc 0  | #<set: NUM>
+
+purity10       conc a    #13      flow-time 1       lams 2   called 2   pure 0  obs 0  proc 2  | 3
+purity10       conc sa   #13      flow-time 1       lams 2   called 2   pure 0  obs 0  proc 2  | 3
+purity10       conc sfa  #13      flow-time 1       lams 2   called 2   pure 0  obs 0  proc 2  | 3
+purity10       type a    #13      flow-time 1       lams 2   called 2   pure 0  obs 0  proc 2  | #<set: NUM>
+purity10       type sa   #13      flow-time 1       lams 2   called 2   pure 0  obs 0  proc 2  | #<set: NUM>
+purity10       type sfa  #13      flow-time 1       lams 2   called 2   pure 0  obs 0  proc 2  | #<set: NUM>
+
+purity11       conc a    #10      flow-time 0       lams 2   called 2   pure 1  obs 0  proc 1  | undefined
+purity11       conc sa   #10      flow-time 0       lams 2   called 2   pure 1  obs 0  proc 1  | undefined
+purity11       conc sfa  #10      flow-time 0       lams 2   called 2   pure 1  obs 0  proc 1  | undefined
+purity11       type a    #10      flow-time 1       lams 2   called 2   pure 1  obs 0  proc 1  | #<set: SYM>
+purity11       type sa   #10      flow-time 1       lams 2   called 2   pure 1  obs 0  proc 1  | #<set: SYM>
+purity11       type sfa  #10      flow-time 1       lams 2   called 2   pure 1  obs 0  proc 1  | #<set: SYM>
+
+purity12       conc a    #16      flow-time 0       lams 2   called 2   pure 1  obs 1  proc 0  | 11
+purity12       conc sa   #16      flow-time 0       lams 2   called 2   pure 1  obs 1  proc 0  | 11
+purity12       conc sfa  #16      flow-time 0       lams 2   called 2   pure 1  obs 1  proc 0  | 11
+purity12       type a    #20      flow-time 0       lams 2   called 2   pure 1  obs 1  proc 0  | #<set: NUM>
+purity12       type sa   #20      flow-time 0       lams 2   called 2   pure 1  obs 1  proc 0  | #<set: NUM>
+purity12       type sfa  #20      flow-time 0       lams 2   called 2   pure 1  obs 1  proc 0  | #<set: NUM>
+
+purity13       conc a    #20      flow-time 0       lams 2   called 2   pure 1  obs 1  proc 0  | 3
+purity13       conc sa   #20      flow-time 0       lams 2   called 2   pure 1  obs 1  proc 0  | 3
+purity13       conc sfa  #20      flow-time 0       lams 2   called 2   pure 1  obs 1  proc 0  | 3
+purity13       type a    #24      flow-time 0       lams 2   called 2   pure 1  obs 1  proc 0  | #<set: NUM>
+purity13       type sa   #24      flow-time 0       lams 2   called 2   pure 1  obs 1  proc 0  | #<set: NUM>
+purity13       type sfa  #24      flow-time 0       lams 2   called 2   pure 1  obs 1  proc 0  | #<set: NUM>
+
+purity14       conc a    #64      flow-time 1       lams 2   called 2   pure 1  obs 0  proc 1  | done
+purity14       conc sa   #64      flow-time 1       lams 2   called 2   pure 1  obs 0  proc 1  | done
+purity14       conc sfa  #64      flow-time 1       lams 2   called 2   pure 1  obs 0  proc 1  | done
+purity14       type a    #34      flow-time 1       lams 2   called 2   pure 1  obs 0  proc 1  | #<set: SYM>
+purity14       type sa   #34      flow-time 1       lams 2   called 2   pure 1  obs 0  proc 1  | #<set: SYM>
+purity14       type sfa  #34      flow-time 1       lams 2   called 2   pure 1  obs 0  proc 1  | #<set: SYM>
+
+purity15       conc a    #84      flow-time 1       lams 2   called 2   pure 1  obs 0  proc 1  | done
+purity15       conc sa   #84      flow-time 1       lams 2   called 2   pure 1  obs 0  proc 1  | done
+purity15       conc sfa  #84      flow-time 1       lams 2   called 2   pure 1  obs 0  proc 1  | done
+purity15       type a    #44      flow-time 1       lams 2   called 2   pure 1  obs 0  proc 1  | #<set: SYM>
+purity15       type sa   #44      flow-time 1       lams 2   called 2   pure 1  obs 0  proc 1  | #<set: SYM>
+purity15       type sfa  #44      flow-time 1       lams 2   called 2   pure 1  obs 0  proc 1  | #<set: SYM>
+
+purity16       conc a    #91      flow-time 2       lams 1   called 1   pure 0  obs 0  proc 1  | done
+purity16       conc sa   #91      flow-time 2       lams 1   called 1   pure 0  obs 0  proc 1  | done
+purity16       conc sfa  #91      flow-time 2       lams 1   called 1   pure 0  obs 0  proc 1  | done
+purity16       type a    #49      flow-time 2       lams 1   called 1   pure 0  obs 0  proc 1  | #<set: SYM>
+purity16       type sa   #49      flow-time 2       lams 1   called 1   pure 0  obs 0  proc 1  | #<set: SYM>
+purity16       type sfa  #49      flow-time 2       lams 1   called 1   pure 0  obs 0  proc 1  | #<set: SYM>
+
+purity17       conc a    #52      flow-time 0       lams 1   called 1   pure 1  obs 0  proc 0  | done
+purity17       conc sa   #52      flow-time 0       lams 1   called 1   pure 1  obs 0  proc 0  | done
+purity17       conc sfa  #52      flow-time 0       lams 1   called 1   pure 1  obs 0  proc 0  | done
+purity17       type a    #28      flow-time 1       lams 1   called 1   pure 0  obs 0  proc 1  | #<set: SYM>
+purity17       type sa   #28      flow-time 1       lams 1   called 1   pure 1  obs 0  proc 0  | #<set: SYM>
+purity17       type sfa  #28      flow-time 1       lams 1   called 1   pure 1  obs 0  proc 0  | #<set: SYM>
+
+purity18       conc a    #76      flow-time 1       lams 1   called 1   pure 1  obs 0  proc 0  | #(struct:addr 53)
+purity18       conc sa   #76      flow-time 1       lams 1   called 1   pure 1  obs 0  proc 0  | #(struct:addr 53)
+purity18       conc sfa  #76      flow-time 1       lams 1   called 1   pure 1  obs 0  proc 0  | #(struct:addr 53)
+purity18       type a    #41      flow-time 1       lams 1   called 1   pure 0  obs 0  proc 1  | #<set: #(struct:addr (cons 1 2)) SYM>
+purity18       type sa   #41      flow-time 1       lams 1   called 1   pure 0  obs 0  proc 1  | #<set: #(struct:addr (cons 1 2)) SYM>
+purity18       type sfa  #41      flow-time 1       lams 1   called 1   pure 1  obs 0  proc 0  | #<set: #(struct:addr (cons 1 2)) SYM>
+
+fresh1         conc a    #16      flow-time 0       lams 2   called 2   pure 0  obs 0  proc 2  | undefined
+fresh1         conc sa   #16      flow-time 0       lams 2   called 2   pure 0  obs 0  proc 2  | undefined
+fresh1         conc sfa  #16      flow-time 0       lams 2   called 2   pure 0  obs 0  proc 2  | undefined
+fresh1         type a    #16      flow-time 0       lams 2   called 2   pure 0  obs 0  proc 2  | #<set: SYM>
+fresh1         type sa   #16      flow-time 0       lams 2   called 2   pure 0  obs 0  proc 2  | #<set: SYM>
+fresh1         type sfa  #16      flow-time 0       lams 2   called 2   pure 0  obs 0  proc 2  | #<set: SYM>
+
+fresh2         conc a    #20      flow-time 1       lams 1   called 1   pure 0  obs 0  proc 1  | #(struct:addr 52)
+fresh2         conc sa   #20      flow-time 1       lams 1   called 1   pure 0  obs 0  proc 1  | #(struct:addr 52)
+fresh2         conc sfa  #20      flow-time 1       lams 1   called 1   pure 0  obs 0  proc 1  | #(struct:addr 52)
+fresh2         type a    #34      flow-time 0       lams 1   called 1   pure 0  obs 0  proc 1  | #<set: #(struct:addr (cons 4 5)) BOOL>
+fresh2         type sa   #34      flow-time 0       lams 1   called 1   pure 0  obs 0  proc 1  | #<set: #(struct:addr (cons 4 5)) BOOL>
+fresh2         type sfa  #34      flow-time 0       lams 1   called 1   pure 0  obs 0  proc 1  | #<set: #(struct:addr (cons 4 5)) BOOL>
+
+treenode1      conc a    #68      flow-time 2       lams 2   called 2   pure 2  obs 0  proc 0  | #(struct:addr 84)
+treenode1      conc sa   #68      flow-time 2       lams 2   called 2   pure 2  obs 0  proc 0  | #(struct:addr 84)
+treenode1      conc sfa  #68      flow-time 2       lams 2   called 2   pure 2  obs 0  proc 0  | #(struct:addr 84)
+treenode1      type a    #75      flow-time 2       lams 2   called 2   pure 0  obs 0  proc 2  | #<set: #(struct:addr (cons 1 2))>
+treenode1      type sa   #75      flow-time 2       lams 2   called 2   pure 0  obs 0  proc 2  | #<set: #(struct:addr (cons 1 2))>
+treenode1      type sfa  #75      flow-time 2       lams 2   called 2   pure 2  obs 0  proc 0  | #<set: #(struct:addr (cons 1 2))>
+
+helloset!      conc a    #26      flow-time 0       lams 1   called 1   pure 0  obs 0  proc 1  | foo
+helloset!      conc sa   #26      flow-time 0       lams 1   called 1   pure 0  obs 0  proc 1  | foo
+helloset!      conc sfa  #26      flow-time 0       lams 1   called 1   pure 0  obs 0  proc 1  | foo
+helloset!      type a    #39      flow-time 1       lams 1   called 1   pure 0  obs 0  proc 1  | #<set: NUM STR>
+helloset!      type sa   #39      flow-time 1       lams 1   called 1   pure 0  obs 0  proc 1  | #<set: NUM STR>
+helloset!      type sfa  #39      flow-time 1       lams 1   called 1   pure 0  obs 0  proc 1  | #<set: NUM STR>
+
+hellomemoset!  conc a    #15      flow-time 0       lams 1   called 1   pure 1  obs 0  proc 0  | hehe
+hellomemoset!  conc sa   #15      flow-time 0       lams 1   called 1   pure 1  obs 0  proc 0  | hehe
+hellomemoset!  conc sfa  #15      flow-time 0       lams 1   called 1   pure 1  obs 0  proc 0  | hehe
+hellomemoset!  type a    #16      flow-time 0       lams 1   called 1   pure 1  obs 0  proc 0  | #<set: NUM STR>
+hellomemoset!  type sa   #16      flow-time 0       lams 1   called 1   pure 1  obs 0  proc 0  | #<set: NUM STR>
+hellomemoset!  type sfa  #16      flow-time 0       lams 1   called 1   pure 1  obs 0  proc 0  | #<set: NUM STR>
+Results in purity-result
+
+(conc-purity-test)
+total 213 fail 0
+(abst-purity-test)
+error 38 type-a
+expected ((2 . PURE) (22 . PURE)) actual #hash((22 . PROC) (2 . PROC))
+error 38 type-sa
+expected ((2 . PURE) (22 . PURE)) actual #hash((22 . PROC) (2 . PROC))
+error 46 type-a
+expected ((2 . PURE)) actual #hash((2 . PROC))
+error 47 type-a
+expected ((2 . PURE)) actual #hash((2 . PROC))
+error 52 type-a
+expected ((2 . PURE)) actual #hash((2 . PROC))
+error 52 type-sa
+expected ((2 . PURE)) actual #hash((2 . PROC))
+error 53 type-a
+expected ((2 . PURE)) actual #hash((2 . PROC))
+error 53 type-sa
+expected ((2 . PURE)) actual #hash((2 . PROC))
+error 54 type-a
+expected ((2 . PURE)) actual #hash((2 . PROC))
+error 54 type-sa
+expected ((2 . PURE)) actual #hash((2 . PROC))
+error 57 type-a
+expected ((8 . PURE)) actual #hash((8 . PROC))
+error 57 type-sa
+expected ((8 . PURE)) actual #hash((8 . PROC))
+error 57 type-sfa
+expected ((8 . PURE)) actual #hash((8 . PROC))
+error a4 type-a
+expected ((2 . PURE)) actual #hash((2 . PROC))
+error a5 type-a
+expected ((2 . PURE)) actual #hash((2 . PROC))
+error a6 type-a
+expected ((2 . PURE)) actual #hash((2 . PROC))
+error a14 type-a
+expected ((2 . PURE)) actual #hash((2 . PROC))
+error a14 type-sa
+expected ((2 . PURE)) actual #hash((2 . PROC))
+error a15 type-a
+expected ((2 . PURE)) actual #hash((2 . PROC))
+error a15 type-sa
+expected ((2 . PURE)) actual #hash((2 . PROC))
+error a16 type-a
+expected ((2 . PURE)) actual #hash((2 . PROC))
+error a16 type-sa
+expected ((2 . PURE)) actual #hash((2 . PROC))
+error a20 type-a
+expected ((8 . PURE)) actual #hash((8 . PROC))
+error a20 type-sa
+expected ((8 . PURE)) actual #hash((8 . PROC))
+error a20 type-sfa
+expected ((8 . PURE)) actual #hash((8 . PROC))
+Final: #hash((type-a . 14) (type-sa . 9) (type-sfa . 2))
+
+          ((ev («let» _ x (? ae? ae) e1) ρ _ ι κ Ξi) ; only on ae!
+           (let* ((decl (get-declaration («id»-x x) x parent))
+                  (ctxs (set-add (stack-contexts κ (vector-ref Ξ Ξi)) #f)) ; adding top-level ctx '#f', because freshness also deals with top-level stuff
+                  (F* (for/fold ((F F)) ((κ ctxs))
+                        (let ((Fκ (hash-ref F κ (hash))))
+                              (let ((Fκ* (if (fresh? ae Fκ parent ⊥)
+                                             (add-fresh Fκ decl)
+                                             (add-unfresh Fκ decl))))
+                                (hash-set F κ Fκ*))
+                              ))))
+             (values F* (hash-set sF s F*))))
+
+
+ftp://ftp.cs.indiana.edu/pub/scheme-repository/code/struct/grid.scm
                 
              
+(for/fold ((result type-⊥)) ((prim2 (type-γ (cdr (assoc "<=" type-global)))))
+    (type-⊔ result ((prim2-proc prim2) (type-α 1) (type-α 2))))

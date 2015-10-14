@@ -150,6 +150,7 @@
   (define α (lattice-α lattice))
   (define γ (lattice-γ lattice))
   (define ⊥ (lattice-⊥ lattice))
+  (define ⊑ (lattice-⊑ lattice))
   (define ⊔ (lattice-⊔ lattice))
   (define true? (lattice-true? lattice))
   (define false? (lattice-false? lattice))
