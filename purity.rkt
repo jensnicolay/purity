@@ -75,75 +75,72 @@
          (ast (ev-e initial))
          (parent (make-parent ast)))
 
+      
+    (define (handle-state s E Fs)
+      (let ((Fs (if (and (ev? s)
+                         («lam»? (parent (ev-e s))))
+                    (let* ((κ (state-κ s))
+                           (ρ* (ctx-ρ* κ))
+                           (Ξ (vector-ref Ξ (ev-Ξ s))))
+                      (for/fold ((Fs Fs)) ((name (hash-keys ρ*)))
+                        (let ((decl (get-declaration name (ev-e s) parent)))
+                          (propagatef Fs decl #f κ Ξ))))
+                     Fs)))
+        (match s
+          ((ev («set!» _ x ae) ρ _ ι κ Ξi)
+           (let* ((decl (get-declaration («id»-x x) x parent))
+                  (Ξ (vector-ref Ξ Ξi)))
+             (propagatef Fs decl ae κ Ξ)))
+          ((ev («let» _ x (? ae? ae) e1) ρ _ ι κ Ξi) ; only on ae!
+           (let* ((decl (get-declaration («id»-x x) x parent))
+                  (Ξ (vector-ref Ξ Ξi)))
+             (propagatef Fs decl ae κ Ξ)))
+          ((ko v _ (cons (letk x e ρ) ι) κ Ξi) ; when e0 in let is not ae, letk is used
+           (let* ((decl (get-declaration («id»-x x) x parent))
+                  (Ξ (vector-ref Ξ Ξi)))
+             (propagatef2 Fs decl E κ Ξ)))
+          (_ Fs))))
+
+    (define (propagatef Fs decl e κ Ξ)
+      (for/fold ((Fs Fs)) ((κ* (set-add (stack-contexts κ Ξ) #f))) ; adding top-level ctx '#f', because freshness also deals with top-level stuff
+        (hash-set Fs κ* (updatef (hash-ref Fs κ* (hash)) decl e)))) 
+    
+    (define (updatef Fκ decl e)
+      (if (fresh? e Fκ parent ⊥)
+          (add-fresh Fκ decl)
+          (add-unfresh Fκ decl)))
+
+    (define (propagatef2 Fs decl E κ Ξ)
+      (for/fold ((Fs Fs)) ((κ* (set-add (stack-contexts κ Ξ) #f))) ; adding top-level ctx '#f', because freshness also deals with top-level stuff
+        (hash-set Fs κ* (updatef2 (hash-ref Fs κ* (hash)) decl E)))) 
+    
+    (define (updatef2 Fκ decl E)
+      (if (set-member? E (fr))
+          (add-fresh Fκ decl)
+          (add-unfresh Fκ decl)))
+
     (define (add-fresh Fκ decl)
       (hash-set Fκ decl (⊔ (hash-ref Fκ decl ⊥) (set FRESH))))
       
     (define (add-unfresh Fκ decl)
       (hash-set Fκ decl (⊔ (hash-ref Fκ decl ⊥) (set UNFRESH))))
 
-    
       
-    (define (handle-state s E F sF)
-      (let ((F (if (and (ev? s)
-                        («lam»? (parent (ev-e s))))
-                   (let* ((lam (parent (ev-e s)))
-                          (κ (state-κ s))
-                          (Fκ (hash-ref F κ (hash)))
-                          (Fκ* (for/fold ((Fκ Fκ)) ((decl («lam»-x lam)))
-                                 (add-unfresh Fκ decl)))
-                          (F* (hash-set F κ Fκ*)))
-                     F*)
-                   F)))
-        (match s
-          ((ev («set!» _ x ae) ρ _ ι κ Ξi)
-           (let* ((decl (get-declaration («id»-x x) x parent))
-                  (ctxs (set-add (stack-contexts κ (vector-ref Ξ Ξi)) #f)) ; adding top-level ctx '#f', because freshness also deals with top-level stuff
-                  (F* (for/fold ((F F)) ((κ ctxs))
-                        (let ((Fκ (hash-ref F κ (hash))))
-                              (let ((Fκ* (if (fresh? ae Fκ parent ⊥)
-                                             (add-fresh Fκ decl)
-                                             (add-unfresh Fκ decl))))
-                                (hash-set F κ Fκ*))
-                              ))))
-             (values F* (hash-set sF s F*))))
-          ((ev («let» _ x (? ae? ae) e1) ρ _ ι κ Ξi) ; only on ae!
-           (let* ((decl (get-declaration («id»-x x) x parent))
-                  (ctxs (set-add (stack-contexts κ (vector-ref Ξ Ξi)) #f)) ; adding top-level ctx '#f', because freshness also deals with top-level stuff
-                  (F* (for/fold ((F F)) ((κ ctxs))
-                        (let ((Fκ (hash-ref F κ (hash))))
-                              (let ((Fκ* (if (fresh? ae Fκ parent ⊥)
-                                             (add-fresh Fκ decl)
-                                             (add-unfresh Fκ decl))))
-                                (hash-set F κ Fκ*))
-                              ))))
-             (values F* (hash-set sF s F*))))
-          ((ko v _ (cons (letk x e ρ) ι) κ Ξi) ; when e0 in let is not ae, letk is used
-           (let* ((decl (get-declaration («id»-x x) x parent))
-                  (ctxs (set-add (stack-contexts κ (vector-ref Ξ Ξi)) #f)) ; adding top-level ctx '#f', because freshness also deals with top-level stuff
-                  (F* (for/fold ((F F)) ((κ ctxs))
-                        (let ((Fκ (hash-ref F κ (hash))))
-                              (let ((Fκ* (if (set-member? E (fr))
-                                             (add-fresh Fκ decl)
-                                             (add-unfresh Fκ decl))))
-                                (hash-set F κ Fκ*))
-                              ))))
-             (values F* (hash-set sF s F*))))
-          (_ (let ((Fκ (hash-ref F (state-κ s) (hash))))
-               (values F (hash-set sF s F)))))))
-      
-    (define (traverse-graph* S W F sF)
+    (define (traverse-graph* S W Fs F)
       (if (set-empty? W)
-          sF
+          F
           (let* ((t (set-first W)))
             (if (set-member? S t)
-                (traverse-graph* S (set-rest W) F sF)
+                (traverse-graph* S (set-rest W) Fs F)
                 (let* ((s (transition-s t))
-                       (E (transition-E t)))
-                  (let-values (((F* sF*) (handle-state s E F sF)))
+                       (E (transition-E t))
+                       (Fs (hash-ref F s (hash)))
+                       (Fs* (handle-state s E Fs))
+                       (F* (hash-set F s Fs*)))
                     (let* ((W* (set-union (set-rest W) (hash-ref graph s (set))))
-                           (unchanged (equal? F F*))
+                           (unchanged (equal? Fs Fs*))
                            (S* (if unchanged (set-add S t) (set))))
-                    (traverse-graph* S* W* F* sF*))))))))
+                    (traverse-graph* S* W* Fs* F*)))))))
 
     (traverse-graph* (set) (set (transition initial (set))) (hash) (hash))))
 
@@ -497,7 +494,6 @@
       (printf "Done.\n")
       results)))
 
-
 #|
 
 (define t1 (add-map '(let ((env '())) (let ((eval (lambda () (map (lambda (x) (set! env 123)) '(4))))) (eval)))))
@@ -514,14 +510,19 @@
   (newline)
   (print-purity-info (sa-purity-analysis sys2)))
 
-(define t3 '(let ((f (lambda (h) (h)))) (let ((z #t)) (let ((g (lambda () (set! z #f)))) (f g)))))
+
+(define t3 '(letrec ((f (lambda (h) (let ((z (cons 1 2))) (if h (h) (f (lambda () (set-car! z 3)))))))) (f #f)))
 (define sys3 (conc-mach t3))
 (generate-dot (system-graph sys3) "t3")
 (parameterize ((PRINT-PER-LAMBDA #t))
   (print-purity-info (a-purity-analysis sys3))
   (newline)
-  (print-purity-info (sa-purity-analysis sys3)))
-
+  (print-purity-info (sa-purity-analysis sys3))
+  (newline)
+  (print-purity-info (sfa-purity-analysis sys3))
+  (newline)
+  (print-fresh-info (fresh-analysis sys3 (set) set-union))
+  )
 
 ;; Lower-bound for printing time (if smaller, prints \epsilon), in seconds
 (define TIMECUTOFF (make-parameter 1))

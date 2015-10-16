@@ -351,6 +351,8 @@
                           (match x
                             ('()
                              (let ((κ* (kalloc e λ ρ*)))
+                               (when (not (hash? ρ*))
+                                 (printf "here\n"))
                                (stack-alloc! κ* (cons ι κ))
                                (set-add succ (transition (ev e0 ρ* σi '() κ* Ξi) E))))
                             ((cons x xs)
@@ -462,7 +464,7 @@ explore)
   (cons x (and ctx (ctx-e ctx))))
 ;;
 
-(define conc-kalloc (lambda (e λ ρ*) (ctx #f λ (conc-alloc))))
+(define conc-kalloc (lambda (e λ ρ*) (ctx (conc-alloc) λ ρ*)))
 (define free-kalloc (lambda (e λ ρ*) (ctx #f λ ρ*))) ; no 1-cfa (no e) TODO!!!!
 
 (define conc-mach (make-machine conc-lattice conc-alloc conc-kalloc))
