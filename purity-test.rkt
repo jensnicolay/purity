@@ -125,6 +125,8 @@
         (cons 58 (cons '(let ((o (cons 1 2))) (letrec ((f (lambda (n) (let ((c (zero? n))) (if c 'done (let ((p o)) (let ((pp (cons 1 2))) (let ((p pp)) (let ((w (set-cdr! p 4))) (let ((nn (- n 1))) (f nn))))))))))) (f 4))) '((8 . "PURE"))))
         (cons 59 (cons '(let ((g (lambda (p) (set-cdr! p 3) ))) (let ((f (lambda (h) (let ((o (cons 1 2))) (let ((u (h o))) (cdr o)))))) (letrec ((l (lambda (n) (let ((c (zero? n))) (if c 'done (let ((v (f g))) (let ((nn (- n 1))) (l nn)))))))) (l 4)))) '((2 . "PROC") (10 . "PURE") (28 . "PURE"))))
         (cons 60 (cons '(let ((f (lambda (h) (h)))) (let ((z #t)) (let ((g (lambda () (set! z #f)))) (f g)))) '((2 . "PROC") (11 . "PROC"))))
+        (cons 61 (cons '(letrec ((f (lambda (h) (let ((z #t)) (if h (h) (f (lambda () (set! z #f)))))))) (f #f)) '((2 . "PROC") (13 . "PROC"))))
+        (cons 62 (cons '(letrec ((f (lambda (h) (let ((z (cons 1 2))) (if h (h) (f (lambda () (set-car! z 3)))))))) (f #f)) '((2 . "PROC") (16 . "PROC"))))
         ))
 
 

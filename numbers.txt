@@ -881,3 +881,95 @@ ftp://ftp.cs.indiana.edu/pub/scheme-repository/code/struct/grid.scm
              
 (for/fold ((result type-⊥)) ((prim2 (type-γ (cdr (assoc "<=" type-global)))))
     (type-⊔ result ((prim2-proc prim2) (type-α 1) (type-α 2))))
+    
+    
+    
+treeadd        conc a    #680     flow-time 48      lams 3   called 3   pure 3  obs 0  proc 0  | 15
+treeadd        conc sa   #680     flow-time 48      lams 3   called 3   pure 3  obs 0  proc 0  | 15
+treeadd        conc sfa  #680     flow-time 48      lams 3   called 3   pure 3  obs 0  proc 0  | 15
+treeadd        type a    #304     flow-time 14      lams 3   called 3   pure 2  obs 0  proc 1  | #<set: NUM>
+treeadd        type sa   #304     flow-time 14      lams 3   called 3   pure 3  obs 0  proc 0  | #<set: NUM>
+treeadd        type sfa  #304     flow-time 14      lams 3   called 3   pure 3  obs 0  proc 0  | #<set: NUM>
+
+treeadd2       conc a    #996     flow-time 26      lams 3   called 3   pure 3  obs 0  proc 0  | 15
+treeadd2       conc sa   #996     flow-time 26      lams 3   called 3   pure 3  obs 0  proc 0  | 15
+treeadd2       conc sfa  #996     flow-time 26      lams 3   called 3   pure 3  obs 0  proc 0  | 15
+treeadd2       type a    #301     flow-time 14      lams 3   called 3   pure 1  obs 0  proc 2  | #<set: NUM>
+treeadd2       type sa   #301     flow-time 14      lams 3   called 3   pure 1  obs 1  proc 1  | #<set: NUM>
+treeadd2       type sfa  #301     flow-time 14      lams 3   called 3   pure 1  obs 1  proc 1  | #<set: NUM>
+
+treeadd3       conc a    #815     flow-time 22      lams 2   called 2   pure 2  obs 0  proc 0  | 15
+treeadd3       conc sa   #815     flow-time 22      lams 2   called 2   pure 2  obs 0  proc 0  | 15
+treeadd3       conc sfa  #815     flow-time 22      lams 2   called 2   pure 2  obs 0  proc 0  | 15
+treeadd3       type a    #249     flow-time 15      lams 2   called 2   pure 0  obs 0  proc 2  | #<set: NUM>
+treeadd3       type sa   #249     flow-time 15      lams 2   called 2   pure 1  obs 0  proc 1  | #<set: NUM>
+treeadd3       type sfa  #249     flow-time 15      lams 2   called 2   pure 2  obs 0  proc 0  | #<set: NUM>    
+
+
+*** 20151016 pre-scoping/fresh bug with ho function
+(conc-purity-test)
+error 61 conc-sa
+expected ((2 . PROC) (13 . PROC)) actual #hash((13 . PROC) (2 . PURE))
+error 61 conc-sfa
+expected ((2 . PROC) (13 . PROC)) actual #hash((13 . PROC) (2 . PURE))
+error 62 conc-sfa
+expected ((2 . PROC) (16 . PROC)) actual #hash((2 . PURE) (16 . PROC))
+total 219 fail 3
+(abst-purity-test)
+error 38 type-a
+expected ((2 . PURE) (22 . PURE)) actual #hash((22 . PROC) (2 . PROC))
+error 38 type-sa
+expected ((2 . PURE) (22 . PURE)) actual #hash((22 . PROC) (2 . PROC))
+error 46 type-a
+expected ((2 . PURE)) actual #hash((2 . PROC))
+error 47 type-a
+expected ((2 . PURE)) actual #hash((2 . PROC))
+error 52 type-a
+expected ((2 . PURE)) actual #hash((2 . PROC))
+error 52 type-sa
+expected ((2 . PURE)) actual #hash((2 . PROC))
+error 53 type-a
+expected ((2 . PURE)) actual #hash((2 . PROC))
+error 53 type-sa
+expected ((2 . PURE)) actual #hash((2 . PROC))
+error 54 type-a
+expected ((2 . PURE)) actual #hash((2 . PROC))
+error 54 type-sa
+expected ((2 . PURE)) actual #hash((2 . PROC))
+error 57 type-a
+expected ((8 . PURE)) actual #hash((8 . PROC))
+error 57 type-sa
+expected ((8 . PURE)) actual #hash((8 . PROC))
+error 57 type-sfa
+expected ((8 . PURE)) actual #hash((8 . PROC))
+error 61 type-sa
+expected ((2 . PROC) (13 . PROC)) actual #hash((13 . PROC) (2 . PURE))
+error 61 type-sfa
+expected ((2 . PROC) (13 . PROC)) actual #hash((13 . PROC) (2 . PURE))
+error 62 type-sfa
+expected ((2 . PROC) (16 . PROC)) actual #hash((2 . PURE) (16 . PROC))
+error a4 type-a
+expected ((2 . PURE)) actual #hash((2 . PROC))
+error a5 type-a
+expected ((2 . PURE)) actual #hash((2 . PROC))
+error a6 type-a
+expected ((2 . PURE)) actual #hash((2 . PROC))
+error a14 type-a
+expected ((2 . PURE)) actual #hash((2 . PROC))
+error a14 type-sa
+expected ((2 . PURE)) actual #hash((2 . PROC))
+error a15 type-a
+expected ((2 . PURE)) actual #hash((2 . PROC))
+error a15 type-sa
+expected ((2 . PURE)) actual #hash((2 . PROC))
+error a16 type-a
+expected ((2 . PURE)) actual #hash((2 . PROC))
+error a16 type-sa
+expected ((2 . PURE)) actual #hash((2 . PROC))
+error a20 type-a
+expected ((8 . PURE)) actual #hash((8 . PROC))
+error a20 type-sa
+expected ((8 . PURE)) actual #hash((8 . PROC))
+error a20 type-sfa
+expected ((8 . PURE)) actual #hash((8 . PROC))
+Final: #hash((type-sa . 10) (type-sfa . 4) (type-a . 14))
