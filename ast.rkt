@@ -120,15 +120,15 @@
     (_ (error "cannot handle expression" e))))
 
 
-(define (parent e ast)
-  (let ((cs (children ast)))
-    (if (set-member? cs e)
-        ast
-        (let loop ((cs cs))
-          (if (set-empty? cs)
-              #f
-              (let ((p (parent e (set-first cs))))
-                (or p (loop (set-rest cs)))))))))
+;(define (parent e ast)
+;  (let ((cs (children ast)))
+;    (if (set-member? cs e)
+;        ast
+;        (let loop ((cs cs))
+;          (if (set-empty? cs)
+;              #f
+;              (let ((p (parent e (set-first cs))))
+;                (or p (loop (set-rest cs)))))))))
 
 
 (define (parent-map ast)
