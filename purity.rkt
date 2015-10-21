@@ -98,13 +98,20 @@
                   (Fκ (hash-ref Fs κ (hash)))
                   (Fκ* (updatef Fκ decl ae)))
              (hash-set Fs κ Fκ*)))
+          ((ev (? ae? ae) ρ _ (cons (letk x e ρ*) ι) κ Ξi)
+           (let* ((decl x)
+                  (Ξ (vector-ref Ξ Ξi))
+                  (Fκ (hash-ref Fs κ (hash)))
+                  (Fκ* (updatef Fκ decl ae)))
+            (hash-set Fs κ Fκ*)))
           ((ko v _ (cons (letk x e ρ) ι) κ Ξi) ; when e0 in let is not ae, letk is used
            (let* ((decl (get-declaration («id»-x x) x parent))
                   (Ξ (vector-ref Ξ Ξi))
                   (Fκ (hash-ref Fs κ (hash)))
                   (Fκ* (if (set-member? E (fr))
                            (add-fresh Fκ decl)
-                           (add-unfresh Fκ decl))))
+                           ;(add-unfresh Fκ decl))))
+                           Fκ)))
              (hash-set Fs κ Fκ*)))
           (_ Fs))))
 
@@ -252,6 +259,7 @@
          (let ((O (for/fold ((O O)) ((λ-r λ-rs))
                     (hash-set O res (set-add (hash-ref O res (set)) λ-r)))))
            (let ((κ (state-κ s)))
+             ;(when (fresh? x s κ) (printf "fresh! x ~a s ~a κ ~a\n" x (state->statei s) (ctx->ctxi κ)))
              (if (fresh? x s κ)
                  (values F R O)
                  (let ((F (for/fold ((F F)) ((κ* (stack-contexts κ (state-Ξ s Ξ))))
@@ -437,7 +445,7 @@
                     purity1 purity2 purity3 purity4 purity5 purity6 purity7 purity8 purity9 purity10 purity11 purity12 purity13
                     purity14 purity15 purity16 purity17 purity18
                     fresh1 fresh2
-                    treenode1 helloset! hellomemoset!)))
+                    treenode1 treeadd treeadd2 treeadd3 grid )))
   (define configs (list (cons 'a a-purity-benchmark)
                         (cons 'sa sa-purity-benchmark)
                         (cons 'sfa sfa-purity-benchmark)
@@ -470,13 +478,21 @@
       (printf "Done.\n")
       results)))
 
-#|
-(define t1 treenode1)
+
+(define t1 '(letrec ((f (lambda (b)
+                          (if b
+                              (let ((x (let ((y (cons 1 2))) y)))
+                                (let ((u (set-car! x 3)))
+                                    (let ((uu (f #f)))
+                                      x)))
+                              'done))))
+              (f #t)))
 (define sys1 (type-mach-0 t1))
 (generate-dot (system-graph sys1) "t1")
 (print-fresh-info (fresh-analysis sys1 (set) set-union))
 (print-purity-info (sfa-purity-analysis sys1))
 
+#|
 (define t2 mceval2) 
 (define sys2 (conc-mach t2))
 (parameterize ((PRINT-PER-LAMBDA #t))

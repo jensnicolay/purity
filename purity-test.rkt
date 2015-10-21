@@ -128,6 +128,9 @@
         ;add to JS ==>
         (cons 61 (cons '(letrec ((f (lambda (h) (let ((z #t)) (if h (h) (f (lambda () (set! z #f)))))))) (f #f)) '((2 . "PROC") (13 . "PROC"))))
         (cons 62 (cons '(letrec ((f (lambda (h) (let ((z (cons 1 2))) (if h (h) (f (lambda () (set-car! z 3)))))))) (f #f)) '((2 . "PROC") (16 . "PROC"))))
+        (cons 63 (cons '(letrec ((f (lambda (b) (if b (let ((x (let ((y (cons 1 2))) y))) (let ((u (set-car! x 3))) (f #f))) 'done)))) (f #t)) '((2 . "PURE"))))
+        (cons 64 (cons grid '((266 . "PROC") (185 . "OBS") (59 . "PURE") (2 . "PURE") (120 . "PROC"))))
+        (cons 65 (cons '(letrec ((f (lambda (b) (if b (let ((x (let ((y (cons 1 2))) y))) (let ((u (set-car! x 3))) (let ((uu (f #f))) x))) 'done)))) (f #t)) '((2 . "PURE"))))
         ))
 
 
