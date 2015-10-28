@@ -1147,6 +1147,7 @@ mceval         type a    #60685   flow-time 55442   lams 86  called 84  pure 12 
 mceval         type sa   #60685   flow-time 55442   lams 86  called 84  pure 12 obs 59 proc 13 | #<set: #<prim2> #<prim2> #<prim2> #(struct:addr (cons _p2 _p4)) #(struct
 mceval         type sfa  #60685   flow-time 55442   lams 86  called 84  pure 12 obs 59 proc 13 | #<set: #<prim2> #<prim2> #<prim2> #(struct:addr (cons _p2 _p4)) #(struct
 
+20151021
 ==
 Example for reachable-A vs A
 (letrec ((f (lambda (b)
@@ -1159,5 +1160,107 @@ Example for reachable-A vs A
 Even without freshness 'f' is detected as pure.
 ==
 
+(conc-purity-test)
+total 228 fail 0
+(abst-purity-test)
+error 38 type-a
+expected ((2 . PURE) (22 . PURE)) actual #hash((22 . PROC) (2 . PROC))
+error 38 type-sa
+expected ((2 . PURE) (22 . PURE)) actual #hash((22 . PROC) (2 . PROC))
+error 46 type-a
+expected ((2 . PURE)) actual #hash((2 . PROC))
+error 47 type-a
+expected ((2 . PURE)) actual #hash((2 . PROC))
+error 52 type-a
+expected ((2 . PURE)) actual #hash((2 . PROC))
+error 52 type-sa
+expected ((2 . PURE)) actual #hash((2 . PROC))
+error 53 type-a
+expected ((2 . PURE)) actual #hash((2 . PROC))
+error 53 type-sa
+expected ((2 . PURE)) actual #hash((2 . PROC))
+error 54 type-a
+expected ((2 . PURE)) actual #hash((2 . PROC))
+error 54 type-sa
+expected ((2 . PURE)) actual #hash((2 . PROC))
+error 57 type-a
+expected ((8 . PURE)) actual #hash((8 . PROC))
+error 57 type-sa
+expected ((8 . PURE)) actual #hash((8 . PROC))
+error 57 type-sfa
+expected ((8 . PURE)) actual #hash((8 . PROC))
+error 64 type-a
+expected ((266 . PROC) (185 . OBS) (59 . PURE) (2 . PURE) (120 . PROC)) actual #hash((266 . PROC) (185 . OBS) (59 . PROC) (2 . PURE) (120 . PROC))
+error 64 type-sa
+expected ((266 . PROC) (185 . OBS) (59 . PURE) (2 . PURE) (120 . PROC)) actual #hash((266 . PROC) (185 . OBS) (59 . PROC) (2 . PURE) (120 . PROC))
+error 64 type-sfa
+expected ((266 . PROC) (185 . OBS) (59 . PURE) (2 . PURE) (120 . PROC)) actual #hash((266 . PROC) (185 . OBS) (59 . PROC) (2 . PURE) (120 . PROC))
+error 65 type-a
+expected ((2 . PURE)) actual #hash((2 . PROC))
+error 65 type-sa
+expected ((2 . PURE)) actual #hash((2 . PROC))
+error a4 type-a
+expected ((2 . PURE)) actual #hash((2 . PROC))
+error a5 type-a
+expected ((2 . PURE)) actual #hash((2 . PROC))
+error a6 type-a
+expected ((2 . PURE)) actual #hash((2 . PROC))
+error a14 type-a
+expected ((2 . PURE)) actual #hash((2 . PROC))
+error a14 type-sa
+expected ((2 . PURE)) actual #hash((2 . PROC))
+error a15 type-a
+expected ((2 . PURE)) actual #hash((2 . PROC))
+error a15 type-sa
+expected ((2 . PURE)) actual #hash((2 . PROC))
+error a16 type-a
+expected ((2 . PURE)) actual #hash((2 . PROC))
+error a16 type-sa
+expected ((2 . PURE)) actual #hash((2 . PROC))
+error a20 type-a
+expected ((8 . PURE)) actual #hash((8 . PROC))
+error a20 type-sa
+expected ((8 . PURE)) actual #hash((8 . PROC))
+error a20 type-sfa
+expected ((8 . PURE)) actual #hash((8 . PROC))
+Final: #hash((type-sfa . 3) (type-a . 16) (type-sa . 11))
+All done.
 
+(purity-test 'treeadd 'treeadd2 'treeadd3)
+treeadd        conc a    #680     flow-time 19      lams 3   called 3   pure 3  obs 0  proc 0  | 15
+treeadd        conc sa   #680     flow-time 19      lams 3   called 3   pure 3  obs 0  proc 0  | 15
+treeadd        conc sfa  #680     flow-time 19      lams 3   called 3   pure 3  obs 0  proc 0  | 15
+treeadd        type a    #304     flow-time 12      lams 3   called 3   pure 2  obs 0  proc 1  | #<set: NUM>
+treeadd        type sa   #304     flow-time 12      lams 3   called 3   pure 3  obs 0  proc 0  | #<set: NUM>
+treeadd        type sfa  #304     flow-time 12      lams 3   called 3   pure 3  obs 0  proc 0  | #<set: NUM>
+
+treeadd2       conc a    #996     flow-time 32      lams 3   called 3   pure 3  obs 0  proc 0  | 15
+treeadd2       conc sa   #996     flow-time 32      lams 3   called 3   pure 3  obs 0  proc 0  | 15
+treeadd2       conc sfa  #996     flow-time 32      lams 3   called 3   pure 3  obs 0  proc 0  | 15
+treeadd2       type a    #301     flow-time 16      lams 3   called 3   pure 1  obs 0  proc 2  | #<set: NUM>
+treeadd2       type sa   #301     flow-time 16      lams 3   called 3   pure 1  obs 1  proc 1  | #<set: NUM>
+treeadd2       type sfa  #301     flow-time 16      lams 3   called 3   pure 1  obs 1  proc 1  | #<set: NUM>
+
+treeadd3       conc a    #815     flow-time 27      lams 2   called 2   pure 2  obs 0  proc 0  | 15
+treeadd3       conc sa   #815     flow-time 27      lams 2   called 2   pure 2  obs 0  proc 0  | 15
+treeadd3       conc sfa  #815     flow-time 27      lams 2   called 2   pure 2  obs 0  proc 0  | 15
+treeadd3       type a    #249     flow-time 11      lams 2   called 2   pure 0  obs 0  proc 2  | #<set: NUM>
+treeadd3       type sa   #249     flow-time 11      lams 2   called 2   pure 1  obs 0  proc 1  | #<set: NUM>
+treeadd3       type sfa  #249     flow-time 11      lams 2   called 2   pure 2  obs 0  proc 0  | #<set: NUM>
+Results in purity-result
+
+(parameterize ((PRINT-PER-LAMBDA #t)) (purity-test 'grid))
+
+20151023
+Branch: fresh-ctxs
+Fresh ctxs that allow alking don't work that well: a recursive call of a letrec f is considered to be an unfresh call (grid: loop)
+
+added 'grid1' test
+
+(print-purity-info (sfa-purity-analysis (type-mach-0 grid1)))
+(lambda (start dims) (let ((v  -> #<set: GEN>
+(lambda (i) (let ((_45 dims))  -> #<set: GEN>
+
+A Type-based Escape Analysis for Functional Languages
+www.cse.psu.edu/~jjh9/papers/escape.ps.gz
 
