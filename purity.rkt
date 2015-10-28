@@ -259,14 +259,14 @@
 
   (define parent (make-parent (ev-e initial)))
 
-  (define (add-read-dep a λ R)
-    (hash-set R a (set-add (hash-ref R a (set)) λ)))
+  (define (add-read-dep res λ R)
+    (hash-set R res (set-add (hash-ref R res (set)) λ)))
   
   (define (add-observer λ F)
     (hash-set F λ (set-add (hash-ref F λ (set)) OBSERVES)))
   
-  (define (add-observers a F O)
-    (let ((λ-os (hash-ref O a (set))))
+  (define (add-observers res F O)
+    (let ((λ-os (hash-ref O res (set))))
       (for/fold ((F F)) ((λ-o λ-os))
         (add-observer λ-o F))))
 
@@ -307,8 +307,8 @@
       (let ((A (hash-ref call-states κ*)))
         (if (set-member? A a)
             (let ((λ (ctx-λ κ*)))
-              (values (add-observers a F O)
-                      (add-read-dep a λ R)))
+              (values (add-observers res F O)
+                      (add-read-dep res λ R)))
             (values F R)))))
 
   (define (handle-effect eff s F R O)
