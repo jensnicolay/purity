@@ -115,7 +115,7 @@
                     (let* ((κ (state-κ s))
                            (κq (match q ; with a match just to be sure we're transitioning from an app (`(ev-κ q)` would suffice)
                                  ((ev («app» _ _ _) _ _ _ κq _) κq)))
-                           (ρ* (ctx-ρ* κ))
+                           (ρ* (ev-ρ s))
                            (Ξ (vector-ref Ξ (ev-Ξ s)))
                            (Fκ (hash-ref Fs κ (hash)))
                            (Fκ* (for/fold ((Fκ Fκ)) ((name (hash-keys ρ*)))
@@ -126,21 +126,21 @@
         (match s
           ((ev («set!» _ x ae) ρ _ ι κ Ξi)
            (let* ((decl (get-declaration («id»-x x) x parent))
-                  (Ξ (vector-ref Ξ Ξi)))
+                  (Ξ (vector-ref Ξ Ξi))) ; propagate is wrong! cannot reliably stack-walk!
              (propagatef Fs decl ae κ Ξ)))
-          ((ev («let» _ x (? ae? ae) e1) ρ _ ι κ Ξi) ; only on ae!
+          ((ev («let» _ x (? ae? ae) e1) _ _ ι κ Ξi) ; only on ae; only for this impl
            (let* ((decl (get-declaration («id»-x x) x parent))
                   (Ξ (vector-ref Ξ Ξi))
                   (Fκ (hash-ref Fs κ (hash)))
                   (Fκ* (updatef Fκ decl ae)))
              (hash-set Fs κ Fκ*)))
-          ((ev (? ae? ae) ρ _ (cons (letk x e ρ*) ι) κ Ξi)
+          ((ev (? ae? ae) _ _ (cons (letk x e ρ*) ι) κ Ξi)
            (let* ((decl x)
                   (Ξ (vector-ref Ξ Ξi))
                   (Fκ (hash-ref Fs κ (hash)))
                   (Fκ* (updatef Fκ decl ae)))
             (hash-set Fs κ Fκ*)))
-          ((ev (? ae? ae) ρ _ '() κ Ξi)
+          ((ev (? ae? ae) _ _ '() κ Ξi)
            (let* ((fr (fresh? ae (hash-ref Fs κ (hash)) parent ⊥))
                   (Ξ (vector-ref Ξ Ξi))
                   (ικGs (stack-pop '() κ Ξ (set))))
@@ -152,7 +152,7 @@
                              ((cons (letk x e ρ*) ι*) (if fr (add-fresh Fκ x) (add-unfresh Fκ x)))
                              (_ Fκ))))
                  (hash-set Fs κ* Fκ*)))))
-          ((ko v _ (cons (letk x e ρ) ι) κ Ξi) ; when e0 in let is not ae, letk is used
+          ((ko v _ (cons (letk x e ρ) ι) κ Ξi) ; when e0 in let is not ae, letk is used; only for this impl
            (let* ((decl (get-declaration («id»-x x) x parent))
                   (Ξ (vector-ref Ξ Ξi))
                   (Fκ (hash-ref Fs κ (hash)))
@@ -208,10 +208,10 @@
           (printf "\t\t~a -> ~a\n" decl FU)))
       (newline)))
                   
-(define (fresh? e Fκ parent ⊥)
-  (match e
+(define (fresh? ae Fκ parent ⊥)
+  (match ae
     ((«id» _ x)
-     (let* ((decl (get-declaration x e parent))
+     (let* ((decl (get-declaration x ae parent))
             (freshness (hash-ref Fκ decl ⊥)))
        (equal? freshness (set FRESH))))
     (_ #f)))
