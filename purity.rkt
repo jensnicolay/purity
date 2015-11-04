@@ -109,6 +109,13 @@
          (parent (make-parent ast))
          (V (variable-analysis sys)))
 
+    (define (freshness ae Fκ)
+      (match ae
+        ((«id» _ x)
+         (let* ((decl (get-declaration x ae parent)))
+                (hash-ref Fκ decl ⊥)))
+        (_ (set UNFRESH))))
+
     (define (handle-state q E s Fs)
       (let ((Fs (if (and (ev? s)
                          («lam»? (parent (ev-e s))))
@@ -120,28 +127,43 @@
                            (Fκ (hash-ref Fs κ (hash)))
                            (Fκ* (for/fold ((Fκ Fκ)) ((name (hash-keys ρ*)))
                                   (let ((decl (get-declaration name (ev-e s) parent)))
-                                    (add-unfresh Fκ decl)))))
+                                    (hash-set Fκ decl (⊔ (hash-ref Fκ decl ⊥) (set UNFRESH)))))))
                       (hash-set Fs κ Fκ*))
                      Fs)))
         (match s
           ((ev («set!» _ x ae) ρ _ ι κ Ξi)
-           (let* ((decl (get-declaration («id»-x x) x parent))
-                  (Ξ (vector-ref Ξ Ξi))) ; propagate is wrong! cannot reliably stack-walk!
-             (propagatef Fs decl ae κ Ξ)))
-          ((ev («let» _ x (? ae? ae) e1) _ _ ι κ Ξi) ; only on ae; only for this impl
-           (let* ((decl (get-declaration («id»-x x) x parent))
-                  (Ξ (vector-ref Ξ Ξi))
+           (let* ((declx (get-declaration («id»-x x) x parent)) ; don't propagate: cannot soundly stack-walk!
                   (Fκ (hash-ref Fs κ (hash)))
-                  (Fκ* (updatef Fκ decl ae)))
+                  (ψ (freshness ae Fκ))
+                  (Fκ* (hash-set Fκ declx (⊔ (hash-ref Fκ declx ⊥) ψ)))
+                  (Fs* (hash-set Fs κ Fκ*))
+                  (Ξ (vector-ref Ξ Ξi)))
+             (if κ
+                 (let* ((ικs (stack-lookup Ξ κ))
+                        (κs (set-map ικs cdr)))
+                   (for/fold ((Fs Fs*)) ((κ κs))
+                     (for/fold ((Fs Fs)) ((κ (set-add (stack-contexts κ Ξ) #f))) ; adding top-level ctx, since freshness also tracked on that level
+                       (let* ((Fκ (hash-ref Fs κ (hash)))
+                              (Fκ* (hash-set Fκ declx (⊔ (hash-ref Fκ declx ⊥) (set UNFRESH)))))
+                   (hash-set Fs κ Fκ*)))))
+                 Fs*)))
+          ((ev («let» _ x (? ae? ae) e1) _ _ ι κ Ξi) ; only on ae; only for this impl
+           (let* ((declx x)
+                  (Fκ (hash-ref Fs κ (hash)))
+                  (ψ (freshness ae Fκ))
+                  (Ξ (vector-ref Ξ Ξi))
+                  (Fκ* (hash-set Fκ declx (⊔ (hash-ref Fκ declx ⊥) ψ))))
              (hash-set Fs κ Fκ*)))
           ((ev (? ae? ae) _ _ (cons (letk x e ρ*) ι) κ Ξi)
-           (let* ((decl x)
-                  (Ξ (vector-ref Ξ Ξi))
+           (let* ((declx x)
                   (Fκ (hash-ref Fs κ (hash)))
-                  (Fκ* (updatef Fκ decl ae)))
+                  (ψ (freshness ae Fκ))
+                  (Ξ (vector-ref Ξ Ξi))
+                  (Fκ* (hash-set Fκ declx (⊔ (hash-ref Fκ declx ⊥) ψ))))
             (hash-set Fs κ Fκ*)))
           ((ev (? ae? ae) _ _ '() κ Ξi)
-           (let* ((fr (fresh? ae (hash-ref Fs κ (hash)) parent ⊥))
+           (let* ((Fκ (hash-ref Fs κ (hash)))
+                  (ψ (freshness ae Fκ))
                   (Ξ (vector-ref Ξ Ξi))
                   (ικGs (stack-pop '() κ Ξ (set))))
              (for/fold ((Fs Fs)) ((ικG ικGs))
@@ -149,20 +171,22 @@
                       (κ* (cadr ικG))
                       (Fκ (hash-ref Fs κ* (hash)))
                       (Fκ* (match ι
-                             ((cons (letk x e ρ*) ι*) (if fr (add-fresh Fκ x) (add-unfresh Fκ x)))
+                             ((cons (letk x e ρ*) ι*)
+                              (let ((declx x))
+                                (hash-set Fκ declx (⊔ (hash-ref Fκ x ⊥) ψ))))
                              (_ Fκ))))
                  (hash-set Fs κ* Fκ*)))))
           ((ko v _ (cons (letk x e ρ) ι) κ Ξi) ; when e0 in let is not ae, letk is used; only for this impl
-           (let* ((decl (get-declaration («id»-x x) x parent))
+           (let* ((declx x)
                   (Ξ (vector-ref Ξ Ξi))
                   (Fκ (hash-ref Fs κ (hash)))
-                  (Fκ* (if (set-member? E (fr))
-                           (add-fresh Fκ decl)
-                           ;(add-unfresh Fκ decl))))
-                           Fκ)))
+                  (Fκ* (hash-set Fκ declx (⊔ (hash-ref Fκ declx ⊥) (if (set-member? E (fr))
+                                                                       (set FRESH)
+                                                                       (set)))))) ;TODO argh! ; only in impl
              (hash-set Fs κ Fκ*)))
           (_ Fs))))
 
+    #|
     (define (propagatef Fs decl e κ Ξ)
       (for/fold ((Fs Fs)) ((κ* (set-add (stack-contexts κ Ξ) #f))) ; adding top-level ctx '#f', because freshness also deals with top-level stuff
         (hash-set Fs κ* (updatef (hash-ref Fs κ* (hash)) decl e))))
@@ -176,7 +200,7 @@
       (hash-set Fκ decl (⊔ (hash-ref Fκ decl ⊥) (set FRESH))))
       
     (define (add-unfresh Fκ decl)
-      (hash-set Fκ decl (⊔ (hash-ref Fκ decl ⊥) (set UNFRESH))))
+      (hash-set Fκ decl (⊔ (hash-ref Fκ decl ⊥) (set UNFRESH))))|#
 
       
     (define (traverse-graph* S W Fs F)
@@ -373,10 +397,10 @@
          (lattice (system-lattice sys))
          (⊥ (lattice-⊥ lattice))
          (⊔ (lattice-⊔ lattice))
-         (sF (fresh-analysis sys ⊥ ⊔))
+         (F (fresh-analysis sys ⊥ ⊔))
          (fresh? (lambda (x s κ)
-                   (let* ((F (hash-ref sF s (hash)))
-                          (Fκ (hash-ref F κ (hash))))
+                   (let* ((Fs (hash-ref F s (hash)))
+                          (Fκ (hash-ref Fs κ (hash))))
                      (fresh? x Fκ parent ⊥)))))
     (traverse-graph (system-graph sys) (system-initial sys) (system-Ξ sys) call-states inner? fresh?)))
 
@@ -477,7 +501,7 @@
                     purity1 purity2 purity3 purity4 purity5 purity6 purity7 purity8 purity9 purity10 purity11 purity12 purity13
                     purity14 purity15 purity16 purity17 purity18
                     fresh1 fresh2
-                    treenode1 treeadd treeadd2 treeadd3 grid )))
+                    treenode1 treeadd treeadd2 treeadd3 purity19 grid)))
   (define configs (list (cons 'a a-purity-benchmark)
                         (cons 'sa sa-purity-benchmark)
                         (cons 'sfa sfa-purity-benchmark)
@@ -510,7 +534,19 @@
       (printf "Done.\n")
       results)))
 
+
 #|
+(define t2 '(letrec ((f (lambda (b) (if b (let ((z (cons 1 2))) (let ((g (lambda () (set-cdr! z 3)))) (let ((u (g))) (let ((uu (f #f))) z)))) 'done)))) (f #t)))
+(define sys2 (conc-mach t2))
+(generate-dot (system-graph sys2) "t2")
+(let* ((lattice (system-lattice sys2))
+       (⊥ (lattice-⊥ lattice))
+       (⊔ (lattice-⊔ lattice))
+       (F (fresh-analysis sys2 ⊥ ⊔)))
+       (print-fresh-info F))
+(parameterize ((PRINT-PER-LAMBDA #t))
+(print-purity-info (sfa-purity-analysis sys2)))
+
 (define t1 '(letrec ((make-grid (lambda (start dims)
                                   (let ((v (make-vector dims start)))
                                     (let ((_43 (zero? dims)))
@@ -536,14 +572,6 @@
 (print-fresh-info (fresh-analysis sys1 (set) set-union))
 (print-variable-info (variable-analysis sys1))
 (print-purity-info (sfa-purity-analysis sys1))
-
-(define t2 mceval2) 
-(define sys2 (conc-mach t2))
-(parameterize ((PRINT-PER-LAMBDA #t))
-  (print-purity-info (a-purity-analysis sys2))
-  (newline)
-  (print-purity-info (sa-purity-analysis sys2)))
-
 
 (define t3 '(letrec ((f (lambda (h) (let ((z (cons 1 2))) (if h (h) (f (lambda () (set-car! z 3)))))))) (f #f)))
 (define sys3 (conc-mach t3))

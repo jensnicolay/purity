@@ -132,7 +132,7 @@
         (cons 64 (cons grid '((266 . "PROC") (185 . "OBS") (59 . "PURE") (2 . "PURE") (120 . "PROC"))))
         (cons 65 (cons '(letrec ((f (lambda (b) (if b (let ((x (let ((y (cons 1 2))) y))) (let ((u (set-car! x 3))) (let ((uu (f #f))) x))) 'done)))) (f #t)) '((2 . "PURE"))))
         (cons 66 (cons '(letrec ((f (lambda (p) (let ((o (cons 1 2))) (if p (set-cdr! p 3) (f o)))))) (f #f)) '((2 . "PROC"))))
-        ;(cons 67 (cons '(letrec ((f (lambda (b) (if b (let ((z (cons 1 2))) (let ((g (lambda () (set-cdr! z 3)))) (let ((u (g))) (let ((uu (f #f))) z)))) 'done)))) (f #t)) '((2 . "PURE") (5 . "PURE"))))        
+        (cons 67 (cons '(letrec ((f (lambda (b) (if b (let ((z (cons 1 2))) (let ((g (lambda () (set-cdr! z 3)))) (let ((u (g))) (let ((uu (f #f))) z)))) 'done)))) (f #t)) '((2 . "PURE") (14 . "PROC"))))        
         ))
 
 
