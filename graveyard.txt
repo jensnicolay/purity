@@ -1,3 +1,40 @@
+(define (variable-analysis sys)
+  (let* ((graph (system-graph sys))
+         (initial (system-initial sys))
+         (ast (ev-e initial))
+         (parent (make-parent ast)))
+
+    (define (traverse-graphv S W V)
+      (if (set-empty? W)
+          V
+          (let* ((s (set-first W)))
+            (if (set-member? S s)
+                (traverse-graphv S (set-rest W) V)
+                (let ((ts (hash-ref graph s (set)))
+                      (S* (set-add S s)))
+                  (let-values (((V* W*)
+                                (for/fold ((V V) (W (set-rest W))) ((t ts))
+                                  (let* ((s* (transition-s t))
+                                         (E (transition-E t))
+                                         (V* (for/fold ((V V)) ((eff E))
+                                               (match eff
+                                                 ((wv a x)
+                                                  (let ((decl (get-declaration («id»-x x) (ev-e s) parent)))
+                                                    (set-add V decl)))
+                                                 (_ V))))
+                                         (W* (set-add W s*)))
+                                    (values V* W*)))))
+                    (traverse-graphv S* W* V*)))))))
+    
+    (traverse-graphv (set) (set initial) (set))))
+
+(define (print-variable-info V)
+      (printf "~a\n" V))
+
+
+
+
+
   (define (prim-cdr e rands σ ι κ Ξ)
     (if (= (length rands) 1)
         (for/fold ((states (set))) ((w (γ (car rands))))

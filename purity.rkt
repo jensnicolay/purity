@@ -65,49 +65,72 @@
              (up p)))
         (_ (up p))))))
 
-(define FRESH "fresh")
-(define UNFRESH "unfresh")
-
-(define (variable-analysis sys)
+(define (escape-analysis sys)
   (let* ((graph (system-graph sys))
          (initial (system-initial sys))
          (ast (ev-e initial))
-         (parent (make-parent ast)))
+         (α (lattice-α (system-lattice sys)))
+         (γ (lattice-γ (system-lattice sys)))
+         (σ (system-σ sys)))
 
-    (define (traverse-graphv S W V)
-      (if (set-empty? W)
-          V
-          (let* ((s (set-first W)))
-            (if (set-member? S s)
-                (traverse-graphv S (set-rest W) V)
-                (let ((ts (hash-ref graph s (set)))
-                      (S* (set-add S s)))
-                  (let-values (((V* W*)
-                                (for/fold ((V V) (W (set-rest W))) ((t ts))
-                                  (let* ((s* (transition-s t))
-                                         (E (transition-E t))
-                                         (V* (for/fold ((V V)) ((eff E))
-                                               (match eff
-                                                 ((wv a x)
-                                                  (let ((decl (get-declaration («id»-x x) (ev-e s) parent)))
-                                                    (set-add V decl)))
-                                                 (_ V))))
-                                         (W* (set-add W s*)))
-                                    (values V* W*)))))
-                    (traverse-graphv S* W* V*)))))))
+    (define (eval-atom ae ρ σ) ; copied from cesk, but in principle can/should be provided in system
+      (match ae
+        ((«lit» _ v)
+         (α v))
+        ((«id» _ x)
+         (let ((a (env-lookup ρ x)))
+           (store-lookup σ a)))
+        ((«lam» _ x e)
+         (let ((cl (clo ae ρ)))
+           (α cl)))
+        ((«quo» _ atom)
+         (α atom))
+        (_ (error "cannot handle ae" ae))))
+
+    (define (check-values ae ρ σ M)
+      (let ((d (eval-atom ae ρ σ)))
+        (for/fold ((M M)) ((w (γ d)))
+          (match w
+            ((clo λ _) (set-add M λ))
+            (_ M)))))
     
-    (traverse-graphv (set) (set initial) (set))))
+    (define (handle-state s M)
+        (match s
+          ((ev («app» _ _ aes) ρ σi _ _ _)
+           (let ((σ (vector-ref σ σi)))
+             (for/fold ((M M)) ((ae aes))
+               (check-values ae ρ σ M))))
+          ((ev («set!» _ _ ae) ρ σi _ _ _)
+           (let ((σ (vector-ref σ σi)))
+             (check-values ae ρ σ M)))
+          ;((ev («let» _ _ (? ae? ae) _) ρ σi _ _ _)
+          ;((ev (? ae? ae) _ _ (cons (letk x e ρ*) ι) κ Ξi)
+          ((ev (? ae? ae) ρ σi '() _ _)
+           (let ((σ (vector-ref σ σi)))
+             (check-values ae ρ σ M)))
+          (_ M)))
 
-(define (print-variable-info V)
-      (printf "~a\n" V))
+    (define (traverse-graph graph)
+      (for/fold ((M (set))) (((s t) graph))
+          (handle-state s M)))
+
+    (traverse-graph graph)))
+
+
+(define (print-escape-info M)
+  (for ((λ M))
+    (printf "~a\n" λ)))
+
+
+(define FRESH "fresh")
+(define UNFRESH "unfresh")
 
 (define (fresh-analysis sys ⊥ ⊔)
   (let* ((graph (system-graph sys))
          (Ξ (system-Ξ sys))
          (initial (system-initial sys))
          (ast (ev-e initial))
-         (parent (make-parent ast))
-         (V (variable-analysis sys)))
+         (parent (make-parent ast)))
 
     (define (freshness ae Fκ)
       (match ae
