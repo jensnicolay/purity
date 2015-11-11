@@ -41,6 +41,11 @@
 (define (free-variable? decl e)
   (set-member? (free e) decl))
 
+(define (ctx-local-decl? decl κ)
+  (and κ
+       (let ((λ (ctx-λ κ)))
+         (inner-scope-declaration? decl λ))))
+
 (define (get-declaration name e parent)
   (let up ((e e))
     (let ((p (parent e)))
@@ -125,7 +130,7 @@
 (define FRESH "fresh")
 (define UNFRESH "unfresh")
 
-(define (fresh-analysis sys ⊥ ⊔)
+(define (fresh-analysis sys ⊥ ⊔ escapes?)
   (let* ((graph (system-graph sys))
          (Ξ (system-Ξ sys))
          (initial (system-initial sys))
@@ -155,21 +160,32 @@
                      Fs)))
         (match s
           ((ev («set!» _ x ae) ρ _ ι κ Ξi)
-           (let* ((declx (get-declaration («id»-x x) x parent)) ; don't propagate: cannot soundly stack-walk!
-                  (Fκ (hash-ref Fs κ (hash)))
-                  (ψ (freshness ae Fκ))
-                  (Fκ* (hash-set Fκ declx (⊔ (hash-ref Fκ declx ⊥) ψ)))
-                  (Fs* (hash-set Fs κ Fκ*))
-                  (Ξ (vector-ref Ξ Ξi)))
-             (if κ
-                 (let* ((ικs (stack-lookup Ξ κ))
-                        (κs (set-map ικs cdr)))
-                   (for/fold ((Fs Fs*)) ((κ κs))
-                     (for/fold ((Fs Fs)) ((κ (set-add (stack-contexts κ Ξ) #f))) ; adding top-level ctx, since freshness also tracked on that level
-                       (let* ((Fκ (hash-ref Fs κ (hash)))
-                              (Fκ* (hash-set Fκ declx (⊔ (hash-ref Fκ declx ⊥) (set UNFRESH)))))
-                   (hash-set Fs κ Fκ*)))))
-                 Fs*)))
+           (let ((declx (get-declaration («id»-x x) x parent))
+                 (Ξ (vector-ref Ξ Ξi)))
+             
+             (define (walk-stack-set S W Fs)
+               (if (set-empty? W)
+                   Fs
+                   (let ((κdyn (set-first W)))
+                     (if (set-member? S κdyn)
+                         (walk-stack-set S (set-rest W) Fs)
+                         (let* ((κ (car κdyn))
+                                (dyn (cdr κdyn))
+                                (Fκ (hash-ref Fs κ (hash)))
+                                (ψ (if dyn
+                                       (freshness ae Fκ)
+                                       (set UNFRESH)))
+                                (Fκ* (hash-set Fκ declx (⊔ (hash-ref Fκ declx ⊥) ψ)))
+                                (Fs* (hash-set Fs κ Fκ*)))
+                           (if κ
+                               (let* ((λ (ctx-λ κ))
+                                      (ικs (stack-lookup Ξ κ))
+                                      (dyn* (and dyn (not (escapes? λ)))))
+                                 (let* ((W* (set-union (set-rest W) (for/set ((ικ ικs)) (cons (cdr ικ) dyn*)))))
+                                   (walk-stack-set (set-add S κdyn) W* Fs*)))
+                               (walk-stack-set (set-add S κdyn) (set-rest W) Fs*)))))))
+
+             (walk-stack-set (set) (set (cons κ #t)) Fs)))
           ((ev («let» _ x (? ae? ae) e1) _ _ ι κ Ξi) ; only on ae; only for this impl
            (let* ((declx x)
                   (Fκ (hash-ref Fs κ (hash)))
@@ -203,29 +219,12 @@
            (let* ((declx x)
                   (Ξ (vector-ref Ξ Ξi))
                   (Fκ (hash-ref Fs κ (hash)))
-                  (Fκ* (hash-set Fκ declx (⊔ (hash-ref Fκ declx ⊥) (if (set-member? E (fr))
-                                                                       (set FRESH)
-                                                                       (set)))))) ;TODO argh! ; only in impl
+                  (Fκ* (if (set-member? E (fr))
+                           (hash-set Fκ declx (⊔ (hash-ref Fκ declx ⊥) (set FRESH)))
+                           Fκ))) ;TODO argh! ; only in impl
              (hash-set Fs κ Fκ*)))
           (_ Fs))))
 
-    #|
-    (define (propagatef Fs decl e κ Ξ)
-      (for/fold ((Fs Fs)) ((κ* (set-add (stack-contexts κ Ξ) #f))) ; adding top-level ctx '#f', because freshness also deals with top-level stuff
-        (hash-set Fs κ* (updatef (hash-ref Fs κ* (hash)) decl e))))
-
-    (define (updatef Fκ decl e)
-      (if (fresh? e Fκ parent ⊥)
-          (add-fresh Fκ decl)
-          (add-unfresh Fκ decl)))
-
-    (define (add-fresh Fκ decl)
-      (hash-set Fκ decl (⊔ (hash-ref Fκ decl ⊥) (set FRESH))))
-      
-    (define (add-unfresh Fκ decl)
-      (hash-set Fκ decl (⊔ (hash-ref Fκ decl ⊥) (set UNFRESH))))|#
-
-      
     (define (traverse-graph* S W Fs F)
       (if (set-empty? W)
           F
@@ -302,7 +301,7 @@
 (define GENERATES "GEN")
 (define OBSERVES "OBS")
 
-(define (traverse-graph graph initial Ξ call-states inner? fresh?)
+(define (traverse-graph graph initial Ξ observable? escapes?)
 
   (define parent (make-parent (ev-e initial)))
 
@@ -340,92 +339,205 @@
       (for/fold ((O O)) ((λ-r λ-rs))
         (hash-set O res (set-add (hash-ref O res (set)) λ-r)))))
 
-  (define (update-F-write a κ Ξ F)
-    (for/fold ((F F)) ((κ* (stack-contexts κ Ξ)))
-      (let ((A (hash-ref call-states κ*)))
-        (if (set-member? A a)
-            (let ((λ (ctx-λ κ*)))
-              ;(printf "GEN wv a ~a  x ~a λ ~a ~a\n" a x (~a λ #:max-width 30) (state-repr s))
-              (hash-set F λ (set-add (hash-ref F λ (set)) GENERATES)))
-            F))))
+  (define (walk-stack-write eff res s S W F)
+    (if (set-empty? W)
+        F
+        (let ((κdyn (set-first W)))
+          (if (set-member? S κdyn)
+              (walk-stack-write eff res s S (set-rest W) F)
+              (let ((κ (car κdyn)))
+                (if κ
+                    (let ((dyn (cdr κdyn))) ;TODO λ to `inner?`?
+                      (if (observable? eff κ s dyn)
+                          (let* ((λ (ctx-λ κ))
+                                 (F* (hash-set F λ (set-add (hash-ref F λ (set)) GENERATES)))
+                                 (ικs (stack-lookup (state-Ξ s Ξ) κ))
+                                 (dyn* (and dyn (not (escapes? λ)))))
+                            (walk-stack-write eff res s (set-add S κdyn) (set-union (set-rest W) (for/set ((ικ ικs)) (cons (cdr ικ) dyn*))) F*))
+                          (walk-stack-write eff res s (set-add S κdyn) (set-rest W) F)))
+                    (walk-stack-write eff res s S (set-rest W) F)))))))
 
-  (define (update-F-R-read a res κ Ξ F R O)
-    (for/fold ((F F) (R R)) ((κ* (stack-contexts κ Ξ)))
-      (let ((A (hash-ref call-states κ*)))
-        (if (set-member? A a)
-            (let ((λ (ctx-λ κ*)))
-              (values (add-observers res F O)
-                      (add-read-dep res λ R)))
-            (values F R)))))
+  (define (walk-stack-read eff res s S W F R O)
+    (if (set-empty? W)
+        (values F R)
+        (let ((κdyn (set-first W)))
+          (if (set-member? S κdyn)
+              (walk-stack-read eff res s S (set-rest W) F R O)
+              (let ((κ (car κdyn)))
+                (if κ
+                    (let ((dyn (cdr κdyn))) ;TODO λ to `inner?`?
+                      (if (observable? eff κ s dyn)
+                          (let* ((λ (ctx-λ κ))
+                                 (F* (add-observers res F O))
+                                 (R* (add-read-dep res λ R))
+                                 (dyn* (and dyn (not (escapes? λ))))
+                                 (ικs (stack-lookup (state-Ξ s Ξ) κ)))
+                            (walk-stack-read eff res s (set-add S κdyn) (set-union (set-rest W) (for/set ((ικ ικs)) (cons (cdr ικ) dyn*))) F* R* O))
+                          (walk-stack-read eff res s (set-add S κdyn) (set-rest W) F R O)))
+                    (walk-stack-read eff res s S (set-rest W) F R O)))))))
 
+  (define (handle-read-effect eff res s F R O)
+    (let-values (((F* R*) (walk-stack-read eff res s (set) (set (cons (state-κ s) #t)) F R O)))
+      (values F* R* O)))
+
+  (define (handle-write-effect eff res s F R O)
+       (let ((O* (update-O-write res R O))
+             (F* (walk-stack-write eff res s (set) (set (cons (state-κ s) #t)) F)))
+           (values F* R O*)))
+    
+    
   (define (handle-effect eff s F R O)
     (match eff
       ((wv a x)
-       (let ((O (update-O-write a R O)))
-         (let ((κ (state-κ s)))
-           (if (inner? x κ)
-               (values F R O)
-               (let ((F (update-F-write a κ (state-Ξ s Ξ) F)))
-                 (values F R O))))))
+       (handle-write-effect eff a s F R O))
       ((wp a n x)
-       (let ((O (update-O-write (cons a n) R O)))
-         (let ((κ (state-κ s)))
-           (if (fresh? x s κ)
-               (values F R O)
-               (let ((F (update-F-write a κ (state-Ξ s Ξ) F)))
-                 (values F R O))))))
+       (handle-write-effect eff (cons a n) s F R O))
       ((rv a x)
-       (let ((κ (state-κ s)))
-         (if (inner? x κ)
-             (values F R O)
-             (let-values (((F R) (update-F-R-read a a κ (state-Ξ s Ξ) F R O)))
-               (values F R O)))))
+       (handle-read-effect eff a s F R O))
       ((rp a n x)
-       (let ((κ (state-κ s)))
-         (if (fresh? x s κ)
-             (values F R O)
-             (let-values (((F R) (update-F-R-read a (cons a n) κ (state-Ξ s Ξ) F R O)))
-               (values F R O)))))
+       (handle-read-effect eff (cons a n) s F R O))
       (_ (values F R O))))
   
   (traverse-graph* (set) (set initial) (hash) (hash) (hash)))
 
+(define (a-observable-effect? call-states)
+  (lambda (eff κ s dyn)
+    (match eff
+      ((wv a _)
+       (let ((A (hash-ref call-states κ)))
+         (set-member? A a)))
+      ((wp a _ _)
+       (let ((A (hash-ref call-states κ)))
+         (set-member? A a)))
+      ((rv a _)
+       (let ((A (hash-ref call-states κ)))
+         (set-member? A a)))
+      ((rp a _ _)
+       (let ((A (hash-ref call-states κ)))
+         (set-member? A a))))))
+
+(define (sa-observable-effect? call-states parent)
+  (lambda (eff κ s dyn)
+    (match eff
+      ((wv a x)
+       (if dyn
+           (let ((decl (get-declaration («id»-x x) x parent))
+                 (λ (ctx-λ κ)))
+             (if (inner-scope-declaration? decl λ)
+                 #f
+                 (let ((A (hash-ref call-states κ)))
+                   (set-member? A a))))
+           (let ((A (hash-ref call-states κ)))
+             (set-member? A a))))
+      ((wp a _ _)
+       (let ((A (hash-ref call-states κ)))
+         (set-member? A a)))
+      ((rv a x)
+       (if dyn
+           (let ((decl (get-declaration («id»-x x) x parent))
+                 (λ (ctx-λ κ)))
+             (if (inner-scope-declaration? decl λ)
+                 #f
+                 (let ((A (hash-ref call-states κ)))
+                   (set-member? A a))))
+           (let ((A (hash-ref call-states κ)))
+             (set-member? A a))))
+      ((rp a _ _)
+       (let ((A (hash-ref call-states κ)))
+         (set-member? A a))))))
+
+(define (sfa-observable-effect? call-states parent fresh?)
+  (lambda (eff κ s dyn)
+    (match eff
+      ((wv a x)
+       (if dyn
+           (let ((decl (get-declaration («id»-x x) x parent))
+                 (λ (ctx-λ κ)))
+             (if (inner-scope-declaration? decl λ)
+                 #f
+                 (let ((A (hash-ref call-states κ)))
+                   (set-member? A a))))
+           (let ((A (hash-ref call-states κ)))
+             (set-member? A a))))
+      ((wp a _ x)
+       (if dyn
+           (if (fresh? x s κ)
+               #f
+               (let ((A (hash-ref call-states κ)))
+                 (set-member? A a)))
+           (let ((A (hash-ref call-states κ)))
+             (set-member? A a))))
+      ((rv a x)
+       (if dyn
+           (let ((decl (get-declaration («id»-x x) x parent))
+                 (λ (ctx-λ κ)))
+             (if (inner-scope-declaration? decl λ)
+                 #f
+                 (let ((A (hash-ref call-states κ)))
+                   (set-member? A a))))
+           (let ((A (hash-ref call-states κ)))
+             (set-member? A a))))
+      ((rp a _ x)
+       (if dyn
+           (if (fresh? x s κ)
+               #f
+               (let ((A (hash-ref call-states κ)))
+                 (set-member? A a)))
+           (let ((A (hash-ref call-states κ)))
+             (set-member? A a)))))))
 
 (define (a-purity-analysis sys)
-  (let* ((call-states (call-state-analysis sys)))
-    (traverse-graph (system-graph sys) (system-initial sys) (system-Ξ sys) call-states (lambda _ #f) (lambda _ #f))))
+  (let* ((call-states (call-state-analysis sys))
+         (observable? (a-observable-effect? call-states))
+         (escapes? (lambda _ #t)))
+    (traverse-graph (system-graph sys) (system-initial sys) (system-Ξ sys) observable? escapes?)))
     
 (define (sa-purity-analysis sys)
   (let* ((call-states (call-state-analysis sys))
          (initial (system-initial sys))
          (ast (ev-e initial))
-         (parent (make-parent ast))         
-         (inner? (lambda (x κ)
-                   (and κ
-                        (let ((decl (get-declaration («id»-x x) x parent))
-                              (λ (ctx-λ κ)))
-                          (inner-scope-declaration? decl λ))))))
-    (traverse-graph (system-graph sys) (system-initial sys) (system-Ξ sys) call-states inner? (lambda _ #f))))
-    
+         (parent (make-parent ast))
+         (lattice (system-lattice sys))
+         (⊥ (lattice-⊥ lattice))
+         (⊔ (lattice-⊔ lattice))
+         (escapes? (lambda _ #t))
+         (observable? (sa-observable-effect? call-states parent)))
+    (traverse-graph (system-graph sys) (system-initial sys) (system-Ξ sys) observable? escapes?)))
+
 (define (sfa-purity-analysis sys)
   (let* ((call-states (call-state-analysis sys))
          (initial (system-initial sys))
          (ast (ev-e initial))
          (parent (make-parent ast))
-         (inner? (lambda (x κ)
-                   (and κ
-                        (let ((decl (get-declaration («id»-x x) x parent))
-                              (λ (ctx-λ κ)))
-                          (inner-scope-declaration? decl λ)))))
          (lattice (system-lattice sys))
          (⊥ (lattice-⊥ lattice))
          (⊔ (lattice-⊔ lattice))
-         (F (fresh-analysis sys ⊥ ⊔))
+         (escapes? (lambda _ #t))
+         (F (fresh-analysis sys ⊥ ⊔ escapes?))
          (fresh? (lambda (x s κ)
                    (let* ((Fs (hash-ref F s (hash)))
                           (Fκ (hash-ref Fs κ (hash))))
-                     (fresh? x Fκ parent ⊥)))))
-    (traverse-graph (system-graph sys) (system-initial sys) (system-Ξ sys) call-states inner? fresh?)))
+                     (fresh? x Fκ parent ⊥))))
+         (observable? (sfa-observable-effect? call-states parent fresh?)))
+    (traverse-graph (system-graph sys) (system-initial sys) (system-Ξ sys) observable? escapes?)))
+
+(define (msfa-purity-analysis sys)
+  (let* ((call-states (call-state-analysis sys))
+         (initial (system-initial sys))
+         (ast (ev-e initial))
+         (parent (make-parent ast))
+         (lattice (system-lattice sys))
+         (⊥ (lattice-⊥ lattice))
+         (⊔ (lattice-⊔ lattice))
+         (M (escape-analysis sys))
+         (escapes? (lambda (λ) (set-member? M λ)))
+         (F (fresh-analysis sys ⊥ ⊔ escapes?))
+         (fresh? (lambda (x s κ)
+                   (let* ((Fs (hash-ref F s (hash)))
+                          (Fκ (hash-ref Fs κ (hash))))
+                     (fresh? x Fκ parent ⊥))))
+         (observable? (sfa-observable-effect? call-states parent fresh?)))
+    (traverse-graph (system-graph sys) (system-initial sys) (system-Ξ sys) observable? escapes?)))
 
 (define PURE "PURE")
 (define OBSERVER "OBS")
@@ -461,6 +573,9 @@
 
 (define (sfa-purity-benchmark sys)
   (purity-benchmark sys sfa-purity-analysis))
+
+(define (msfa-purity-benchmark sys)
+  (purity-benchmark sys msfa-purity-analysis))
 
 (define FLOW-TIME "flow-time")
 (define STATE-COUNT "state-count")
@@ -528,6 +643,7 @@
   (define configs (list (cons 'a a-purity-benchmark)
                         (cons 'sa sa-purity-benchmark)
                         (cons 'sfa sfa-purity-benchmark)
+                        (cons 'msfa msfa-purity-benchmark)
                         ))
   (define machs (list (cons 'conc conc-mach) (cons 'type type-mach-0)))
   (set! purity-result
@@ -557,15 +673,15 @@
       (printf "Done.\n")
       results)))
 
-
 #|
-(define t2 '(letrec ((f (lambda (b) (if b (let ((z (cons 1 2))) (let ((g (lambda () (set-cdr! z 3)))) (let ((u (g))) (let ((uu (f #f))) z)))) 'done)))) (f #t)))
+(define t2 '(letrec ((f (lambda (b) (if b (let ((x (let ((y (cons 1 2))) y))) (let ((u (set-car! x 3))) (f #f))) 'done)))) (f #t)))
 (define sys2 (conc-mach t2))
 (generate-dot (system-graph sys2) "t2")
 (let* ((lattice (system-lattice sys2))
        (⊥ (lattice-⊥ lattice))
        (⊔ (lattice-⊔ lattice))
-       (F (fresh-analysis sys2 ⊥ ⊔)))
+       (escapes? (lambda _ #t))
+       (F (fresh-analysis sys2 ⊥ ⊔ escapes?)))
        (print-fresh-info F))
 (parameterize ((PRINT-PER-LAMBDA #t))
 (print-purity-info (sfa-purity-analysis sys2)))

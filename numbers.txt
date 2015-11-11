@@ -1,3 +1,4 @@
+<<<<<<< Local Changes
 ******************** Server experiments
 fac          CFA  #96      flow-time 22      called 1   pure 1  obs 0  proc 0  | 40320
 fac          FA   #25      flow-time 6       called 1   pure 1  obs 0  proc 0  | #<set: NUM>
@@ -1147,7 +1148,6 @@ mceval         type a    #60685   flow-time 55442   lams 86  called 84  pure 12 
 mceval         type sa   #60685   flow-time 55442   lams 86  called 84  pure 12 obs 59 proc 13 | #<set: #<prim2> #<prim2> #<prim2> #(struct:addr (cons _p2 _p4)) #(struct
 mceval         type sfa  #60685   flow-time 55442   lams 86  called 84  pure 12 obs 59 proc 13 | #<set: #<prim2> #<prim2> #<prim2> #(struct:addr (cons _p2 _p4)) #(struct
 
-20151021
 ==
 Example for reachable-A vs A
 (letrec ((f (lambda (b)
@@ -1160,8 +1160,9 @@ Example for reachable-A vs A
 Even without freshness 'f' is detected as pure.
 ==
 
+20151104 Redesigned freshness analysis
 (conc-purity-test)
-total 228 fail 0
+total 234 fail 0
 (abst-purity-test)
 error 38 type-a
 expected ((2 . PURE) (22 . PURE)) actual #hash((22 . PROC) (2 . PROC))
@@ -1199,6 +1200,12 @@ error 65 type-a
 expected ((2 . PURE)) actual #hash((2 . PROC))
 error 65 type-sa
 expected ((2 . PURE)) actual #hash((2 . PROC))
+error 67 type-a
+expected ((2 . PURE) (14 . PROC)) actual #hash((14 . PROC) (2 . PROC))
+error 67 type-sa
+expected ((2 . PURE) (14 . PROC)) actual #hash((14 . PROC) (2 . PROC))
+error 67 type-sfa
+expected ((2 . PURE) (14 . PROC)) actual #hash((14 . PROC) (2 . PROC))
 error a4 type-a
 expected ((2 . PURE)) actual #hash((2 . PROC))
 error a5 type-a
@@ -1223,44 +1230,203 @@ error a20 type-sa
 expected ((8 . PURE)) actual #hash((8 . PROC))
 error a20 type-sfa
 expected ((8 . PURE)) actual #hash((8 . PROC))
-Final: #hash((type-sfa . 3) (type-a . 16) (type-sa . 11))
+Final: #hash((type-sfa . 4) (type-a . 17) (type-sa . 12))
 All done.
 
-(purity-test 'treeadd 'treeadd2 'treeadd3)
-treeadd        conc a    #680     flow-time 19      lams 3   called 3   pure 3  obs 0  proc 0  | 15
-treeadd        conc sa   #680     flow-time 19      lams 3   called 3   pure 3  obs 0  proc 0  | 15
-treeadd        conc sfa  #680     flow-time 19      lams 3   called 3   pure 3  obs 0  proc 0  | 15
-treeadd        type a    #304     flow-time 12      lams 3   called 3   pure 2  obs 0  proc 1  | #<set: NUM>
-treeadd        type sa   #304     flow-time 12      lams 3   called 3   pure 3  obs 0  proc 0  | #<set: NUM>
-treeadd        type sfa  #304     flow-time 12      lams 3   called 3   pure 3  obs 0  proc 0  | #<set: NUM>
+> (purity-test 'treeadd 'treeadd2 'treeadd3 'purity19)
 
-treeadd2       conc a    #996     flow-time 32      lams 3   called 3   pure 3  obs 0  proc 0  | 15
-treeadd2       conc sa   #996     flow-time 32      lams 3   called 3   pure 3  obs 0  proc 0  | 15
-treeadd2       conc sfa  #996     flow-time 32      lams 3   called 3   pure 3  obs 0  proc 0  | 15
-treeadd2       type a    #301     flow-time 16      lams 3   called 3   pure 1  obs 0  proc 2  | #<set: NUM>
-treeadd2       type sa   #301     flow-time 16      lams 3   called 3   pure 1  obs 1  proc 1  | #<set: NUM>
-treeadd2       type sfa  #301     flow-time 16      lams 3   called 3   pure 1  obs 1  proc 1  | #<set: NUM>
+treeadd        conc a    #680     flow-time 22      lams 3   called 3   pure 3  obs 0  proc 0  | 15
+treeadd        conc sa   #680     flow-time 22      lams 3   called 3   pure 3  obs 0  proc 0  | 15
+treeadd        conc sfa  #680     flow-time 22      lams 3   called 3   pure 3  obs 0  proc 0  | 15
+treeadd        type a    #304     flow-time 14      lams 3   called 3   pure 2  obs 0  proc 1  | #<set: NUM>
+treeadd        type sa   #304     flow-time 14      lams 3   called 3   pure 3  obs 0  proc 0  | #<set: NUM>
+treeadd        type sfa  #304     flow-time 14      lams 3   called 3   pure 3  obs 0  proc 0  | #<set: NUM>
 
-treeadd3       conc a    #815     flow-time 27      lams 2   called 2   pure 2  obs 0  proc 0  | 15
-treeadd3       conc sa   #815     flow-time 27      lams 2   called 2   pure 2  obs 0  proc 0  | 15
-treeadd3       conc sfa  #815     flow-time 27      lams 2   called 2   pure 2  obs 0  proc 0  | 15
-treeadd3       type a    #249     flow-time 11      lams 2   called 2   pure 0  obs 0  proc 2  | #<set: NUM>
-treeadd3       type sa   #249     flow-time 11      lams 2   called 2   pure 1  obs 0  proc 1  | #<set: NUM>
-treeadd3       type sfa  #249     flow-time 11      lams 2   called 2   pure 2  obs 0  proc 0  | #<set: NUM>
+treeadd2       conc a    #996     flow-time 35      lams 3   called 3   pure 3  obs 0  proc 0  | 15
+treeadd2       conc sa   #996     flow-time 35      lams 3   called 3   pure 3  obs 0  proc 0  | 15
+treeadd2       conc sfa  #996     flow-time 35      lams 3   called 3   pure 3  obs 0  proc 0  | 15
+treeadd2       type a    #301     flow-time 18      lams 3   called 3   pure 1  obs 0  proc 2  | #<set: NUM>
+treeadd2       type sa   #301     flow-time 18      lams 3   called 3   pure 1  obs 1  proc 1  | #<set: NUM>
+treeadd2       type sfa  #301     flow-time 18      lams 3   called 3   pure 1  obs 1  proc 1  | #<set: NUM>
+
+treeadd3       conc a    #815     flow-time 29      lams 2   called 2   pure 2  obs 0  proc 0  | 15
+treeadd3       conc sa   #815     flow-time 29      lams 2   called 2   pure 2  obs 0  proc 0  | 15
+treeadd3       conc sfa  #815     flow-time 29      lams 2   called 2   pure 2  obs 0  proc 0  | 15
+treeadd3       type a    #249     flow-time 17      lams 2   called 2   pure 0  obs 0  proc 2  | #<set: NUM>
+treeadd3       type sa   #249     flow-time 17      lams 2   called 2   pure 1  obs 0  proc 1  | #<set: NUM>
+treeadd3       type sfa  #249     flow-time 17      lams 2   called 2   pure 2  obs 0  proc 0  | #<set: NUM>
+
+purity19       conc a    #18      flow-time 0       lams 2   called 2   pure 1  obs 0  proc 1  | #(struct:addr 55)
+purity19       conc sa   #18      flow-time 0       lams 2   called 2   pure 1  obs 0  proc 1  | #(struct:addr 55)
+purity19       conc sfa  #18      flow-time 0       lams 2   called 2   pure 1  obs 0  proc 1  | #(struct:addr 55)
+purity19       type a    #39      flow-time 1       lams 2   called 2   pure 0  obs 0  proc 2  | #<set: #(struct:addr (cons 1 2)) SYM>
+purity19       type sa   #39      flow-time 1       lams 2   called 2   pure 0  obs 0  proc 2  | #<set: #(struct:addr (cons 1 2)) SYM>
+purity19       type sfa  #39      flow-time 1       lams 2   called 2   pure 0  obs 0  proc 2  | #<set: #(struct:addr (cons 1 2)) SYM>
 Results in purity-result
 
-(parameterize ((PRINT-PER-LAMBDA #t)) (purity-test 'grid))
+> (server-purity-test)
+fib            conc a    #701     flow-time 26      lams 1   called 1   pure 1  obs 0  proc 0  | 21
+fib            conc sa   #701     flow-time 26      lams 1   called 1   pure 1  obs 0  proc 0  | 21
+fib            conc sfa  #701     flow-time 26      lams 1   called 1   pure 1  obs 0  proc 0  | 21
+fib            type a    #54      flow-time 3       lams 1   called 1   pure 1  obs 0  proc 0  | #<set: NUM>
+fib            type sa   #54      flow-time 3       lams 1   called 1   pure 1  obs 0  proc 0  | #<set: NUM>
+fib            type sfa  #54      flow-time 3       lams 1   called 1   pure 1  obs 0  proc 0  | #<set: NUM>
 
-20151023
-Branch: fresh-ctxs
-Fresh ctxs that allow alking don't work that well: a recursive call of a letrec f is considered to be an unfresh call (grid: loop)
+fib-mut        conc a    #188     flow-time 9       lams 2   called 2   pure 1  obs 0  proc 1  | 21
+fib-mut        conc sa   #188     flow-time 9       lams 2   called 2   pure 1  obs 0  proc 1  | 21
+fib-mut        conc sfa  #188     flow-time 9       lams 2   called 2   pure 1  obs 0  proc 1  | 21
+fib-mut        type a    #63      flow-time 4       lams 2   called 2   pure 1  obs 0  proc 1  | #<set: NUM>
+fib-mut        type sa   #63      flow-time 4       lams 2   called 2   pure 1  obs 0  proc 1  | #<set: NUM>
+fib-mut        type sfa  #63      flow-time 4       lams 2   called 2   pure 1  obs 0  proc 1  | #<set: NUM>
 
-added 'grid1' test
+treenode1      conc a    #68      flow-time 3       lams 2   called 2   pure 2  obs 0  proc 0  | #(struct:addr 87)
+treenode1      conc sa   #68      flow-time 3       lams 2   called 2   pure 2  obs 0  proc 0  | #(struct:addr 87)
+treenode1      conc sfa  #68      flow-time 3       lams 2   called 2   pure 2  obs 0  proc 0  | #(struct:addr 87)
+treenode1      type a    #75      flow-time 5       lams 2   called 2   pure 0  obs 0  proc 2  | #<set: #(struct:addr (cons 1 2))>
+treenode1      type sa   #75      flow-time 5       lams 2   called 2   pure 0  obs 0  proc 2  | #<set: #(struct:addr (cons 1 2))>
+treenode1      type sfa  #75      flow-time 5       lams 2   called 2   pure 2  obs 0  proc 0  | #<set: #(struct:addr (cons 1 2))>
 
-(print-purity-info (sfa-purity-analysis (type-mach-0 grid1)))
-(lambda (start dims) (let ((v  -> #<set: GEN>
-(lambda (i) (let ((_45 dims))  -> #<set: GEN>
+nqueens        conc a    #2622    flow-time 182     lams 6   called 6   pure 6  obs 0  proc 0  | 2
+nqueens        conc sa   #2622    flow-time 182     lams 6   called 6   pure 6  obs 0  proc 0  | 2
+nqueens        conc sfa  #2622    flow-time 182     lams 6   called 6   pure 6  obs 0  proc 0  | 2
+nqueens        type a    #910     flow-time 98      lams 6   called 6   pure 6  obs 0  proc 0  | #<set: NUM>
+nqueens        type sa   #910     flow-time 98      lams 6   called 6   pure 6  obs 0  proc 0  | #<set: NUM>
+nqueens        type sfa  #910     flow-time 98      lams 6   called 6   pure 6  obs 0  proc 0  | #<set: NUM>
 
-A Type-based Escape Analysis for Functional Languages
-www.cse.psu.edu/~jjh9/papers/escape.ps.gz
+dderiv         conc a    #2846    flow-time 205     lams 20  called 10  pure 9  obs 0  proc 1  | #t
+dderiv         conc sa   #2846    flow-time 205     lams 20  called 10  pure 9  obs 0  proc 1  | #t
+dderiv         conc sfa  #2846    flow-time 205     lams 20  called 10  pure 9  obs 0  proc 1  | #t
+dderiv         type a    #5091    flow-time 926     lams 20  called 14  pure 5  obs 8  proc 1  | #<set: BOOL>
+dderiv         type sa   #5091    flow-time 926     lams 20  called 14  pure 5  obs 8  proc 1  | #<set: BOOL>
+dderiv         type sfa  #5091    flow-time 926     lams 20  called 14  pure 5  obs 8  proc 1  | #<set: BOOL>
+
+destruct       conc a    #2251    flow-time 213     lams 11  called 11  pure 3  obs 1  proc 7  | #(struct:addr 127)
+destruct       conc sa   #2251    flow-time 213     lams 11  called 11  pure 3  obs 1  proc 7  | #(struct:addr 127)
+destruct       conc sfa  #2251    flow-time 213     lams 11  called 11  pure 3  obs 1  proc 7  | #(struct:addr 127)
+destruct       type a    #1440    flow-time 201     lams 11  called 11  pure 3  obs 1  proc 7  | #<set: #(struct:addr (cons #(struct:«quo» 105 ()) _a19)) ()>
+destruct       type sa   #1440    flow-time 201     lams 11  called 11  pure 3  obs 1  proc 7  | #<set: #(struct:addr (cons #(struct:«quo» 105 ()) _a19)) ()>
+destruct       type sfa  #1440    flow-time 201     lams 11  called 11  pure 3  obs 1  proc 7  | #<set: #(struct:addr (cons #(struct:«quo» 105 ()) _a19)) ()>
+
+mceval         conc a    #9104    flow-time 2403    lams 86  called 71  pure 59 obs 2  proc 10 | 2
+mceval         conc sa   #9104    flow-time 2403    lams 86  called 71  pure 59 obs 2  proc 10 | 2
+mceval         conc sfa  #9104    flow-time 2403    lams 86  called 71  pure 59 obs 2  proc 10 | 2
+mceval         type a    #43802   flow-time 47032   lams 86  called 84  pure 12 obs 59 proc 13 | #<set: #<prim2> #<prim2> #<prim2> #(struct:addr (cons _p2 _p4)) #(struct
+mceval         type sa   #43802   flow-time 47032   lams 86  called 84  pure 12 obs 59 proc 13 | #<set: #<prim2> #<prim2> #<prim2> #(struct:addr (cons _p2 _p4)) #(struct
+mceval         type sfa  #43802   flow-time 47032   lams 86  called 84  pure 12 obs 59 proc 13 | #<set: #<prim2> #<prim2> #<prim2> #(struct:addr (cons _p2 _p4)) #(struct
+Results in purity-result
+
+=== 20151111 Another big revamp: stack-walking with dyn for scope and fresh (dyn comes frome escape analysis)
+(conc-purity-test)
+total 312 fail 0
+(abst-purity-test)
+error 38 type-a
+expected ((2 . PURE) (22 . PURE)) actual #hash((22 . PROC) (2 . PROC))
+error 38 type-sa
+expected ((2 . PURE) (22 . PURE)) actual #hash((22 . PROC) (2 . PROC))
+error 46 type-a
+expected ((2 . PURE)) actual #hash((2 . PROC))
+error 47 type-a
+expected ((2 . PURE)) actual #hash((2 . PROC))
+error 52 type-a
+expected ((2 . PURE)) actual #hash((2 . PROC))
+error 52 type-sa
+expected ((2 . PURE)) actual #hash((2 . PROC))
+error 53 type-a
+expected ((2 . PURE)) actual #hash((2 . PROC))
+error 53 type-sa
+expected ((2 . PURE)) actual #hash((2 . PROC))
+error 54 type-a
+expected ((2 . PURE)) actual #hash((2 . PROC))
+error 54 type-sa
+expected ((2 . PURE)) actual #hash((2 . PROC))
+error 57 type-a
+expected ((8 . PURE)) actual #hash((8 . PROC))
+error 57 type-sa
+expected ((8 . PURE)) actual #hash((8 . PROC))
+error 57 type-sfa
+expected ((8 . PURE)) actual #hash((8 . PROC))
+error 57 type-msfa
+expected ((8 . PURE)) actual #hash((8 . PROC))
+error 64 type-a
+expected ((266 . PROC) (185 . OBS) (59 . PURE) (2 . PURE) (120 . PROC)) actual #hash((266 . PROC) (185 . OBS) (59 . PROC) (2 . PURE) (120 . PROC))
+error 64 type-sa
+expected ((266 . PROC) (185 . OBS) (59 . PURE) (2 . PURE) (120 . PROC)) actual #hash((266 . PROC) (185 . OBS) (59 . PROC) (2 . PURE) (120 . PROC))
+error 64 type-sfa
+expected ((266 . PROC) (185 . OBS) (59 . PURE) (2 . PURE) (120 . PROC)) actual #hash((266 . PROC) (185 . OBS) (59 . PROC) (2 . PURE) (120 . PROC))
+error 65 type-a
+expected ((2 . PURE)) actual #hash((2 . PROC))
+error 65 type-sa
+expected ((2 . PURE)) actual #hash((2 . PROC))
+error 67 type-a
+expected ((2 . PURE) (14 . PROC)) actual #hash((14 . PROC) (2 . PROC))
+error 67 type-sa
+expected ((2 . PURE) (14 . PROC)) actual #hash((14 . PROC) (2 . PROC))
+error 67 type-sfa
+expected ((2 . PURE) (14 . PROC)) actual #hash((14 . PROC) (2 . PROC))
+error a4 type-a
+expected ((2 . PURE)) actual #hash((2 . PROC))
+error a5 type-a
+expected ((2 . PURE)) actual #hash((2 . PROC))
+error a6 type-a
+expected ((2 . PURE)) actual #hash((2 . PROC))
+error a14 type-a
+expected ((2 . PURE)) actual #hash((2 . PROC))
+error a14 type-sa
+expected ((2 . PURE)) actual #hash((2 . PROC))
+error a15 type-a
+expected ((2 . PURE)) actual #hash((2 . PROC))
+error a15 type-sa
+expected ((2 . PURE)) actual #hash((2 . PROC))
+error a16 type-a
+expected ((2 . PURE)) actual #hash((2 . PROC))
+error a16 type-sa
+expected ((2 . PURE)) actual #hash((2 . PROC))
+error a20 type-a
+expected ((8 . PURE)) actual #hash((8 . PROC))
+error a20 type-sa
+expected ((8 . PURE)) actual #hash((8 . PROC))
+error a20 type-sfa
+expected ((8 . PURE)) actual #hash((8 . PROC))
+error a20 type-msfa
+expected ((8 . PURE)) actual #hash((8 . PROC))
+Final: #hash((type-msfa . 2) (type-a . 17) (type-sa . 12) (type-sfa . 4))
+
+> (purity-test 'treeadd 'treeadd2 'treeadd3 'purity19)
+treeadd        conc a    #680     flow-time 52      lams 3   called 3   pure 3  obs 0  proc 0  | 15
+treeadd        conc sa   #680     flow-time 52      lams 3   called 3   pure 3  obs 0  proc 0  | 15
+treeadd        conc sfa  #680     flow-time 52      lams 3   called 3   pure 3  obs 0  proc 0  | 15
+treeadd        conc msfa #680     flow-time 52      lams 3   called 3   pure 3  obs 0  proc 0  | 15
+treeadd        type a    #304     flow-time 13      lams 3   called 3   pure 2  obs 0  proc 1  | #<set: NUM>
+treeadd        type sa   #304     flow-time 13      lams 3   called 3   pure 3  obs 0  proc 0  | #<set: NUM>
+treeadd        type sfa  #304     flow-time 13      lams 3   called 3   pure 3  obs 0  proc 0  | #<set: NUM>
+treeadd        type msfa #304     flow-time 13      lams 3   called 3   pure 3  obs 0  proc 0  | #<set: NUM>
+
+treeadd2       conc a    #996     flow-time 33      lams 3   called 3   pure 3  obs 0  proc 0  | 15
+treeadd2       conc sa   #996     flow-time 33      lams 3   called 3   pure 3  obs 0  proc 0  | 15
+treeadd2       conc sfa  #996     flow-time 33      lams 3   called 3   pure 3  obs 0  proc 0  | 15
+treeadd2       conc msfa #996     flow-time 33      lams 3   called 3   pure 3  obs 0  proc 0  | 15
+treeadd2       type a    #301     flow-time 14      lams 3   called 3   pure 1  obs 0  proc 2  | #<set: NUM>
+treeadd2       type sa   #301     flow-time 14      lams 3   called 3   pure 1  obs 1  proc 1  | #<set: NUM>
+treeadd2       type sfa  #301     flow-time 14      lams 3   called 3   pure 1  obs 1  proc 1  | #<set: NUM>
+treeadd2       type msfa #301     flow-time 14      lams 3   called 3   pure 1  obs 1  proc 1  | #<set: NUM>
+
+treeadd3       conc a    #815     flow-time 42      lams 2   called 2   pure 2  obs 0  proc 0  | 15
+treeadd3       conc sa   #815     flow-time 42      lams 2   called 2   pure 2  obs 0  proc 0  | 15
+treeadd3       conc sfa  #815     flow-time 42      lams 2   called 2   pure 2  obs 0  proc 0  | 15
+treeadd3       conc msfa #815     flow-time 42      lams 2   called 2   pure 2  obs 0  proc 0  | 15
+treeadd3       type a    #249     flow-time 14      lams 2   called 2   pure 0  obs 0  proc 2  | #<set: NUM>
+treeadd3       type sa   #249     flow-time 14      lams 2   called 2   pure 1  obs 0  proc 1  | #<set: NUM>
+treeadd3       type sfa  #249     flow-time 14      lams 2   called 2   pure 2  obs 0  proc 0  | #<set: NUM>
+treeadd3       type msfa #249     flow-time 14      lams 2   called 2   pure 2  obs 0  proc 0  | #<set: NUM>
+
+purity19       conc a    #18      flow-time 1       lams 2   called 2   pure 1  obs 0  proc 1  | #(struct:addr 55)
+purity19       conc sa   #18      flow-time 1       lams 2   called 2   pure 1  obs 0  proc 1  | #(struct:addr 55)
+purity19       conc sfa  #18      flow-time 1       lams 2   called 2   pure 1  obs 0  proc 1  | #(struct:addr 55)
+purity19       conc msfa #18      flow-time 1       lams 2   called 2   pure 1  obs 0  proc 1  | #(struct:addr 55)
+purity19       type a    #39      flow-time 1       lams 2   called 2   pure 0  obs 0  proc 2  | #<set: #(struct:addr (cons 1 2)) SYM>
+purity19       type sa   #39      flow-time 1       lams 2   called 2   pure 0  obs 0  proc 2  | #<set: #(struct:addr (cons 1 2)) SYM>
+purity19       type sfa  #39      flow-time 1       lams 2   called 2   pure 0  obs 0  proc 2  | #<set: #(struct:addr (cons 1 2)) SYM>
+purity19       type msfa #39      flow-time 1       lams 2   called 2   pure 1  obs 0  proc 1  | #<set: #(struct:addr (cons 1 2)) SYM>
+Results in purity-result
+
 
