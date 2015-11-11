@@ -416,32 +416,32 @@
        (let ((A (hash-ref call-states κ)))
          (set-member? A a))))))
 
+(define (sa-observable-variable-effect? a x κ dyn call-states parent)
+  (if (and dyn
+           (let ((decl (get-declaration («id»-x x) x parent))
+                 (λ (ctx-λ κ)))
+             (inner-scope-declaration? decl λ)))
+      #f
+      (let ((A (hash-ref call-states κ)))
+              (set-member? A a))))
+
+(define (fa-observable-property-effect? a x s κ dyn call-states fresh?)
+  (if (and dyn
+           (fresh? x s κ))
+      #f
+      (let ((A (hash-ref call-states κ)))
+        (set-member? A a))))
+
 (define (sa-observable-effect? call-states parent)
   (lambda (eff κ s dyn)
     (match eff
       ((wv a x)
-       (if dyn
-           (let ((decl (get-declaration («id»-x x) x parent))
-                 (λ (ctx-λ κ)))
-             (if (inner-scope-declaration? decl λ)
-                 #f
-                 (let ((A (hash-ref call-states κ)))
-                   (set-member? A a))))
-           (let ((A (hash-ref call-states κ)))
-             (set-member? A a))))
+       (sa-observable-variable-effect? a x κ dyn call-states parent))
       ((wp a _ _)
        (let ((A (hash-ref call-states κ)))
          (set-member? A a)))
       ((rv a x)
-       (if dyn
-           (let ((decl (get-declaration («id»-x x) x parent))
-                 (λ (ctx-λ κ)))
-             (if (inner-scope-declaration? decl λ)
-                 #f
-                 (let ((A (hash-ref call-states κ)))
-                   (set-member? A a))))
-           (let ((A (hash-ref call-states κ)))
-             (set-member? A a))))
+       (sa-observable-variable-effect? a x κ dyn call-states parent))
       ((rp a _ _)
        (let ((A (hash-ref call-states κ)))
          (set-member? A a))))))
@@ -450,41 +450,13 @@
   (lambda (eff κ s dyn)
     (match eff
       ((wv a x)
-       (if dyn
-           (let ((decl (get-declaration («id»-x x) x parent))
-                 (λ (ctx-λ κ)))
-             (if (inner-scope-declaration? decl λ)
-                 #f
-                 (let ((A (hash-ref call-states κ)))
-                   (set-member? A a))))
-           (let ((A (hash-ref call-states κ)))
-             (set-member? A a))))
+       (sa-observable-variable-effect? a x κ dyn call-states parent))
       ((wp a _ x)
-       (if dyn
-           (if (fresh? x s κ)
-               #f
-               (let ((A (hash-ref call-states κ)))
-                 (set-member? A a)))
-           (let ((A (hash-ref call-states κ)))
-             (set-member? A a))))
+       (fa-observable-property-effect? a x s κ dyn call-states fresh?))
       ((rv a x)
-       (if dyn
-           (let ((decl (get-declaration («id»-x x) x parent))
-                 (λ (ctx-λ κ)))
-             (if (inner-scope-declaration? decl λ)
-                 #f
-                 (let ((A (hash-ref call-states κ)))
-                   (set-member? A a))))
-           (let ((A (hash-ref call-states κ)))
-             (set-member? A a))))
+       (sa-observable-variable-effect? a x κ dyn call-states parent))
       ((rp a _ x)
-       (if dyn
-           (if (fresh? x s κ)
-               #f
-               (let ((A (hash-ref call-states κ)))
-                 (set-member? A a)))
-           (let ((A (hash-ref call-states κ)))
-             (set-member? A a)))))))
+       (fa-observable-property-effect? a x s κ dyn call-states fresh?)))))
 
 (define (a-purity-analysis sys)
   (let* ((call-states (call-state-analysis sys))
