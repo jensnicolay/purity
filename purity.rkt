@@ -78,6 +78,31 @@
          (γ (lattice-γ (system-lattice sys)))
          (σ (system-σ sys)))
 
+    (define (touchesd d)
+      (if (set? d)
+          (for/fold ((as (set)) (lams (set))) ((v d))
+            (let-values (((A L) (touchesd v)))
+              (values (set-union as A) (set-union lams L))))
+          (match d
+            ((clo lam ρ) (values (env-addresses ρ) (set lam)))
+            ((letk _ _ ρ) (values (env-addresses ρ) (set)))
+            ((letreck _ _ ρ) (values (env-addresses ρ) (set)))
+            ((addr a) (values (set a) (set)))
+            ((cons x y) (touchesd (set x y)))
+            (_ (values (set) (set))))))
+    
+    (define (reachabled A L σ)
+      (let loop ((A A) (L L) (R (set)))
+        (if (set-empty? A)
+            L
+            (let ((a (set-first A)))
+              (if (set-member? R a)
+                  (loop (set-rest A) L R)
+                  (let ((v (γ (store-lookup σ a))))
+                    (let-values (((ΔA ΔL) (touchesd v)))
+                      (loop (set-union (set-rest A) ΔA) (set-union L ΔL) (set-add R a)))))))))
+    
+
     (define (eval-atom ae ρ σ) ; copied from cesk, but in principle can/should be provided in system
       (match ae
         ((«lit» _ v)
@@ -94,17 +119,15 @@
 
     (define (check-values ae ρ σ M)
       (let ((d (eval-atom ae ρ σ)))
-        (for/fold ((M M)) ((w (γ d)))
-          (match w
-            ((clo λ _) (set-add M λ))
-            (_ M)))))
+        (let-values (((A L) (touchesd d)))
+          (reachabled A L σ))))
     
     (define (handle-state s M)
         (match s
           ((ev («app» _ _ aes) ρ σi _ _ _)
            (let ((σ (vector-ref σ σi)))
              (for/fold ((M M)) ((ae aes))
-               (check-values ae ρ σ M))))
+               (set-union M (check-values ae ρ σ M)))))
           ((ev («set!» _ _ ae) ρ σi _ _ _)
            (let ((σ (vector-ref σ σi)))
              (check-values ae ρ σ M)))
