@@ -1,4 +1,3 @@
-<<<<<<< Local Changes
 ******************** Server experiments
 fac          CFA  #96      flow-time 22      called 1   pure 1  obs 0  proc 0  | 40320
 fac          FA   #25      flow-time 6       called 1   pure 1  obs 0  proc 0  | #<set: NUM>
@@ -1429,4 +1428,69 @@ purity19       type sfa  #39      flow-time 1       lams 2   called 2   pure 0  
 purity19       type msfa #39      flow-time 1       lams 2   called 2   pure 1  obs 0  proc 1  | #<set: #(struct:addr (cons 1 2)) SYM>
 Results in purity-result
 
+> (server-purity-test)
 
+fib            conc a    #701     flow-time 27      lams 1   called 1   pure 1  obs 0  proc 0  | 21
+fib            conc sa   #701     flow-time 27      lams 1   called 1   pure 1  obs 0  proc 0  | 21
+fib            conc sfa  #701     flow-time 27      lams 1   called 1   pure 1  obs 0  proc 0  | 21
+fib            conc msfa #701     flow-time 27      lams 1   called 1   pure 1  obs 0  proc 0  | 21
+fib            type a    #54      flow-time 3       lams 1   called 1   pure 1  obs 0  proc 0  | #<set: NUM>
+fib            type sa   #54      flow-time 3       lams 1   called 1   pure 1  obs 0  proc 0  | #<set: NUM>
+fib            type sfa  #54      flow-time 3       lams 1   called 1   pure 1  obs 0  proc 0  | #<set: NUM>
+fib            type msfa #54      flow-time 3       lams 1   called 1   pure 1  obs 0  proc 0  | #<set: NUM>
+
+fib-mut        conc a    #188     flow-time 9       lams 2   called 2   pure 1  obs 0  proc 1  | 21
+fib-mut        conc sa   #188     flow-time 9       lams 2   called 2   pure 1  obs 0  proc 1  | 21
+fib-mut        conc sfa  #188     flow-time 9       lams 2   called 2   pure 1  obs 0  proc 1  | 21
+fib-mut        conc msfa #188     flow-time 9       lams 2   called 2   pure 1  obs 0  proc 1  | 21
+fib-mut        type a    #63      flow-time 4       lams 2   called 2   pure 1  obs 0  proc 1  | #<set: NUM>
+fib-mut        type sa   #63      flow-time 4       lams 2   called 2   pure 1  obs 0  proc 1  | #<set: NUM>
+fib-mut        type sfa  #63      flow-time 4       lams 2   called 2   pure 1  obs 0  proc 1  | #<set: NUM>
+fib-mut        type msfa #63      flow-time 4       lams 2   called 2   pure 1  obs 0  proc 1  | #<set: NUM>
+
+treenode1      conc a    #68      flow-time 3       lams 2   called 2   pure 2  obs 0  proc 0  | #(struct:addr 87)
+treenode1      conc sa   #68      flow-time 3       lams 2   called 2   pure 2  obs 0  proc 0  | #(struct:addr 87)
+treenode1      conc sfa  #68      flow-time 3       lams 2   called 2   pure 2  obs 0  proc 0  | #(struct:addr 87)
+treenode1      conc msfa #68      flow-time 3       lams 2   called 2   pure 2  obs 0  proc 0  | #(struct:addr 87)
+treenode1      type a    #75      flow-time 4       lams 2   called 2   pure 0  obs 0  proc 2  | #<set: #(struct:addr (cons 1 2))>
+treenode1      type sa   #75      flow-time 4       lams 2   called 2   pure 0  obs 0  proc 2  | #<set: #(struct:addr (cons 1 2))>
+treenode1      type sfa  #75      flow-time 4       lams 2   called 2   pure 2  obs 0  proc 0  | #<set: #(struct:addr (cons 1 2))>
+treenode1      type msfa #75      flow-time 4       lams 2   called 2   pure 2  obs 0  proc 0  | #<set: #(struct:addr (cons 1 2))>
+
+nqueens        conc a    #2622    flow-time 183     lams 6   called 6   pure 6  obs 0  proc 0  | 2
+nqueens        conc sa   #2622    flow-time 183     lams 6   called 6   pure 6  obs 0  proc 0  | 2
+nqueens        conc sfa  #2622    flow-time 183     lams 6   called 6   pure 6  obs 0  proc 0  | 2
+nqueens        conc msfa #2622    flow-time 183     lams 6   called 6   pure 6  obs 0  proc 0  | 2
+nqueens        type a    #910     flow-time 100     lams 6   called 6   pure 6  obs 0  proc 0  | #<set: NUM>
+nqueens        type sa   #910     flow-time 100     lams 6   called 6   pure 6  obs 0  proc 0  | #<set: NUM>
+nqueens        type sfa  #910     flow-time 100     lams 6   called 6   pure 6  obs 0  proc 0  | #<set: NUM>
+nqueens        type msfa #910     flow-time 100     lams 6   called 6   pure 6  obs 0  proc 0  | #<set: NUM>
+
+dderiv         conc a    #2846    flow-time 206     lams 20  called 10  pure 9  obs 0  proc 1  | #t
+dderiv         conc sa   #2846    flow-time 206     lams 20  called 10  pure 9  obs 0  proc 1  | #t
+dderiv         conc sfa  #2846    flow-time 206     lams 20  called 10  pure 9  obs 0  proc 1  | #t
+dderiv         conc msfa #2846    flow-time 206     lams 20  called 10  pure 9  obs 0  proc 1  | #t
+dderiv         type a    #4596    flow-time 825     lams 20  called 14  pure 5  obs 8  proc 1  | #<set: BOOL>
+dderiv         type sa   #4596    flow-time 825     lams 20  called 14  pure 5  obs 8  proc 1  | #<set: BOOL>
+dderiv         type sfa  #4596    flow-time 825     lams 20  called 14  pure 5  obs 8  proc 1  | #<set: BOOL>
+dderiv         type msfa #4596    flow-time 825     lams 20  called 14  pure 5  obs 8  proc 1  | #<set: BOOL>
+
+destruct       conc a    #2251    flow-time 209     lams 11  called 11  pure 3  obs 1  proc 7  | #(struct:addr 127)
+destruct       conc sa   #2251    flow-time 209     lams 11  called 11  pure 3  obs 1  proc 7  | #(struct:addr 127)
+destruct       conc sfa  #2251    flow-time 209     lams 11  called 11  pure 3  obs 1  proc 7  | #(struct:addr 127)
+destruct       conc msfa #2251    flow-time 209     lams 11  called 11  pure 3  obs 1  proc 7  | #(struct:addr 127)
+destruct       type a    #1440    flow-time 203     lams 11  called 11  pure 3  obs 1  proc 7  | #<set: #(struct:addr (cons #(struct:«quo» 105 ()) _a19)) ()>
+destruct       type sa   #1440    flow-time 203     lams 11  called 11  pure 3  obs 1  proc 7  | #<set: #(struct:addr (cons #(struct:«quo» 105 ()) _a19)) ()>
+destruct       type sfa  #1440    flow-time 203     lams 11  called 11  pure 3  obs 1  proc 7  | #<set: #(struct:addr (cons #(struct:«quo» 105 ()) _a19)) ()>
+destruct       type msfa #1440    flow-time 203     lams 11  called 11  pure 3  obs 1  proc 7  | #<set: #(struct:addr (cons #(struct:«quo» 105 ()) _a19)) ()>
+
+mceval         conc a    #9104    flow-time 2395    lams 86  called 71  pure 59 obs 2  proc 10 | 2
+mceval         conc sa   #9104    flow-time 2395    lams 86  called 71  pure 59 obs 2  proc 10 | 2
+mceval         conc sfa  #9104    flow-time 2395    lams 86  called 71  pure 59 obs 2  proc 10 | 2
+mceval         conc msfa #9104    flow-time 2395    lams 86  called 71  pure 59 obs 2  proc 10 | 2
+mceval         type a    #46153   flow-time 38598   lams 86  called 84  pure 12 obs 59 proc 13 | #<set: #<prim2> #<prim2> #<prim2> #(struct:addr (cons _p2 _p4)) #(struct
+mceval         type sa   #46153   flow-time 38598   lams 86  called 84  pure 12 obs 59 proc 13 | #<set: #<prim2> #<prim2> #<prim2> #(struct:addr (cons _p2 _p4)) #(struct
+mceval         type sfa  #46153   flow-time 38598   lams 86  called 84  pure 12 obs 59 proc 13 | #<set: #<prim2> #<prim2> #<prim2> #(struct:addr (cons _p2 _p4)) #(struct
+mceval         type msfa #46153   flow-time 38598   lams 86  called 84  pure 12 obs 59 proc 13 | #<set: #<prim2> #<prim2> #<prim2> #(struct:addr (cons _p2 _p4)) #(struct
+Results in purity-result
+Done.
