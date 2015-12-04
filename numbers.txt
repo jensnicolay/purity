@@ -1494,3 +1494,6 @@ mceval         type sfa  #46153   flow-time 38598   lams 86  called 84  pure 12 
 mceval         type msfa #46153   flow-time 38598   lams 86  called 84  pure 12 obs 59 proc 13 | #<set: #<prim2> #<prim2> #<prim2> #(struct:addr (cons _p2 _p4)) #(struct
 Results in purity-result
 Done.
+
+==== 20151203
+(conc-eval '(let ((v (make-vector 10 999))) (let ((u (vector-set! v 3 88))) (vector-ref v 3))))
