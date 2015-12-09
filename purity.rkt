@@ -304,21 +304,6 @@
        (equal? freshness (set FRESH))))
     (_ #f)))
 
-(define (state-κ s)
-  (match s
-    ((ev _ _ _ _ κ _) κ)
-    ((ko _ _ _ κ _) κ)))
-
-(define (state-σ s σ)
-  (match s
-    ((ev _ _ σi _ _ _) (vector-ref σ σi))
-    ((ko _ σi _ _ _) (vector-ref σ σi))))
-
-(define (state-Ξ s Ξ)
-  (match s
-    ((ev _ _ _ _ _ Ξi) (vector-ref Ξ Ξi))
-    ((ko _ _ _ _ Ξi) (vector-ref Ξ Ξi))))
-
 (define (call-state-analysis sys)
   (let* ((graph (system-graph sys))
          (σ (system-σ sys))
@@ -574,6 +559,14 @@
       ((set-member? f GENERATES) (values λ PROCEDURE))
       (else (values λ OBSERVES)))))
 
+(define (get-gen F)
+  (for/fold ((gen (set))) (((λ f) F))
+    (if (set-member? f GENERATES) (set λ) (set))))
+     
+(define (get-obs F)
+  (for/fold ((obs (set))) (((λ f) F))
+    (if (set-member? f OBSERVES) (set λ) (set))))
+     
 (define (print-purity-info C)
   (for (((λ c) C))
     (printf "~a -> ~a\n" (~a λ #:max-width 30) c)))
@@ -602,6 +595,9 @@
 (define FLOW-MSG "flow-msg")
 (define NUM-LAMBDAS "num-lambdas")
 (define NUM-CALLED "num-called")
+(define GEN "gen")
+(define OBS "obs")
+(define PURITY-TIME "purity-time")
 
 (define (purity-benchmark sys analysis)
   (define (nodes ast) (for/fold ((cs (list ast))) ((c (children ast))) (append cs (nodes c))))
@@ -617,13 +613,18 @@
         (let* ((initial (system-initial sys))
                (ast (ev-e initial))
                (Ξ (system-Ξ sys))
+               (purity-start (current-milliseconds))
                (F (extend-to-applied (analysis sys) Ξ))
+               (purity-time (- (current-milliseconds) purity-start))
                (C (F->C F))
                (count-summary (count-classes C)))
           (for (((k v) count-summary))
             (hash-set! summary k v))
+          (hash-set! summary GEN (get-gen F))
+          (hash-set! summary OBS (get-obs F))
           (hash-set! summary NUM-LAMBDAS (length (lambdas ast)))
-          (hash-set! summary NUM-CALLED (set-count (list->set (hash-keys F))))))
+          (hash-set! summary NUM-CALLED (set-count (list->set (hash-keys F))))
+          (hash-set! summary PURITY-TIME purity-time)))
       summary)))
 
 (define (print-purity-summary summary)
@@ -635,8 +636,9 @@
         (num-pure (hash-ref summary PURE 0))
         (num-obs (hash-ref summary OBSERVER 0))
         (num-proc (hash-ref summary PROCEDURE 0))
+        (purity-time (hash-ref summary PURITY-TIME "?"))
         (msg (hash-ref summary FLOW-MSG "")))
-    (printf "#~a flow-time ~a lams ~a called ~a pure ~a obs ~a proc ~a | ~a\n"
+    (printf "#~a f-time ~a lams ~a called ~a pure ~a obs ~a proc ~a p-time ~a | ~a\n"
             (~a (if (eq? exit 'ok) state-count (format ">~a" state-count)) #:min-width 7)
             (~a flow-time #:min-width 7)
             (~a num-lambdas #:min-width 3)
@@ -644,6 +646,7 @@
             (~a num-pure #:min-width 2)
             (~a num-obs #:min-width 2)
             (~a num-proc #:min-width 2)
+            (~a purity-time #:min-width 7)
             (~a msg #:max-width 72))))
   
 
@@ -659,36 +662,74 @@
                     purity14 purity15 purity16 purity17 purity18
                     fresh1 fresh2
                     treenode1 treeadd treeadd2 treeadd3 purity19 grid)))
-  (define configs (list (cons 'a a-purity-benchmark)
-                        (cons 'sa sa-purity-benchmark)
-                        (cons 'sfa sfa-purity-benchmark)
-                        (cons 'msfa msfa-purity-benchmark)
-                        ))
-  (define machs (list (cons 'conc conc-mach) (cons 'type type-mach-0)))
-  (set! purity-result
-    (for/list ((en ens))
-      (newline)
-      (let* ((e (eval en)))
-        (cons en
-              (for/list ((machc machs))
-                (let* ((mach-name (car machc))
-                       (mach (cdr machc))
-                       (sys (mach e)))
-                  (cons mach-name
-                  (for/list ((config configs))
-                    (printf "~a ~a ~a" (~a en #:min-width 14) (~a mach-name #:min-width 4) (~a (car config) #:min-width 5))
-                    (let ((result ((cdr config) sys)))
-                      (print-purity-summary result)
-                (cons (car config) result))))))))))
-  (printf "Results in purity-result\n"))
 
-(define (server-purity-test)
+  (define (print-result en name result)
+    (printf "~a ~a" (~a en #:min-width 14) (~a name #:min-width 10))
+    (print-purity-summary result))
+
+  (define (check-same-conc-results r1 . rs)
+    (let* ((gen1 (hash-ref r1 GEN (set)))
+           (obs1 (hash-ref r1 OBS (set))))
+      (define (checker rs)
+        (if (null? rs)
+            'ok
+            (let* ((ri (car rs))
+                   (geni (hash-ref ri GEN (set)))
+                   (obsi (hash-ref ri OBS (set))))
+              (unless (equal? gen1 geni)
+                (error "unequal gen sets"))
+              (unless (equal? obs1 obsi)
+                (error "unequal obs sets"))
+              (checker (cdr rs)))))
+      (checker rs)))
+
+  (define (check-subsuming rc rt)
+    (let* ((genc (hash-ref rc GEN (set)))
+           (obsc (hash-ref rc OBS (set)))
+           (gent (hash-ref rt GEN (set)))
+           (obst (hash-ref rt OBS (set))))
+      (for ((lam genc))
+           (unless (set-member? gent lam)
+             (error "no gen subsumption")))
+      (for ((lam obsc))
+           (unless (set-member? obst lam)
+             (error "no obs subsumption")))))
+
+  (for ((en ens))
+       (newline)
+       (let* ((e (eval en)))
+         (let ((conc-sys (conc-mach e)))
+           (let ((conc-a-result (a-purity-benchmark conc-sys))
+                 (conc-sa-result (sa-purity-benchmark conc-sys))
+                 (conc-sfa-result (sfa-purity-benchmark conc-sys))
+                 (conc-msfa-result (msfa-purity-benchmark conc-sys)))
+             (print-result en 'conc-a conc-a-result)
+             (print-result en 'conc-sa conc-sa-result)
+             (print-result en 'conc-sfa conc-sfa-result)
+             (print-result en 'conc-msfa conc-msfa-result)
+             (let ((type-sys (type-mach-0 e)))
+               (let ((type-a-result (a-purity-benchmark type-sys))
+                     (type-sa-result (sa-purity-benchmark type-sys))
+                     (type-sfa-result (sfa-purity-benchmark type-sys))
+                     (type-msfa-result (msfa-purity-benchmark type-sys)))
+                 (print-result en 'type-a type-a-result)
+                 (print-result en 'type-sa type-sa-result)
+                 (print-result en 'type-sfa type-sfa-result)
+                 (print-result en 'type-msfa type-msfa-result)
+                 (check-same-conc-results conc-a-result conc-sa-result conc-sfa-result conc-msfa-result)
+                 (check-subsuming conc-a-result type-a-result)
+                 (check-subsuming conc-a-result type-sa-result)
+                 (check-subsuming conc-a-result type-sfa-result)
+                 (check-subsuming conc-a-result type-msfa-result)
+                 )))))))
+
+              
+
+(define (server-purity-test . ens)
+  (when (null? ens)
+    (set! ens '(fib nqueens dderiv destruct grid mceval boyer)))
   (parameterize ((CESK-TIMELIMIT 60) (THROW #f))
-    (let ((results (apply purity-test '(fib fib-mut
-                                        treenode1
-                                        nqueens dderiv destruct mceval
-                                     ; regex boyer 
-                                     )))) 
+    (let ((results (apply purity-test ens))) 
       (printf "Done.\n")
       results)))
 

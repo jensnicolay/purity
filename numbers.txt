@@ -1496,4 +1496,43 @@ Results in purity-result
 Done.
 
 ==== 20151203
-(conc-eval '(let ((v (make-vector 10 999))) (let ((u (vector-set! v 3 88))) (vector-ref v 3))))
+Removed from purity.rkt:
+(define (outer-scope-declaration? decl e parent)
+  (let up ((e e))
+    (let ((p (parent e)))
+      (match p
+        (#f #f)
+        ((«lam» _ x _)
+         (let right ((x x))
+           (if (null? x)
+               (up p)
+               (if (equal? decl (car x))
+                   #t
+                   (right (cdr x))))))
+        ((«let» _ x e0 e1)
+         (if (eq? e0 e)
+             (up p)
+             (if (equal? decl x)
+                 #t
+                 (up p)))) 
+        ((«letrec» _ x _ _)
+         (if (equal? decl x)
+             #t
+             (up p)))
+        (_ (up p))))))
+        
+(define sys (type-mach-0 treeadd3))
+(generate-dot (system-graph sys) "treeadd3")
+(sa-purity-analysis sys)
+
+==== 20151208
+local
+> (define sys (parameterize ((CESK-TIMELIMIT 60) (THROW #f)) (type-mach-0 boyer)))
+> sys
+<sys #114030 ok >
+> (define a-summary (purity-benchmark sys a-purity-analysis))
+> (define msfa-summary (purity-benchmark sys msfa-purity-analysis))
+> (print-purity-summary a-summary)
+#114030  f-time 630353  lams 36  called 26  pure 3  obs 8  proc 15 p-time 3824491 | #<set: BOOL>
+> (print-purity-summary msfa-summary)
+#114030  f-time 630353  lams 36  called 26  pure 3  obs 8  proc 15 p-time 7557049 | #<set: BOOL>

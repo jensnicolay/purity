@@ -45,6 +45,22 @@
                  (⊒ v (hash-ref σ2 k)))))))
 (define (stack-lookup Ξ τ)
   (hash-ref Ξ τ))
+
+;; should become API on machine (system)
+(define (state-κ s)
+  (match s
+    ((ev _ _ _ _ κ _) κ)
+    ((ko _ _ _ κ _) κ)))
+
+(define (state-σ s σ)
+  (match s
+    ((ev _ _ σi _ _ _) (vector-ref σ σi))
+    ((ko _ σi _ _ _) (vector-ref σ σi))))
+
+(define (state-Ξ s Ξ)
+  (match s
+    ((ev _ _ _ _ _ Ξi) (vector-ref Ξ Ξi))
+    ((ko _ _ _ _ Ξi) (vector-ref Ξ Ξi))))
 ;;
 
 ;; machine
@@ -162,7 +178,9 @@
     (define Ξ (hash))
     (define Ξi 0)
     (define stack-stores '())
-    ;(define pops (make-hash))
+    (define M (hash))
+    (define R (hash))
+    (define U (hash))
     
     (include "primitives.rkt")
     
@@ -449,12 +467,11 @@
                  (for/fold ((succ (set))) ((w (γ v)))
                    (match w
                      ((clo (and λ («lam» _ x e0)) ρ**)
+                      ;(let ((σi-caller σi))
                         (define (bind-loop x vs ρ*)
                           (match x
                             ('()
-                             (let ((κ* (kalloc e λ ρ*)))
-                               (when (not (hash? ρ*))
-                                 (printf "here\n"))
+                             (let ((κ* (kalloc e λ ρ*))); clo vs σi-caller)))
                                (stack-alloc! κ* (cons ι κ))
                                (set-add succ (transition (ev e0 ρ* σi '() κ* Ξi) E))))
                             ((cons x xs)
@@ -464,6 +481,7 @@
                                    (store-alloc! a (car vs))
                                    (bind-loop xs (cdr vs) (env-bind ρ* («id»-x x) a)))))))                        
                         (bind-loop x (reverse rvs) ρ**))
+                      ;)
                      ((prim name proc)
                       (set-union succ (list->set (set-map (proc e (reverse rvs) ι κ Ξ) (lambda (vE) (transition (ko (car vE) σi ι κ Ξi) (set-union E (cadr vE))))))))
                      ((prim2 _ proc)
@@ -498,6 +516,28 @@
     (define todo (set initial))
     (define (make-system duration exit msg)
       (system (list->vector (set->list states)) duration initial graph (list->vector (reverse stores)) (list->vector (reverse stack-stores)) lattice answer? exit msg))
+
+    (define (handle-effect! s eff)
+      (match eff
+        ((wv a x)
+         (handle-write a s))
+        ((wp a n x)
+         (handle-write a s))
+        ((rv a x)
+         (handle-read a s))
+        ((rp a n x)
+         (handle-read a s))
+        ))
+
+    (define (handle-read a s)
+      (for ((τ (stack-contexts (state-κ s) Ξ)))
+         123))
+           
+
+    (define (handle-write a s)
+      (for ((τ (stack-contexts (state-κ s) Ξ)))
+           123))
+
     
     ;(define state-limit (STATELIMIT))
     (define time-limit (+ (current-milliseconds) (* (CESK-TIMELIMIT) 60000)))
@@ -520,7 +560,9 @@
                         (let* ((ts (step q))
                                (new-states (for/set ((t ts))
                                              ;(printf "-> ~a\n" (state->statei (transition-s t)))
-                                             (transition-s t)))
+                                                    (match-let (((transition s* E) t))
+                                                      ;(for ((eff E)) (handle-effect! q eff))
+                                                      s*)))
                                (existing (hash-ref graph q (set)))
                                (updated (set-union existing ts)))
                           (hash-set! graph q updated)
@@ -566,8 +608,10 @@ explore)
   (cons x (and ctx (ctx-e ctx))))
 ;;
 
-(define conc-kalloc (lambda (e λ ρ*) (ctx (conc-alloc) λ ρ*)))
-(define free-kalloc (lambda (e λ ρ*) (ctx #f λ ρ*))) ; no 1-cfa (no e) TODO!!!!
+(define conc-kalloc (lambda (e lam ρ*) (ctx (conc-alloc) lam ρ*))); #f #f #f)))
+(define free-kalloc (lambda (e lam ρ*) (ctx #f lam ρ*))); #f #f #f))) ; no 1-cfa (no e) TODO!!!!
+;(define concm-kalloc (lambda (e lam ρ* clo args σi) (ctx e #f #f clo args σi)))
+;(define freem-kalloc (lambda (e lam ρ* clo args σi) (ctx e #f #f clo args σi)))
 
 (define conc-mach (make-machine conc-lattice conc-alloc conc-kalloc))
 (define type-mach-0 (make-machine type-lattice mono-alloc free-kalloc))

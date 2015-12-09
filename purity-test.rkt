@@ -38,6 +38,7 @@
 
 (define (abst-purity-test)
   (define log (make-hash))
+  (define num-tests 0)
   (for* ((test (append common-tests abstract-tests))
          (test-handler (list (cons 'type-a (make-test-handler type-mach-0 a-purity-analysis))
                              (cons 'type-sa (make-test-handler type-mach-0 sa-purity-analysis))
@@ -50,10 +51,11 @@
              (handler-name (car test-handler))
              (handler (cdr test-handler))
              (C (handler e)))
+        (set! num-tests (add1 num-tests))
         (unless (equal? (make-hash expected) C)
           (hash-set! log handler-name (add1 (hash-ref log handler-name 0)))
           (printf "error ~a ~a\nexpected ~a actual ~a\n" test-name handler-name expected C))))
-    (printf "Final: ~a\n" log))
+    (printf "Final: #tests ~a ~a\n" num-tests log))
 
 (define common-tests
   (list (cons 'fac (cons fac '((2 . "PURE"))))
