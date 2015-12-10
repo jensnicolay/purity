@@ -42,16 +42,16 @@
 (define test-sat (list sat (set) (set) (set) (set) (set) (set) (set)))
 (define test-collatz (list collatz (set) (set) (set) (set) (set)))
 (define test-rsa (list rsa (set) (set) (set) (set) (set) (set) (set) (set) (set)))
-(define test-primtest (list primtest  (set) (set) (set) (set)))
+(define test-primtest (list primtest #f (set) (set) (set) (set)))
 (define test-factor (list factor (set) (set) (set) (set) (set) (set) (set)))
 (define test-nqueens (list nqueens (set) (set) (set) (set) (set) (set)))
-(define test-dderiv (list dderiv (set) (set) (set) (set) (set) (set GENERATES OBSERVES) (set) (set) (set) (set)))
+(define test-dderiv (list dderiv (set) #f #f #f #f #f #f #f #f (set) (set) (set) (set) (set GENERATES OBSERVES) (set) (set)  #f (set) (set) #f))
 (define test-destruct (list destruct (set OBSERVES) (set OBSERVES GENERATES) (set GENERATES) (set) (set) (set OBSERVES GENERATES) (set OBSERVES GENERATES) (set) (set OBSERVES GENERATES) (set GENERATES) (set GENERATES)))
 (define test-grid (list grid (set) (set) (set GENERATES) (set OBSERVES) (set GENERATES)))
-(define test-mceval (list mceval (set) (set) (set) (set) (set) (set) (set) (set) (set) (set) (set) (set) (set) (set) (set) (set) (set) (set) (set) (set) (set) (set) (set) (set) (set)
-                          (set) (set) (set) (set) (set) (set) (set) (set) (set) (set) (set) (set) (set) (set) (set) (set) (set) (set) (set) (set) (set OBSERVES) (set OBSERVES)
-                          (set OBSERVES GENERATES) (set) (set) (set) (set) (set GENERATES) (set GENERATES) (set GENERATES) (set OBSERVES GENERATES) (set OBSERVES GENERATES) (set) (set)
-                          (set) (set) (set) (set) (set) (set) (set OBSERVES GENERATES) (set OBSERVES GENERATES) (set) (set) (set GENERATES) (set OBSERVES GENERATES) (set)))
+(define test-mceval (list mceval (set) (set) #f (set) #f #f (set) (set) (set) (set) (set) (set) (set) (set) #f (set) (set) (set) (set) (set) #f (set) (set) (set) (set) (set) (set) (set)
+                          (set) #f (set) (set) (set) (set) (set) #f #f (set) (set) (set) (set) (set) (set) (set) #f #f #f #f #f #f (set) #f (set) (set) (set) (set) (set) (set) (set) (set)
+                          (set "OBS") (set "OBS") (set "OBS" "GEN") (set) (set) (set) (set) (set "GEN") (set "GEN") (set "GEN") (set "OBS" "GEN") (set "OBS" "GEN")
+                          (set) (set) (set) (set) (set) (set) (set) (set) (set "OBS" "GEN") (set "OBS" "GEN") (set) (set) (set "GEN") (set "OBS" "GEN") (set)))
 
 
 

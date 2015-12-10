@@ -58,7 +58,7 @@
 
     (define (touchesd d)
       (if (set? d)
-          (for/fold ((as (set)) (lams (set))) ((v d))
+          (for/fold ((as (set)) (lams (set))) ((v (in-set d)))
             (let-values (((A L) (touchesd v)))
               (values (set-union as A) (set-union lams L))))
           (match d
@@ -80,7 +80,6 @@
                     (let-values (((ΔA ΔL) (touchesd v)))
                       (loop (set-union (set-rest A) ΔA) (set-union L ΔL) (set-add R a)))))))))
     
-
     (define (eval-atom ae ρ σ) ; copied from cesk, but in principle can/should be provided in system
       (match ae
         ((«lit» _ v)
@@ -104,7 +103,7 @@
         (match s
           ((ev («app» _ _ aes) ρ σi _ _ _)
            (let ((σ (vector-ref σ σi)))
-             (for/fold ((M M)) ((ae aes))
+             (for/fold ((M M)) ((ae (in-list aes)))
                (set-union M (check-values ae ρ σ M)))))
           ((ev («set!» _ _ ae) ρ σi _ _ _)
            (let ((σ (vector-ref σ σi)))
@@ -127,7 +126,7 @@
           (_ M)))
 
     (define (traverse-graph graph)
-      (for/fold ((M (set))) (((s t) graph))
+      (for/fold ((M (set))) (((s t) (in-hash graph)))
         (let ((M* (handle-state s M)))
           M*)))
 
@@ -319,10 +318,10 @@
   (define Ξ (system-Ξ sys))
   (define γ (lattice-γ (system-lattice sys)))
   (define start (current-milliseconds))
-  (define call-states (for/fold ((call-states (hash))) (((s ts) graph))
+  (define call-states (for/fold ((call-states (hash))) (((s ts) (in-hash graph)))
                         (match s
                           ((ev (? «app»? e) ρ σi ι κ Ξi)
-                           (for/fold ((call-states call-states)) ((t ts))
+                           (for/fold ((call-states call-states)) ((t (in-set ts)))
                              (match t
                                ((transition (ev _ _ _ '() κ* _) _)
                                 (let* ((A-existing (hash-ref call-states κ* (set)))
@@ -581,13 +580,20 @@
       (printf "~a -> ~a\n" (~a lam #:max-width 30) clss))
     (hash-set class->count clss (add1 (hash-ref class->count clss 0)))))
   
-(define (side-effect-pattern lam->side-effects)
-  (map (lambda (lam) (hash-ref lam->side-effects lam)) (sort (hash-keys lam->side-effects) < #:key «lam»-l)))
+(define (side-effect-pattern lam->side-effects lams)
+  (map (lambda (lam) (hash-ref lam->side-effects lam #f)) (sort lams < #:key «lam»-l)))
+
+(define (side-effect-patterns-match? expected actual)
+  (if (null? expected)
+      (null? actual)
+      (let ((s1 (car expected)))
+        (and (or (not s1) (equal? s1 (car actual))) (side-effect-patterns-match? (cdr expected) (cdr actual))))))
+
+(define (nodes ast) (for/fold ((cs (list ast))) ((c (children ast))) (append cs (nodes c))))
+(define (lambdas ast) (filter «lam»? (nodes ast)))
 
 (define (purity-benchmark e mach expected)
 
-  (define (nodes ast) (for/fold ((cs (list ast))) ((c (children ast))) (append cs (nodes c))))
-  (define (lambdas ast) (filter «lam»? (nodes ast)))
   
   (newline)
   (printf "eval... ")
@@ -645,8 +651,8 @@
     (define gen-count (for/sum ((side-effects (hash-values lam->side-effects))) (if (set-member? side-effects GENERATES) 1 0)))
     (define obs-count (for/sum ((side-effects (hash-values lam->side-effects))) (if (set-member? side-effects OBSERVES) 1 0)))
     (define correct (if expected
-                        (let ((actual (side-effect-pattern lam->side-effects)))
-                          (if (equal? expected actual)
+                        (let ((actual (side-effect-pattern lam->side-effects lams)))
+                          (if (side-effect-patterns-match? expected actual)
                               "OK"
                               (begin
                                 ;(printf "expected ~a\ngot ~a\n" expected actual)
@@ -794,7 +800,7 @@
   (define lam->side-effects (side-effect-result-lam->side-effects a-ser))
   (for (((lam side-effects) lam->side-effects))
        (printf "~a ~a\n" (~a lam #:max-width 50) side-effects))
-  (side-effect-pattern lam->side-effects))
+  (side-effect-pattern lam->side-effects (lambdas (ev-e (system-initial sys)))))
 
 #|
 (define t2 '(letrec ((f (lambda (h) (let ((z (cons 1 2))) (if h (h) (f (lambda () (set-car! z 3)))))))) (f #f)))

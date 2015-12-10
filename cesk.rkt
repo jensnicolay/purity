@@ -592,6 +592,15 @@ explore)
          (⊔ (lattice-⊔ lattice)))
     (for/fold ((v ⊥)) ((s (answer-set sys)))
       (⊔ v (ko-v s)))))
+
+;(define (crunch-monotonic-store-graph graph σ)
+
+  ;(define (rewrite-store state)
+ ;   (match 
+  ;
+  ;(for/hash (((s t) (in-hash graph)))
+   ;         (values 
+
 ;;
 
 ;; allocators
