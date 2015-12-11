@@ -332,6 +332,7 @@
   (define time (- (current-milliseconds) start))
   (call-state-result call-states time))
 
+
 (define GENERATES "GEN")
 (define OBSERVES "OBS")
 (struct side-effect-result (lam->side-effects time) #:transparent)
@@ -597,8 +598,6 @@
 (define (lambdas ast) (filter «lam»? (nodes ast)))
 
 (define (purity-benchmark e mach expected)
-
-  
   (newline)
   (printf "eval... ")
   (define sys (mach e))
@@ -667,7 +666,7 @@
   (printf "a-side-effect analysis... ")
   (define a-ser (a-side-effect-analysis sys ctx->addrs))
   (define a-results (handle-side-effect-result a-ser))
-
+  
   (printf "sa-side-effect analysis... ")
   (define sa-ser (sa-side-effect-analysis sys ctx->addrs))
   (define sa-results (handle-side-effect-result sa-ser))
@@ -680,68 +679,23 @@
   (define msfa-ser (msfa-side-effect-analysis sys ctx->addrs state->Fs-esc esc-lams))
   (define msfa-results (handle-side-effect-result msfa-ser))
 
-  (hash 'exit 'ok 'msg result-value 'flow-time flow-time 'state-count state-count 'lam-count lam-count 'called-count called-count 'a a-results 'sa sa-results 'sfa sfa-results 'msfa msfa-results
+  (hash 'exit 'ok 'msg result-value 'flow-time flow-time 'state-count state-count 'lam-count lam-count 'called-count called-count
+        'a a-results 'sa sa-results 'sfa sfa-results 'msfa msfa-results
         'call-state-time call-state-time 'escape-time escape-time 'freshness-time freshness-time 'freshness-esc-time freshness-esc-time
         ))
-
-(define (print-purity-result result)
-
-  (define (~time ms)
-    (~a 
-     (if (< ms 1000)
-         "eps" 
-         (format "~a''" (inexact->exact (round (/ ms 1000)))))
-     #:min-width 5))
-
-  (define (print-config-result name result)
-    (define class-count (hash-ref result 'class-count))
-    (define correct (hash-ref result 'correct))
-    (printf "~a ~a pure ~a obs ~a proc ~a | gen ~a obs ~a | se ~a\n"
-            (~a name #:min-width 4)
-            (~a correct #:min-width 4)
-            (~a (hash-ref class-count PURE 0) #:min-width 2)
-            (~a (hash-ref class-count OBSERVER 0) #:min-width 2)
-            (~a (hash-ref class-count PROCEDURE 0) #:min-width 2)
-            (~a (hash-ref result 'gen-count) #:min-width 2)
-            (~a (hash-ref result 'obs-count) #:min-width 2)
-            (~time (hash-ref result 'side-effect-time))
-            ))
-  
-  (define (print-mach-result name result)
-    (define exit (hash-ref result 'exit))
-    (define msg (hash-ref result 'msg))
-    (define state-count (hash-ref result 'state-count))
-    (printf "~a states ~a lams ~a called ~a | call ~a esc ~a fresh ~a fresh-esc ~a | ~a\n"
-            name
-            (~a (if (eq? exit 'ok) state-count (format ">~a" state-count)) #:min-width 7)
-            (hash-ref result 'lam-count) (hash-ref result 'called-count)
-            (~time (hash-ref result 'call-state-time))
-            (~time (hash-ref result 'escape-time))
-            (~time (hash-ref result 'freshness-time))
-            (~time (hash-ref result 'freshness-esc-time))
-            (~a msg #:max-width 72))
-    (print-config-result "a" (hash-ref result 'a))
-    (print-config-result "sa" (hash-ref result 'sa))
-    (print-config-result "sfa" (hash-ref result 'sfa))
-    (print-config-result "msfa" (hash-ref result 'msfa)))
-  
-  (for ((r result))
-       (printf "~a\n" (car r))
-       (print-mach-result "conc" (cadr r))
-       (print-mach-result "type" (caddr r))))
 
 (define THROW (make-parameter #t))
 (define PRINT-PER-LAMBDA (make-parameter #f))
 
 (define purity-result #f)
 
+(define (se-subsumes? se1 se2)
+  (for/and (((lam side-effects2) se2))
+           (let ((side-effects1 (hash-ref se1 lam (set))))
+             (subset? side-effects2 side-effects1))))
+
 (define (perform-purity-test tests)
-  
-  (define (se-subsumes? se1 se2)
-    (for (((lam side-effects2) se2))
-         (let ((side-effects1 (hash-ref se1 lam (set))))
-           (unless (subset? side-effects2 side-effects1)
-             (error "no subsumption")))))
+               
   (set! purity-result
   (for/list ((test tests))
        (newline)
@@ -762,11 +716,11 @@
        (define type-sfa-lam->side-effects (hash-ref (hash-ref type-results 'sfa) 'lam->side-effects))
        (define type-msfa-lam->side-effects (hash-ref (hash-ref type-results 'msfa) 'lam->side-effects))
 
-       ; conc-a result must be correct
+       ; (CORRECTNESS) conc-a result must be correct
        (unless (eq? "OK" (hash-ref (hash-ref conc-results 'a) 'correct))
          (error "conc-a"))
        
-       ; all conc results must be equal
+       ; (SOUNDNESS) all conc results must be equal
        (unless (equal? conc-a-lam->side-effects conc-sa-lam->side-effects)
          (error "conc-sa"))
        (unless (equal? conc-a-lam->side-effects conc-sfa-lam->side-effects)
@@ -774,7 +728,7 @@
        (unless (equal? conc-a-lam->side-effects conc-msfa-lam->side-effects)
          (error "conc-msfa"))
 
-       ; all type results must subsume conc results
+       ; (SOUNDNESS) all type results must subsume conc results
        (unless (se-subsumes? type-a-lam->side-effects conc-a-lam->side-effects)
          (error "type-a"))
        (unless (se-subsumes? type-sa-lam->side-effects conc-a-lam->side-effects)
@@ -784,12 +738,102 @@
        (unless (se-subsumes? type-msfa-lam->side-effects conc-a-lam->side-effects)
          (error "type-msfa"))
 
+       ; (USEFULNESS) extra analyses must improve results (less-optimized subsumes more-optimized)
+       (unless (se-subsumes? type-a-lam->side-effects type-sa-lam->side-effects)
+         (error "type-a -> sa"))
+       (unless (se-subsumes? type-sa-lam->side-effects type-sfa-lam->side-effects)
+         (error "type-sa -> sfa"))
+       (unless (se-subsumes? type-sfa-lam->side-effects type-msfa-lam->side-effects)
+         (error "type-sfa -> msfa"))
+
        (list name conc-results type-results)
        ))
   (newline)
   (newline)
   (print-purity-result purity-result)
   )
+
+
+(define (print-purity-result result)
+
+  (define correct-counts (make-hash))
+  (define (add1-correct-count! mach config)
+    (let ((existing (hash-ref correct-counts (cons mach config) 0)))
+      (hash-set! correct-counts (cons mach config) (add1 existing))))
+  (define benefits-from-freshness (mutable-set))
+  (define benefits-from-escape (mutable-set)) ; w.r.t. freshness
+  
+  (define (~time ms)
+    (~a 
+     (if (< ms 1000)
+         "eps" 
+         (format "~a''" (inexact->exact (round (/ ms 1000)))))
+     #:min-width 5))
+
+  (define (print-config-result mach name result)
+    (define class-count (hash-ref result 'class-count))
+    (define correct (hash-ref result 'correct))
+    (when (eq? "OK" correct)
+      (add1-correct-count! mach name))
+    (printf "~a ~a pure ~a obs ~a proc ~a | gen ~a obs ~a | se ~a\n"
+            (~a name #:min-width 4)
+            (~a correct #:min-width 4)
+            (~a (hash-ref class-count PURE 0) #:min-width 2)
+            (~a (hash-ref class-count OBSERVER 0) #:min-width 2)
+            (~a (hash-ref class-count PROCEDURE 0) #:min-width 2)
+            (~a (hash-ref result 'gen-count) #:min-width 2)
+            (~a (hash-ref result 'obs-count) #:min-width 2)
+            (~time (hash-ref result 'side-effect-time))
+            ))
+  
+  (define (print-mach-result benchmark-name name result)
+    (define exit (hash-ref result 'exit))
+    (define msg (hash-ref result 'msg))
+    (define state-count (hash-ref result 'state-count))
+    (printf "~a states ~a lams ~a called ~a | call ~a esc ~a fresh ~a fresh-esc ~a | ~a\n"
+            name
+            (~a (if (eq? exit 'ok) state-count (format ">~a" state-count)) #:min-width 7)
+            (hash-ref result 'lam-count) (hash-ref result 'called-count)
+            (~time (hash-ref result 'call-state-time))
+            (~time (hash-ref result 'escape-time))
+            (~time (hash-ref result 'freshness-time))
+            (~time (hash-ref result 'freshness-esc-time))
+            (~a msg #:max-width 72))
+    (define a-result (hash-ref result 'a))
+    (define sa-result (hash-ref result 'sa))
+    (define sfa-result (hash-ref result 'sfa))
+    (define msfa-result (hash-ref result 'msfa))
+    (print-config-result name "a" a-result)
+    (print-config-result name "sa" sa-result)
+    (print-config-result name "sfa" sfa-result)
+    (print-config-result name "msfa" msfa-result)
+    (when (or (< (hash-ref sfa-result 'gen-count) (hash-ref a-result 'gen-count))
+              (< (hash-ref sfa-result 'obs-count) (hash-ref a-result 'obs-count)))
+      (set-add! benefits-from-freshness benchmark-name))
+    (when (or (< (hash-ref msfa-result 'gen-count) (hash-ref sfa-result 'gen-count))
+              (< (hash-ref msfa-result 'obs-count) (hash-ref sfa-result 'obs-count)))
+      (set-add! benefits-from-escape benchmark-name))
+    )
+  
+  
+  (for ((r result))
+       (let ((benchmark-name (car r)))
+         (printf "~a\n" benchmark-name)
+         (print-mach-result benchmark-name "conc" (cadr r))
+         (print-mach-result benchmark-name "type" (caddr r))))
+
+  (printf "conc-a    ~a\n" (hash-ref correct-counts (cons "conc" "a") 0))
+  (printf "conc-sa   ~a\n" (hash-ref correct-counts (cons "conc" "sa") 0))
+  (printf "conc-sfa  ~a\n" (hash-ref correct-counts (cons "conc" "sfa") 0))
+  (printf "conc-msfa ~a\n" (hash-ref correct-counts (cons "conc" "msfa") 0))
+  (printf "type-a    ~a\n" (hash-ref correct-counts (cons "type" "a") 0))
+  (printf "type-sa   ~a\n" (hash-ref correct-counts (cons "type" "sa") 0))
+  (printf "type-sfa  ~a\n" (hash-ref correct-counts (cons "type" "sfa") 0))
+  (printf "type-msfa ~a\n" (hash-ref correct-counts (cons "type" "msfa") 0))
+  (printf "benefits from freshness: ~a\n" benefits-from-freshness)
+  (printf "benefits from escape   : ~a\n" benefits-from-escape)
+  )
+
 
 (define (a-se sys)
   (printf "call-state analysis... ")
