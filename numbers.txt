@@ -1536,3 +1536,181 @@ local
 #114030  f-time 630353  lams 36  called 26  pure 3  obs 8  proc 15 p-time 3824491 | #<set: BOOL>
 > (print-purity-summary msfa-summary)
 #114030  f-time 630353  lams 36  called 26  pure 3  obs 8  proc 15 p-time 7557049 | #<set: BOOL>
+
+
+====20151210 
+server
+fib
+conc states 701     lams 1 called 1 | call eps   esc eps   fresh eps   fresh-esc eps   | 21
+a    pure 1  obs 0  proc 0  | gen / obs / | se eps
+sa   pure 1  obs 0  proc 0  | gen / obs / | se eps
+sfa  pure 1  obs 0  proc 0  | gen / obs / | se eps
+msfa pure 1  obs 0  proc 0  | gen / obs / | se eps
+type states 54      lams 1 called 1 | call eps   esc eps   fresh eps   fresh-esc eps   | #<set: NUM>
+a    pure 1  obs 0  proc 0  | gen / obs / | se eps
+sa   pure 1  obs 0  proc 0  | gen / obs / | se eps
+sfa  pure 1  obs 0  proc 0  | gen / obs / | se eps
+msfa pure 1  obs 0  proc 0  | gen / obs / | se eps
+nqueens
+conc states 2622    lams 6 called 6 | call eps   esc eps   fresh eps   fresh-esc eps   | 2
+a    pure 6  obs 0  proc 0  | gen / obs / | se eps
+sa   pure 6  obs 0  proc 0  | gen / obs / | se eps
+sfa  pure 6  obs 0  proc 0  | gen / obs / | se eps
+msfa pure 6  obs 0  proc 0  | gen / obs / | se eps
+type states 658     lams 6 called 6 | call eps   esc eps   fresh eps   fresh-esc eps   | #<set: NUM>
+a    pure 6  obs 0  proc 0  | gen / obs / | se eps
+sa   pure 6  obs 0  proc 0  | gen / obs / | se eps
+sfa  pure 6  obs 0  proc 0  | gen / obs / | se eps
+msfa pure 6  obs 0  proc 0  | gen / obs / | se eps
+dderiv
+conc states 2846    lams 20 called 10 | call eps   esc eps   fresh eps   fresh-esc eps   | #t
+a    pure 9  obs 0  proc 1  | gen / obs / | se eps
+sa   pure 9  obs 0  proc 1  | gen / obs / | se eps
+sfa  pure 9  obs 0  proc 1  | gen / obs / | se eps
+msfa pure 9  obs 0  proc 1  | gen / obs / | se eps
+type states 5927    lams 20 called 14 | call 2''   esc 2''   fresh 1''   fresh-esc 1''   | #<set: BOOL>
+a    pure 5  obs 8  proc 1  | gen / obs / | se 2''
+sa   pure 5  obs 8  proc 1  | gen / obs / | se 1''
+sfa  pure 5  obs 8  proc 1  | gen / obs / | se 2''
+msfa pure 5  obs 8  proc 1  | gen / obs / | se 2''
+destruct
+conc states 2251    lams 11 called 11 | call eps   esc eps   fresh eps   fresh-esc eps   | #(struct:addr 119)
+a    pure 3  obs 1  proc 7  | gen / obs / | se eps
+sa   pure 3  obs 1  proc 7  | gen / obs / | se eps
+sfa  pure 3  obs 1  proc 7  | gen / obs / | se eps
+msfa pure 3  obs 1  proc 7  | gen / obs / | se 1''
+type states 1984    lams 11 called 11 | call eps   esc eps   fresh eps   fresh-esc eps   | #<set: #(struct:addr (cons #(struct:«quo» 100 ()) _a19)) ()>
+a    pure 3  obs 1  proc 7  | gen / obs / | se eps
+sa   pure 3  obs 1  proc 7  | gen / obs / | se eps
+sfa  pure 3  obs 1  proc 7  | gen / obs / | se eps
+msfa pure 3  obs 1  proc 7  | gen / obs / | se eps
+grid
+conc states 1990    lams 5 called 5 | call eps   esc eps   fresh eps   fresh-esc eps   | #t
+a    pure 2  obs 1  proc 2  | gen / obs / | se eps
+sa   pure 2  obs 1  proc 2  | gen / obs / | se eps
+sfa  pure 2  obs 1  proc 2  | gen / obs / | se eps
+msfa pure 2  obs 1  proc 2  | gen / obs / | se eps
+type states 1256    lams 5 called 5 | call eps   esc eps   fresh eps   fresh-esc eps   | #<set: BOOL>
+a    pure 1  obs 1  proc 3  | gen / obs / | se eps
+sa   pure 1  obs 1  proc 3  | gen / obs / | se eps
+sfa  pure 1  obs 1  proc 3  | gen / obs / | se eps
+msfa pure 2  obs 1  proc 2  | gen / obs / | se eps
+mceval
+conc states 9107    lams 87 called 72 | call 20''  esc eps   fresh 4''   fresh-esc 4''   | 2
+a    pure 60 obs 2  proc 10 | gen / obs / | se 5''
+sa   pure 60 obs 2  proc 10 | gen / obs / | se 5''
+sfa  pure 60 obs 2  proc 10 | gen / obs / | se 5''
+msfa pure 60 obs 2  proc 10 | gen / obs / | se 8''
+type states 87593   lams 87 called 85 | call 1483'' esc 2441'' fresh 100'' fresh-esc 100'' | #<set: #<prim2> #<prim2> #<prim2> #(struct:addr (cons _p2 _p4)) #(struct
+a    pure 13 obs 59 proc 13 | gen / obs / | se 879''
+sa   pure 13 obs 59 proc 13 | gen / obs / | se 822''
+sfa  pure 13 obs 59 proc 13 | gen / obs / | se 832''
+msfa pure 13 obs 59 proc 13 | gen / obs / | se 832''
+
+local
+test-fib
+conc states 701     lams 1 called 1 | call eps   esc eps   fresh eps   fresh-esc eps   | 21
+a    OK   pure 1  obs 0  proc 0  | gen 0  obs 0  | se eps  
+sa   OK   pure 1  obs 0  proc 0  | gen 0  obs 0  | se eps  
+sfa  OK   pure 1  obs 0  proc 0  | gen 0  obs 0  | se eps  
+msfa OK   pure 1  obs 0  proc 0  | gen 0  obs 0  | se eps  
+type states 63      lams 1 called 1 | call eps   esc eps   fresh eps   fresh-esc eps   | #<set: NUM>
+a    OK   pure 1  obs 0  proc 0  | gen 0  obs 0  | se eps  
+sa   OK   pure 1  obs 0  proc 0  | gen 0  obs 0  | se eps  
+sfa  OK   pure 1  obs 0  proc 0  | gen 0  obs 0  | se eps  
+msfa OK   pure 1  obs 0  proc 0  | gen 0  obs 0  | se eps  
+test-nqueens
+conc states 2622    lams 6 called 6 | call eps   esc eps   fresh eps   fresh-esc eps   | 2
+a    OK   pure 6  obs 0  proc 0  | gen 0  obs 0  | se eps  
+sa   OK   pure 6  obs 0  proc 0  | gen 0  obs 0  | se eps  
+sfa  OK   pure 6  obs 0  proc 0  | gen 0  obs 0  | se eps  
+msfa OK   pure 6  obs 0  proc 0  | gen 0  obs 0  | se eps  
+type states 601     lams 6 called 6 | call eps   esc eps   fresh eps   fresh-esc eps   | #<set: NUM>
+a    OK   pure 6  obs 0  proc 0  | gen 0  obs 0  | se eps  
+sa   OK   pure 6  obs 0  proc 0  | gen 0  obs 0  | se eps  
+sfa  OK   pure 6  obs 0  proc 0  | gen 0  obs 0  | se eps  
+msfa OK   pure 6  obs 0  proc 0  | gen 0  obs 0  | se eps  
+test-dderiv
+conc states 2846    lams 20 called 10 | call eps   esc eps   fresh eps   fresh-esc eps   | #t
+a    OK   pure 9  obs 0  proc 1  | gen 1  obs 1  | se eps  
+sa   OK   pure 9  obs 0  proc 1  | gen 1  obs 1  | se eps  
+sfa  OK   pure 9  obs 0  proc 1  | gen 1  obs 1  | se eps  
+msfa OK   pure 9  obs 0  proc 1  | gen 1  obs 1  | se eps  
+type states 1298    lams 20 called 10 | call eps   esc eps   fresh eps   fresh-esc eps   | #<set: BOOL>
+a    NOK  pure 7  obs 2  proc 1  | gen 1  obs 3  | se eps  
+sa   NOK  pure 7  obs 2  proc 1  | gen 1  obs 3  | se eps  
+sfa  NOK  pure 7  obs 2  proc 1  | gen 1  obs 3  | se eps  
+msfa NOK  pure 7  obs 2  proc 1  | gen 1  obs 3  | se eps  
+test-destruct
+conc states 2251    lams 11 called 11 | call eps   esc eps   fresh eps   fresh-esc eps   | #(struct:addr 119)
+a    OK   pure 3  obs 1  proc 7  | gen 7  obs 5  | se eps  
+sa   OK   pure 3  obs 1  proc 7  | gen 7  obs 5  | se eps  
+sfa  OK   pure 3  obs 1  proc 7  | gen 7  obs 5  | se eps  
+msfa OK   pure 3  obs 1  proc 7  | gen 7  obs 5  | se eps  
+type states 1286    lams 11 called 11 | call eps   esc eps   fresh eps   fresh-esc eps   | #<set: #(struct:addr (cons #(struct:«quo» 100 ()) _a19)) ()>
+a    NOK  pure 3  obs 1  proc 7  | gen 7  obs 8  | se eps  
+sa   NOK  pure 3  obs 1  proc 7  | gen 7  obs 8  | se eps  
+sfa  NOK  pure 3  obs 1  proc 7  | gen 7  obs 8  | se eps  
+msfa NOK  pure 3  obs 1  proc 7  | gen 7  obs 8  | se eps  
+test-grid
+conc states 1990    lams 5 called 5 | call eps   esc eps   fresh eps   fresh-esc eps   | #t
+a    OK   pure 2  obs 1  proc 2  | gen 2  obs 1  | se eps  
+sa   OK   pure 2  obs 1  proc 2  | gen 2  obs 1  | se eps  
+sfa  OK   pure 2  obs 1  proc 2  | gen 2  obs 1  | se eps  
+msfa OK   pure 2  obs 1  proc 2  | gen 2  obs 1  | se eps  
+type states 1430    lams 5 called 5 | call eps   esc eps   fresh eps   fresh-esc eps   | #<set: BOOL>
+a    NOK  pure 1  obs 1  proc 3  | gen 3  obs 4  | se eps  
+sa   NOK  pure 1  obs 1  proc 3  | gen 3  obs 4  | se eps  
+sfa  NOK  pure 1  obs 1  proc 3  | gen 3  obs 4  | se eps  
+msfa NOK  pure 2  obs 1  proc 2  | gen 2  obs 3  | se eps  
+test-mceval
+conc states 9107    lams 87 called 72 | call 8''   esc eps   fresh 1''   fresh-esc 1''   | 2
+a    OK   pure 60 obs 2  proc 10 | gen 10 obs 8  | se 2''  
+sa   OK   pure 60 obs 2  proc 10 | gen 10 obs 8  | se 2''  
+sfa  OK   pure 60 obs 2  proc 10 | gen 10 obs 8  | se 3''  
+msfa OK   pure 60 obs 2  proc 10 | gen 10 obs 8  | se 5''  
+type states 28200   lams 87 called 85 | call 105'' esc 106'' fresh 14''  fresh-esc 14''  | #<set: #(struct:addr ((+ (fib (- n 1)) (fib (- n 2))))) #(struct:addr ((
+a    NOK  pure 13 obs 59 proc 13 | gen 13 obs 72 | se 107''
+sa   NOK  pure 13 obs 59 proc 13 | gen 13 obs 72 | se 103''
+sfa  NOK  pure 13 obs 59 proc 13 | gen 13 obs 72 | se 105''
+msfa NOK  pure 13 obs 59 proc 13 | gen 13 obs 72 | se 104''
+Done.
+
+
+local: testing with global Xi without timestamp in state (still global store with ti in state)
+> (server-flow-test)
+fac          states 32      time 5       σi 7    Ξi 1 | #<set: NUM>
+fib          states 51      time 2       σi 9    Ξi 1 | #<set: NUM>
+fib-mut      states 64      time 2       σi 16   Ξi 1 | #<set: NUM>
+blur         states 95      time 3       σi 20   Ξi 1 | #<set: BOOL>
+eta          states 40      time 0       σi 12   Ξi 1 | #<set: BOOL>
+mj09         states 45      time 1       σi 11   Ξi 1 | #<set: NUM>
+gcipd        states 123     time 4       σi 22   Ξi 1 | #<set: NUM>
+kcfa2        states 35      time 0       σi 11   Ξi 1 | #<set: BOOL>
+kcfa3        states 41      time 0       σi 14   Ξi 1 | #<set: BOOL>
+rotate       states 32      time 0       σi 15   Ξi 1 | #<set: STR BOOL NUM>
+loop2        states 60      time 2       σi 16   Ξi 1 | #<set: NUM>
+sat          states 93      time 5       σi 24   Ξi 1 | #<set: BOOL>
+collatz      states 237     time 8       σi 38   Ξi 1 | #<set: NUM>
+rsa          states 445     time 24      σi 77   Ξi 1 | #<set: BOOL>
+primtest     states 524     time 39      σi 59   Ξi 1 | #<set: NUM>
+factor       states 239     time 10      σi 57   Ξi 1 | #<set: #(struct:addr (cons v acc)) () #(struct:addr (cons 2 _two-list5))
+nqueens      states 644     time 25      σi 80   Ξi 1 | #<set: NUM>
+dderiv       states 1055    time 73      σi 163  Ξi 1 | #<set: BOOL>
+mceval       states 54226   time 41147   σi 4055 Ξi 1 | #<set: #(struct:addr ((+ (fib (- n 1)) (fib (- n 2))))) #(struct:addr (c
+
+
+=== 20151211: after CESK opti (mono-store flag, no Xi in states)
+local
+(full-purity-test)
+conc-a    85
+conc-sa   85
+conc-sfa  85
+conc-msfa 85
+type-a    70
+type-sa   73
+type-sfa  78
+type-msfa 79
+benefits from freshness: #<mutable-set: test-purity53 test-purity47 test-treenode1 test-purity65 test-treeadd test-purity54 test-purity52 test-treeadd2 test-purity46 test-treeadd3>
+benefits from escape   : #<mutable-set: test-purity67 test-grid>
+
