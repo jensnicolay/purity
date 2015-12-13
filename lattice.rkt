@@ -56,7 +56,9 @@
     ("remainder" . ,(conc-α (prim2 "remainder" remainder)))
     ("quotient" . ,(conc-α (prim2 "quotient" quotient)))
     ("ceiling" . ,(conc-α (prim2 "ceiling" ceiling)))
+    ("arithmetic-shift" . ,(conc-α (prim2 "arithmetic-shift" arithmetic-shift)))
     ("log" . ,(conc-α (prim2 "log" log)))
+    ("max" . ,(conc-α (prim2 "max" max)))
     ("even?" . ,(conc-α (prim2 "even?" even?)))
     ("odd?" . ,(conc-α (prim2 "odd?" odd?)))
     ("symbol?" . ,(conc-α (prim2 "symbol?" symbol?)))
@@ -79,7 +81,10 @@
     ("char-numeric?" . ,(conc-α (prim2 "char-numeric?" char-numeric?)))
     ("char=?" . ,(conc-α (prim2 "char=?" char=?)))
     ("number?" . ,(conc-α (prim2 "number?" number?)))
-    ("%random" . ,(conc-α (prim2 "%random" %random)))))
+    ("%random" . ,(conc-α (prim2 "%random" %random)))
+    ("display" . ,(conc-α (prim2 "display" (lambda _ 'undefined)))) ; sym
+    ("newline" . ,(conc-α (prim2 "newline" (lambda _ 'undefined)))) ; sym
+    ))
 
 (define conc-lattice (lattice conc-α conc-γ conc-⊥ conc-⊔ conc-⊑ conc-true? conc-false? conc-eq? conc-global))
 ;;
@@ -162,7 +167,9 @@
       ("remainder" . ,(type-α (prim2 "remainder" ->num)))
       ("quotient" . ,(type-α (prim2 "quotient" ->num)))
       ("ceiling" . ,(type-α (prim2 "ceiling" ->num)))
+      ("arithmetic-shift" . ,(type-α (prim2 "arithmetic-shift" ->num)))
       ("log" . ,(type-α (prim2 "log" ->num)))
+      ("max" . ,(type-α (prim2 "max" ->num)))
       ("even?" . ,(type-α (prim2 "even?" ->bool)))
       ("odd?" . ,(type-α (prim2 "odd?" ->bool)))
       ("symbol?" . ,(type-α (prim2 "symbol?" ->bool)))
@@ -186,7 +193,10 @@
       ("char->integer" . ,(type-α (prim2 "char->integer" ->num)))
       ("char-alphabetic?" . ,(type-α (prim2 "char-alphabetic?" ->bool)))
       ("char-numeric?" . ,(type-α (prim2 "char-numeric?" ->bool)))
-      ("char=?" . ,(type-α (prim2 "char=?" ->bool))))))
+      ("char=?" . ,(type-α (prim2 "char=?" ->bool)))
+      ("display" . ,(type-α (prim2 "display" ->sym))) ; sym?
+      ("newline" . ,(type-α (prim2 "newline" ->sym))) ; sym?
+  )))
 
 (define type-lattice (lattice type-α type-γ type-⊥ type-⊔ type-⊑ type-true? type-false? type-eq? type-global))
 ;;

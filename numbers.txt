@@ -1714,24 +1714,17 @@ type-msfa 79
 benefits from freshness: #<mutable-set: test-purity53 test-purity47 test-treenode1 test-purity65 test-treeadd test-purity54 test-purity52 test-treeadd2 test-purity46 test-treeadd3>
 benefits from escape   : #<mutable-set: test-purity67 test-grid>
 
-==== 20151212: relaxing of freshness (FRESH unless explicitly UNFRESH)
+==== 20151212: relaxing of freshness (FRESH unless explicitly UNFRESH); removed some stuff from se-analysis (no checking of Fi)
 conc-a    86
 conc-sa   86
 conc-sfa  86
 conc-msfa 86
 type-a    71
 type-sa   74
-type-sfa  79
-type-msfa 80
-benefits from freshness: #<mutable-set: test-treeadd3 test-purity53 test-treenode1 test-purity47 test-purity65 test-treeadd test-purity54 test-purity52 test-treeadd2 test-purity46>
-benefits from escape   : #<mutable-set: test-purity67 test-grid>
+type-sfa  80
+type-msfa 81
+benefits from freshness: (10) #<mutable-set: test-treeadd3 test-purity53 test-treenode1 test-purity47 test-purity65 test-treeadd test-purity54 test-purity52 test-treeadd2 test-purity46>
+benefits from escape   : (2) #<mutable-set: test-purity67 test-grid>
+benefits from both     : (0) #<mutable-set:>
 
-(define sys (conc-mach destruct))
-(define er (escape-analysis sys))
-(define esc1 (lambda _ #t))
-(define esc2 (lambda (lam) (set-member? (escape-result-lams er) lam)))
-(freshness-analysis sys esc1)
-
-(define sys (conc-mach fib-mut))
-(generate-dot (system-graph sys) "fib-mut")
-(freshness-analysis sys (lambda _ #t))
+(conc-eval '(let ((v (make-vector 10 1))) (let ((vv (vector-copy v))) (vector-ref vv 3))))

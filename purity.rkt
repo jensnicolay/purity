@@ -386,24 +386,6 @@
       (for ((λ-o λ-os))
            (add-effect! λ-o OBSERVES))))
 
-  (define (traverse-graph S W R O)
-    (unless (set-empty? W)
-      (let ((s (set-first W)))
-        (if (set-member? S s)
-            (traverse-graph S (set-rest W) R O)
-            (let ((old-Fi Fi))
-              (let-values (((W* R* O*)
-                            (for/fold ((W W) (R R) (O O)) ((t (hash-ref graph s (set))))
-                              (match t
-                                ((transition s* E)
-                                 (let ((W (set-add (set-remove W s) s*)))
-                                   (for/fold ((W W) (R R) (O O)) ((eff E))
-                                     (let-values (((R O) (handle-effect eff s R O)))
-                                       (values W R O)))))))))
-                (let* ((unchanged (and (= old-Fi Fi) (equal? R R*) (equal? O O*)))
-                       (S* (if unchanged (set-add S s) (set))))
-                  (traverse-graph S* W* R* O*))))))))
-
   (define (update-O-write res R O)
     (let ((λ-rs (hash-ref R res (set))))
       (for/fold ((O O)) ((λ-r λ-rs))
@@ -472,6 +454,23 @@
     (for/hash ((κ (hash-keys Ξ)))
               (let ((lam (ctx-λ κ)))
                 (values lam (hash-ref F lam (set))))))
+
+  (define (traverse-graph S W R O)
+    (unless (set-empty? W)
+      (let ((s (set-first W)))
+        (if (set-member? S s)
+            (traverse-graph S (set-rest W) R O)
+            (let ()
+              ;(printf "~a ~a\n" (set-count S) (set-count W))
+              (let-values (((W* R* O*) (for/fold ((W (set-rest W)) (R R) (O O)) ((t (hash-ref graph s (set))))
+                          (match t
+                            ((transition s* E)
+                             (let-values (((R* O*) (for/fold ((R R) (O O)) ((eff E))
+                                                     (handle-effect eff s R O))))
+                               (values (set-add W s*) R* O*)))))))
+                (let* ((unchanged (and (equal? R R*) (equal? O O*)))
+                       (S* (if unchanged (set-add S s) (set))))
+                  (traverse-graph S* W* R* O*))))))))
   
   (define start (current-milliseconds))
   (traverse-graph (set) (set initial) (hash) (hash))
@@ -847,6 +846,8 @@
   (printf "type-msfa ~a\n" (hash-ref correct-counts (cons "type" "msfa") 0))
   (printf "benefits from freshness: (~a) ~a\n" (set-count benefits-from-freshness) benefits-from-freshness)
   (printf "benefits from escape   : (~a) ~a\n" (set-count benefits-from-escape) benefits-from-escape)
+  (set-intersect! benefits-from-freshness benefits-from-escape)
+  (printf "benefits from both     : (~a) ~a\n" (set-count benefits-from-freshness) benefits-from-freshness)
   )
 
 

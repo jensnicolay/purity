@@ -1,6 +1,7 @@
 #lang racket
 (provide (all-defined-out))
 
+(require racket/hash)
 (require "general.rkt")
 (require "ast.rkt")
 (require "lattice.rkt")
@@ -189,11 +190,13 @@
     (include "primitives.rkt")
     
     (define (inject e)
-      (let ((global* (append (lattice-global lattice)
+      (let ((global* (append (lattice-global lattice) ; all fresh (freshness analysis supposes this: UNWANTED DEP!)
                              `(("eq?" . ,(α (prim "eq?" prim-eq?)))
                                ("~a" . ,(α (prim "~a" prim-to-string)))
                                ("error" . ,(α (prim "error" prim-error)))
                                ("pair?" . ,(α (prim "pair?" prim-pair)))
+                               ("vector-length" . ,(α (prim "vector-length" prim-vector-length)))
+                               ("vector-copy" . ,(α (prim "vector-copy" prim-vector-copy)))
                                )))
             (compiled-e (compile e)))
         (set! conc-alloc-counter 0)

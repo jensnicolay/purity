@@ -172,3 +172,4 @@
 (define destruct (add-length (file->value "test/destruct.scm")))
 (define grid (add-equal? (file->value "test/grid.scm")))
 (define grid1 (add-equal? (file->value "test/grid1.scm")))
+(define fannkuch (file->value "test/fannkuch.scm"))

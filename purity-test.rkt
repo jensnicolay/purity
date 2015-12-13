@@ -164,7 +164,7 @@
 (define test-treeadd2 (list treeadd2 (set) (set) (set)))
 (define test-treeadd3 (list treeadd3 (set) (set)))
 (define test-account (list account (set) (set GENERATES OBSERVES) (set GENERATES OBSERVES) (set)))
-
+(define test-fannkuch (list fannkuch (set) (set) (set OBSERVES) (set OBSERVES) (set OBSERVES GENERATES) (set OBSERVES GENERATES) (set OBSERVES GENERATES) (set) (set GENERATES OBSERVES) (set) (set GENERATES) (set OBSERVES GENERATES) (set) (set OBSERVES GENERATES) (set OBSERVES GENERATES) (set OBSERVES GENERATES)))
 
 
 (define (purity-test . names)
@@ -186,7 +186,7 @@
   (purity-test 'test-fib 'test-fib-mut 'test-blur 'test-eta 'test-mj09 'test-gcipd 'test-kcfa2 'test-kcfa3 'test-rotate 'test-loop2
                'test-sat 'test-collatz 'test-rsa 'test-primtest 'test-factor 'test-treenode1 'test-grid
                'test-treeadd 'test-treeadd2 'test-treeadd3
-               'test-account
+               'test-account 'test-fannkuch
                'test-nqueens 'test-dderiv 'test-destruct
                'test-purity1 'test-purity2 'test-purity3 'test-purity4 'test-purity5 'test-purity6 'test-purity7 'test-purity8 'test-purity9 'test-purity10
                'test-purity11              'test-purity13 'test-purity14 'test-purity15 'test-purity16 'test-purity17 'test-purity18 'test-purity19 'test-purity20
