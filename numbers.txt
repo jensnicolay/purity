@@ -1728,3 +1728,17 @@ benefits from escape   : (2) #<mutable-set: test-purity67 test-grid>
 benefits from both     : (0) #<mutable-set:>
 
 (conc-eval '(let ((v (make-vector 10 1))) (let ((vv (vector-copy v))) (vector-ref vv 3))))
+
+====  20151214
+Removed pops from CESK (again): introduces extra control-flow at revisited states, should only produce control-flow when actually revisiting those states
+conc-a    87
+conc-sa   87
+conc-sfa  87
+conc-msfa 87
+type-a    72
+type-sa   75
+type-sfa  80
+type-msfa 81
+benefits from freshness: (10) #<mutable-set: test-treeadd3 test-purity53 test-treenode1 test-purity47 test-purity65 test-treeadd test-purity54 test-purity52 test-treeadd2 test-purity46>
+benefits from escape   : (2) #<mutable-set: test-purity67 test-grid>
+benefits from both     : (0) #<mutable-set:>

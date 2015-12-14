@@ -178,7 +178,7 @@
     (define M (hash))
     (define R (hash))
     (define U (hash))
-    (define pops (make-hash))
+    ;(define pops (make-hash))
 
     (define state-store (if monotonic-store
                             (lambda ()
@@ -252,14 +252,14 @@
             (unless (set-member? stacks stack)
               ;(printf "ADDING to ~a\n" (set-map stacks stack-to-string))
               (set! Ξ (hash-set Ξ κ (set-add stacks stack)))
-              (for ((s (hash-ref pops κ (set))))
-                (match s
-                  ((ko v _ _ _)
-                   (let ((s* (ko v (state-store) (car stack) (cdr stack))))
-                     (hash-set! graph s (set-add (hash-ref graph s (set)) (transition s* (set))))
+              ;(for ((s (hash-ref pops κ (set))))
+              ;  (match s
+              ;    ((ko v _ _ _)
+              ;     (let ((s* (ko v (state-store) (car stack) (cdr stack))))
+              ;       (hash-set! graph s (set-add (hash-ref graph s (set)) (transition s* (set))))
                      ;(printf "adding ~a -> ~a\n" (state->statei s) (state->statei s*))
-                     (set-remove! visited s*)
-                     (set! todo (set-add todo s*))))))
+              ;       (set-remove! visited s*)
+              ;       (set! todo (set-add todo s*))))))
               ;(set! stack-stores (cons Ξ stack-stores))
               (set! Ξi (add1 Ξi))
               )
@@ -511,8 +511,8 @@
                             (κ (cadr ικG))
                             (G (caddr ικG))
                             (succ* (apply-local-kont ι κ v (set))))
-                       (for ((κ G))
-                         (hash-set! pops κ (set-add (hash-ref pops κ (set)) q)))
+                       ;(for ((κ G))
+                       ;  (hash-set! pops κ (set-add (hash-ref pops κ (set)) q)))
                        (loop (set-rest ικGs)
                              (set-union succ succ*))))))))
         )) ; end step
@@ -583,7 +583,7 @@
                                (updated (set-union existing ts)))
                           (hash-set! graph q updated)
                           (set! todo (set-union new-states todo))
-                          (when (and monotonic-store (> σi old-ii))
+                          (when (or (> Ξi old-i) (and monotonic-store (> σi old-ii)))
                             (set-clear! visited))
                           (explore-loop)))))))))
                               
