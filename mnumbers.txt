@@ -1,0 +1,45 @@
+==== 20151214
+
+localUI, before handle-effect
+> (flow-test)
+fac          states 40      time 4       σi (vector-length (system-σ sys)) Ξi 1 | #<set: NUM>
+fib          states 93      time 3       σi (vector-length (system-σ sys)) Ξi 1 | #<set: NUM>
+fib-mut      states 77      time 2       σi (vector-length (system-σ sys)) Ξi 1 | #<set: NUM>
+blur         states 110     time 3       σi (vector-length (system-σ sys)) Ξi 1 | #<set: BOOL>
+eta          states 28      time 1       σi (vector-length (system-σ sys)) Ξi 1 | #<set: BOOL>
+mj09         states 39      time 1       σi (vector-length (system-σ sys)) Ξi 1 | #<set: NUM>
+gcipd        states 225     time 6       σi (vector-length (system-σ sys)) Ξi 1 | #<set: NUM>
+kcfa2        states 39      time 0       σi (vector-length (system-σ sys)) Ξi 1 | #<set: BOOL>
+kcfa3        states 53      time 1       σi (vector-length (system-σ sys)) Ξi 1 | #<set: BOOL>
+rotate       states 44      time 2       σi (vector-length (system-σ sys)) Ξi 1 | #<set: STR BOOL NUM>
+loop2        states 74      time 2       σi (vector-length (system-σ sys)) Ξi 1 | #<set: NUM>
+sat          states 414     time 47      σi (vector-length (system-σ sys)) Ξi 1 | #<set: BOOL>
+collatz      states 560     time 18      σi (vector-length (system-σ sys)) Ξi 1 | #<set: NUM>
+rsa          states 1059    time 52      σi (vector-length (system-σ sys)) Ξi 1 | #<set: BOOL>
+primtest     states 2026    time 90      σi (vector-length (system-σ sys)) Ξi 1 | #<set: NUM>
+factor       states 520     time 19      σi (vector-length (system-σ sys)) Ξi 1 | #<set: #(struct:addr (cons v acc)) () #(struct:addr (cons 2 _two-list5))
+nqueens      states 1127    time 65      σi (vector-length (system-σ sys)) Ξi 1 | #<set: NUM>
+
+after handle-effect in explore-loop (with dummy handle-r/w)
+> (flow-test)
+fac          states 40      time 29      σi (vector-length (system-σ sys)) Ξi 1 | #<set: NUM>
+fib          states 111     time 4       σi (vector-length (system-σ sys)) Ξi 1 | #<set: NUM>
+fib-mut      states 77      time 2       σi (vector-length (system-σ sys)) Ξi 1 | #<set: NUM>
+blur         states 108     time 3       σi (vector-length (system-σ sys)) Ξi 1 | #<set: BOOL>
+eta          states 28      time 0       σi (vector-length (system-σ sys)) Ξi 1 | #<set: BOOL>
+mj09         states 37      time 1       σi (vector-length (system-σ sys)) Ξi 1 | #<set: NUM>
+gcipd        states 163     time 5       σi (vector-length (system-σ sys)) Ξi 1 | #<set: NUM>
+kcfa2        states 39      time 1       σi (vector-length (system-σ sys)) Ξi 1 | #<set: BOOL>
+kcfa3        states 53      time 2       σi (vector-length (system-σ sys)) Ξi 1 | #<set: BOOL>
+rotate       states 44      time 2       σi (vector-length (system-σ sys)) Ξi 1 | #<set: STR BOOL NUM>
+loop2        states 85      time 3       σi (vector-length (system-σ sys)) Ξi 1 | #<set: NUM>
+sat          states 278     time 35      σi (vector-length (system-σ sys)) Ξi 1 | #<set: BOOL>
+collatz      states 775     time 44      σi (vector-length (system-σ sys)) Ξi 1 | #<set: NUM>
+rsa          states 552     time 50      σi (vector-length (system-σ sys)) Ξi 1 | #<set: BOOL>
+primtest     states 876     time 55      σi (vector-length (system-σ sys)) Ξi 1 | #<set: NUM>
+factor       states 666     time 36      σi (vector-length (system-σ sys)) Ξi 1 | #<set: #(struct:addr (cons v acc)) () #(struct:addr (cons 2 _two-list5))
+nqueens      states 1563    time 116     σi (vector-length (system-σ sys)) Ξi 1 | #<set: NUM>
+
+
+=== Removed `pops` (introduces extra control flow)
+

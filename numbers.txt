@@ -1742,3 +1742,71 @@ type-msfa 81
 benefits from freshness: (10) #<mutable-set: test-treeadd3 test-purity53 test-treenode1 test-purity47 test-purity65 test-treeadd test-purity54 test-purity52 test-treeadd2 test-purity46>
 benefits from escape   : (2) #<mutable-set: test-purity67 test-grid>
 benefits from both     : (0) #<mutable-set:>
+
+=== 20151217
+
+"server" now bertha instead of wilma
+
+server
+> (a-se (conc-mach boyer))
+call-state analysis... 3580710 ms
+a-side-effect analysis... 563687 ms
+(lambda () (let ((_lst69 #(struct:«quo» 883 ((equa #<set: OBS GEN>
+(lambda (p) (let ((_p0 (cdr p))) (let ((_p1 (cdr _ #<set:>
+(lambda () (let ((_ans77 #f)) (let ((_term78 #f))  #<set: OBS GEN>
+(lambda (_term158 _term259) (let ((_$154 (set! _un #<set: OBS GEN>
+(lambda (_term41) (let ((_p126 (pair? _term41))) ( #<set: OBS GEN>
+(lambda (p) (let ((_p0 (cdr p))) (car _p0))) #<set:>
+(lambda (_k1 _l2) (let ((_p89 (null? _l2))) (if _p #<set:>
+(lambda (_name13) (let ((_p98 (car _*lastlook*7))) #<set: OBS GEN>
+(lambda (_name16 _prop17) (let ((_r18 (_nameprop12 #<set: OBS GEN>
+(lambda (p) (let ((_p0 (car p))) (car _p0))) #<set:>
+(lambda (_term185 _term286) (let ((_p216 (pair? _t #<set: OBS GEN>
+(lambda (_name35 _prop36) (let ((_res37 (_get15 _n #<set: OBS GEN>
+(lambda (x1 x2) (let ((_b_t2 (pair? x1))) (if _b_t #<set:>
+(lambda (_lst187 _lst288) (let ((_p232 (null? _lst #<set: OBS GEN>
+(lambda (_alist46 _term47) (letrec ((_apply-subst- #<set: OBS GEN>
+(lambda (_x75) (let ((_p195 (_rewrite61 _x75))) (_ #<set: OBS GEN>
+(lambda (_name21 _prop22 _valu23) (let ((_r24 (_na #<set: OBS GEN>
+(lambda (_term62) (letrec ((_rewrite-args63 (lambd #<set: OBS GEN>
+(lambda (_lst44) (let ((_p137 (null? _lst44))) (if #<set: OBS GEN>
+(lambda (_alist49 _lst50) (let ((_p141 (null? _lst #<set: OBS GEN>
+(lambda (_lst64) (let ((_p155 (null? _lst64))) (if #<set: OBS GEN>
+(lambda (_term66 _lst67) (let ((_p160 (null? _lst6 #<set: OBS GEN>
+(list
+ (set)
+ (set)
+ (set)
+ #f
+ #f
+ #f
+ (set)
+ #f
+ #f
+ (set)
+ #f
+ #f
+ (set "OBS" "GEN")
+ (set "OBS" "GEN")
+ (set "OBS" "GEN")
+ #f
+ #f
+ #f
+ (set "OBS" "GEN")
+ (set "OBS" "GEN")
+ (set "OBS" "GEN")
+ (set "OBS" "GEN")
+ (set "OBS" "GEN")
+ #f
+ (set "OBS" "GEN")
+ (set "OBS" "GEN")
+ (set "OBS" "GEN")
+ (set "OBS" "GEN")
+ (set "OBS" "GEN")
+ #f
+ (set "OBS" "GEN")
+ (set "OBS" "GEN")
+ #f
+ #f
+ (set "OBS" "GEN")
+ (set "OBS" "GEN"))
