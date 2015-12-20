@@ -488,6 +488,7 @@
                                              (let* ((cached (hash-ref m σm))
                                                     (s* (ko cached (state-store) ι κ)))
                                                (set-add! memo-edges (cons q s*))
+                                               (set! U (hash-set U inv (set-add (hash-ref U inv (set)) q)))
                                                (set-add succ (transition s* (set #|addresses read|#))))
                                              (let ((κ* (kalloc e λ ρ* w vs σi-caller)))
                                                (stack-alloc! κ* (cons ι κ))
@@ -528,7 +529,7 @@
                    (when memo
                      (let-values (((M* I) (handle-return d σ G M)))
                        (set! M M*)
-                       (redo! I)))
+                       (redo! I 3)))
                    (set-union succ succ*))))))
         )) ; end step
     
@@ -550,9 +551,19 @@
 
     (define IMPURE "IMPURE")
 
-    (define (redo! I)
+    (define redo-writevi 0)
+    (define redo-writefi 0)
+    (define redo-returni 0)
+    (define redoi 0)
+    (define (redo! I reason)
       (let ((redo (for/fold ((S (set))) ((inv I))
                     (set-union S (hash-ref U inv (set))))))
+        (set! redoi (+ redoi (set-count redo)))
+        (cond ((= reason 1) (set! redo-writevi (+ redo-writevi (set-count redo))))
+              ((= reason 2) (set! redo-writefi (+ redo-writefi (set-count redo))))
+              ((= reason 3) (set! redo-returni (+ redo-returni (set-count redo)))))
+        ;(when (zero? (modulo redoi 100))
+        ;  (printf "redo ~a wv ~a wf ~a ret ~a\n" redoi redo-writevi redo-writefi redo-returni))
         (set! todo (set-union todo redo))
         (set-subtract! visited redo)))
     
@@ -561,11 +572,11 @@
         ((wv a x)
          (let-values (((M* I) (handle-write a s M)))
            (set! M M*)
-           (redo! I)))
+           (redo! I 1)))
         ((wp a n x)
          (let-values (((M* I) (handle-write a s M)))
            (set! M M*)
-           (redo! I)))
+           (redo! I 2)))
         ((rv a x)
          (let ((R* (handle-read a s R)))
            (set! R R*)))
@@ -614,19 +625,21 @@
                       (let* ((Ar (hash-ref R inv (set)))
                              (σm (↓ σ Ar))
                              (cached (hash-ref m σm ⊥)))
-                        (if (equal? d cached) ; Ar only increases
+                        (if (⊑ d cached) ; Ar only increases
                             (values M I)
                             (let-values (((m* d*) (memo-clean m σm)))
-                              (values (hash-set M inv (hash-set m* σm (⊔ cached d*))) (set-add I inv)))))
-                      (values (hash-set M inv IMPURE) (set-add I inv)))
+                              (if (eq? d* ⊥) ; nothing cleaned up
+                                  (values (hash-set M inv (hash-set m σm d)) I)
+                                  (values (hash-set M inv (hash-set m* σm (⊔ d* d))) (set-add I inv)))))); 'noteq 'd d 'cached cached 'd* d* (hash-count m) (hash-count m*)))))))
+                      (values (hash-set M inv IMPURE) (debug (set-add I inv) 'exref)))
                   (if (eq? m IMPURE)
                       (values M I)
-                      ; new entry
+                      ; new inv entry
                       (if no-refs?
                           (let* ((Ar (hash-ref R inv (set)))
                                  (σm (↓ σ Ar)))
                             (values (hash-set M inv (hash σm d)) I))
-                          (values (hash-set M inv IMPURE) (set-add I inv))))))))))
+                          (values (hash-set M inv IMPURE) I)))))))))
                           
 
     ;(define state-limit (STATELIMIT))

@@ -43,3 +43,44 @@ nqueens      states 1563    time 116     σi (vector-length (system-σ sys)) Ξi
 
 === Removed `pops` (introduces extra control flow)
 
+====201521220
+localUI memo-test with some non-print debug present
+standard memo with potentially multiple sigmams per inv
+hellomemo   states 9       time 0       memo 0    | #<set: NUM>
+hellomemo   states 7       time 1       memo 1    | #<set: NUM>
+helloset!   states 26      time 1       memo 0    | #<set: STR NUM>
+helloset!   states 26      time 1       memo 0    | #<set: STR NUM>
+hellomemoset!states 15      time 0       memo 0    | #<set: STR NUM>
+hellomemoset!states 15      time 0       memo 0    | #<set: STR NUM>
+fac         states 27      time 1       memo 0    | #<set: NUM>
+fac         states 28      time 2       memo 1    | #<set: NUM>
+fib         states 54      time 3       memo 0    | #<set: NUM>
+fib         states 40      time 3       memo 3    | #<set: NUM>
+fib-mut     states 53      time 2       memo 0    | #<set: NUM>
+fib-mut     states 53      time 4       memo 0    | #<set: NUM>
+blur        states 65      time 4       memo 0    | #<set: BOOL>
+blur        states 67      time 5       memo 7    | #<set: BOOL>
+eta         states 29      time 1       memo 0    | #<set: BOOL>
+eta         states 25      time 0       memo 2    | #<set: BOOL>
+mj09        states 26      time 1       memo 0    | #<set: NUM>
+mj09        states 21      time 1       memo 2    | #<set: NUM>
+gcipd       states 83      time 5       memo 0    | #<set: NUM>
+gcipd       states 71      time 5       memo 3    | #<set: NUM>
+kcfa2       states 25      time 2       memo 0    | #<set: BOOL>
+kcfa2       states 17      time 1       memo 3    | #<set: BOOL>
+kcfa3       states 27      time 2       memo 0    | #<set: BOOL>
+kcfa3       states 19      time 1       memo 3    | #<set: BOOL>
+rotate      states 26      time 1       memo 0    | #<set: STR BOOL NUM>
+rotate      states 26      time 1       memo 0    | #<set: STR BOOL NUM>
+loop2       states 49      time 3       memo 0    | #<set: NUM>
+loop2       states 51      time 4       memo 3    | #<set: NUM>
+sat         states 66      time 17      memo 0    | #<set: BOOL>
+sat         states 73      time 59      memo 12   | #<set: BOOL>
+collatz     states 182     time 40      memo 0    | #<set: NUM>
+collatz     states 175     time 19      memo 10   | #<set: NUM>
+rsa         states 268     time 52      memo 0    | #<set: BOOL>
+rsa         states 267     time 58      memo 15   | #<set: BOOL>
+primtest    states 265     time 89      memo 0    | #<set: NUM>
+primtest    states 209     time 73      memo 11   | #<set: NUM>
+factor      states 180     time 20      memo 0    | #<set: #(struct:addr (cons v acc)) () #(struct:addr (cons 2 _two-list5))
+factor      states 181     time 98      memo 2    | #<set: #(struct:addr (cons v acc)) () #(struct:addr (cons 2 _two-list5))
