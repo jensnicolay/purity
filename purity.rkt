@@ -599,9 +599,23 @@
       (printf "~a -> ~a\n" (~a lam #:max-width 30) clss))
     (hash-set class->count clss (add1 (hash-ref class->count clss 0)))))
   
-(define (side-effect-pattern lam->side-effects lams)
-  (map (lambda (lam) (hash-ref lam->side-effects lam #f)) (sort lams < #:key «lam»-l)))
+(define (side-effect-pattern lam->side-effects sorted-lams)
+  (map (lambda (lam) (hash-ref lam->side-effects lam #f)) sorted-lams))
 
+(define (filter-expected-lams lam->side-effects expected sorted-lams)
+
+  (define (helper acc expected sorted-lams)
+    (if (null? expected)
+        (if (null? sorted-lams)
+            acc
+            (error "mismatch"))
+        (if (car expected)
+            (helper (hash-set acc (car sorted-lams) (hash-ref lam->side-effects (car sorted-lams))) (cdr expected) (cdr sorted-lams))
+            (helper acc (cdr expected) (cdr sorted-lams)))))
+
+  (helper (hash) expected sorted-lams))
+    
+    
 (define (side-effect-patterns-match? expected actual)
   (if (null? expected)
       (null? actual)
@@ -631,8 +645,8 @@
   (define lattice (system-lattice sys))
   (define ⊥ (lattice-⊥ lattice))
   (define ⊔ (lattice-⊔ lattice))
-  (define lams (sort (lambdas ast) < #:key «lam»-l))
-  (define lam-count (length lams))
+  (define sorted-lams (sort (lambdas ast) < #:key «lam»-l))
+  (define lam-count (length sorted-lams))
   (define called-count (set-count (list->set (map ctx-λ (hash-keys Ξ)))))
   
   (printf "escape analysis... ")
@@ -663,19 +677,20 @@
     (define side-effect-time (side-effect-result-time ser))
     (printf "~a ms\n" side-effect-time)
     (define lam->side-effects (side-effect-result-lam->side-effects ser))
-    (define purity (purity-analysis lam->side-effects gl-classifier))
+    (define filtered-lam->side-effects (filter-expected-lams lam->side-effects expected sorted-lams))
+    (define purity (purity-analysis filtered-lam->side-effects gl-classifier))
     (define class-count (count-classes purity))
-    (define gen-count (for/sum ((side-effects (hash-values lam->side-effects))) (if (set-member? side-effects GENERATES) 1 0)))
-    (define obs-count (for/sum ((side-effects (hash-values lam->side-effects))) (if (set-member? side-effects OBSERVES) 1 0)))
+    (define gen-count (for/sum ((side-effects (hash-values filtered-lam->side-effects))) (if (set-member? side-effects GENERATES) 1 0)))
+    (define obs-count (for/sum ((side-effects (hash-values filtered-lam->side-effects))) (if (set-member? side-effects OBSERVES) 1 0)))
     (define correct (if expected
-                        (let ((actual (side-effect-pattern lam->side-effects lams)))
-                          (if (side-effect-patterns-match? expected actual)
+                        (let ((actual (side-effect-pattern filtered-lam->side-effects sorted-lams)))
+                          (if (equal? expected actual)
                               "OK"
                               (begin
                                 ;(printf "expected ~a\ngot ~a\n" expected actual)
                                 "NOK")))
                         "?"))
-    (hash 'side-effect-time side-effect-time 'class-count class-count 'gen-count gen-count 'obs-count obs-count 'lam->side-effects lam->side-effects 'correct correct))
+    (hash 'side-effect-time side-effect-time 'class-count class-count 'gen-count gen-count 'obs-count obs-count 'lam->side-effects filtered-lam->side-effects 'correct correct))
 
   (printf "a-side-effect analysis... ")
   (define a-ser (a-side-effect-analysis sys ctx->addrs))
@@ -849,7 +864,6 @@
   (set-intersect! benefits-from-freshness benefits-from-escape)
   (printf "benefits from both     : (~a) ~a\n" (set-count benefits-from-freshness) benefits-from-freshness)
   )
-
 
 (define (a-se sys)
   (printf "call-state analysis... ")

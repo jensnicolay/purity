@@ -102,23 +102,6 @@
                                        (assoc x rest)))))))))))
     ,e))
 
-
-
-;(define p1 '(let ((c (cons 1 #f))) (car c)))
-;(define p2 '(let ((c (cons 1 #f))) (cdr c)))
-;(define p3 '(let ((u '(1 2 3))) (let ((v (cdr u))) (car v))))
-;(define p4 '(let ((x '(1 (2 3)))) (let ((y (cdr x))) (let ((z (car y))) (car z)))))
-;(define p5 (add-equal? '(let ((x '(1    "ho"))) (let ((y '(1 #f "ho"))) (equal? x y)))))
-;(define p6 (add-reverse '(let ((x '(1 #f "ho"))) (let ((y (reverse x))) (car y)))))
-;(define p7 (add-reverse '(let ((xx (cons 2 '()))) (let ((x (cons 1 xx))) (let ((y (reverse x))) (car y))))))
-;(define p8 (add-equal? '(equal? 1 2)))
-;(define p9 (add-equal? '(equal? 1 1)))
-;(define p10 (add-equal? '(let ((xx (cons 2 '()))) (let ((x (cons 1 xx))) (let ((y '(1 2))) (equal? x y))))))
-;(define p11 (add-append '(let ((x '(1))) (let ((y '(2))) (let ((z (append x y))) (~a z))))))
-;(define p12 (add-append '(let ((x '(1))) (let ((y '(2 3))) (let ((z (append x y))) (let ((u (cdr z))) (let ((v (car u))) v)))))))
-;(define p13 '(let ((x '(1 2 3))) (~a x)))
-;(define p14 (add-append '(let ((x '(1 2 3))) (let ((y '(4 5))) (append x y)))))
-;(define p15 '(let ((z 123)) (let ((f (lambda () z))) (f))))
 (define sq '((lambda (x) (* x x)) 8))
 (define loopy1 '(letrec ((f (lambda () (f)))) (f)))
 (define loopy2 '((lambda (x) (x x)) (lambda (y) (y y))))

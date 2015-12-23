@@ -229,5 +229,3 @@
   (let ((P (parent-map ast)))
     (lambda (e)
       (hash-ref P e #f))))
-
-
