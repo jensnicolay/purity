@@ -385,16 +385,15 @@
         (let ((s (set-first W)))
           (if (set-member? S s)
               (traverse-graph S (set-rest W) state->ctx->side-effects)
-              (let ((ctx->side-effects (hash-ref state->ctx->side-effects s (hash))))
-                (let-values (((W* ctx->side-effects*)
-                              (for/fold ((W (set-rest W)) (ctx->side-effects ctx->side-effects)) ((t (hash-ref graph s (set))))
-                                (match t
-                                  ((transition s* E)
-                                   (let ((ctx->side-effects* (for/fold ((ctx->side-effects ctx->side-effects)) ((eff E))
-                                                               (traverse-stack eff s (set) (set (cons (state-κ s) #t)) ctx->side-effects))))
-                                     (values (set-add W s*) ctx->side-effects*)))))))
-                  (traverse-graph (set-add S s) W* (hash-set state->ctx->side-effects s ctx->side-effects*))))))))
-  
+              (let-values (((W* ctx->side-effects)
+                            (for/fold ((W (set-rest W)) (ctx->side-effects (hash))) ((t (hash-ref graph s (set))))
+                              (match t
+                                ((transition s* E)
+                                 (let ((ctx->side-effects* (for/fold ((ctx->side-effects ctx->side-effects)) ((eff E))
+                                                             (traverse-stack eff s (set) (set (cons (state-κ s) #t)) ctx->side-effects))))
+                                   (values (set-add W s*) ctx->side-effects*)))))))
+                (traverse-graph (set-add S s) W* (hash-set state->ctx->side-effects s ctx->side-effects)))))))
+
   (define start (current-milliseconds))
   (define state->ctx->side-effects (traverse-graph (set) (set initial) (hash)))
   (define time (- (current-milliseconds) start))
@@ -525,10 +524,9 @@
           (set! lam->summaryi (add1 lam->summaryi))
           (set! lam->summary (hash-set lam->summary lam (set effect))))))
 
-  (define (add-observers! res O)
-    (let ((λ-os (in-set (hash-ref O res (set)))))
-      (for ((λ-o λ-os))
-           (add-effect! λ-o OBSERVES))))
+  (define (add-observer! res lam O)
+    (when (set-member? (hash-ref O res (set)) lam)
+        (add-effect! lam OBSERVES)))
 
   (define (update-O-write res R O)
     (let ((λ-rs (hash-ref R res (set))))
@@ -547,7 +545,7 @@
       (if κ
           (if (set-member? side-effects eff)
               (let ((lam (ctx-λ κ)))
-                (add-observers! res O)
+                (add-observer! res lam O)
                 (add-read-dep res lam R))
               R)
           R)))
@@ -896,7 +894,7 @@
   (printf "benefits from both     : (~a) ~a\n" (set-count benefits-from-freshness) benefits-from-freshness)
   )
 
-(define (a-ses sys)
+(define (a-se sys)
   (printf "call-state analysis... ")
   (define csr (call-state-analysis sys))
   (define call-state-time (call-state-result-time csr))
@@ -913,7 +911,9 @@
   (define lam->side-effect-summary (purity-result-lam->summary pr))
   (for (((lam side-effect-summary) lam->side-effect-summary))
        (printf "~a ~a\n" (~a lam #:max-width 50) side-effect-summary))
-  (summary-pattern lam->side-effect-summary (lambdas (ev-e (system-initial sys)))))
+  (define ast (ev-e (system-initial sys)))
+  (define sorted-lams (sort (lambdas ast) < #:key «lam»-l))
+  (summary-pattern lam->side-effect-summary sorted-lams))
 
 #|
 (define t2 '(letrec ((f (lambda (h) (let ((z (cons 1 2))) (if h (h) (f (lambda () (set-car! z 3)))))))) (f #f)))
