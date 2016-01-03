@@ -7,6 +7,7 @@
 (require "test.rkt")
 (require "purity.rkt")
 
+(provide (all-defined-out))
 
 (define purity1 '(let ((z #f)) (let ((f (lambda () (set! z #t)))) (f))))
 (define test-purity1 (list purity1 (set GENERATES)))
@@ -176,7 +177,7 @@
 
 (define (server-purity-test . names)
   (when (null? names)
-    (set! names '(test-fib test-nqueens test-dderiv test-destruct test-grid test-mceval test-treeadd)))
+    (set! names '(test-fib test-nqueens test-dderiv test-destruct test-grid test-mceval test-treeadd test-fannkuch)))
   (parameterize ((CESK-TIMELIMIT 60) (THROW #f))
     (let ((results (apply purity-test names))) 
       (printf "Done.\n")
