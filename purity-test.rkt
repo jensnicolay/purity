@@ -177,7 +177,7 @@
 
 (define (server-purity-test . names)
   (when (null? names)
-    (set! names '(test-fib test-nqueens test-dderiv test-destruct test-grid test-mceval test-treeadd test-fannkuch)))
+    (set! names '(test-fib test-treenode1 test-treeadd test-treeadd2 test-treeadd3 test-purity46 test-purity47 test-purity52 test-purity53 test-purity54 test-purity65 test-nqueens test-dderiv test-destruct test-grid test-mceval test-fannkuch)))
   (parameterize ((CESK-TIMELIMIT 60) (THROW #f))
     (let ((results (apply purity-test names))) 
       (printf "Done.\n")

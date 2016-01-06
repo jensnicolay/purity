@@ -110,23 +110,23 @@
 ;;;;;;;;;;
 
 (define (print-se-percs-row name conc-result a-type-result sa-type-result sfa-type-result msfa-type-result)
-  (define conc-eff-ctx-count (hash-ref conc-result 'eff-ctx-count))
-  (define conc-eff-ctx-obs-count (hash-ref conc-result 'eff-ctx-obs-count))
-  (define a-type-eff-ctx-count (hash-ref a-type-result 'eff-ctx-count))
-  (define a-type-eff-ctx-obs-count (hash-ref a-type-result 'eff-ctx-obs-count))
-  (define sa-type-eff-ctx-count (hash-ref sa-type-result 'eff-ctx-count))
-  (define sa-type-eff-ctx-obs-count (hash-ref sa-type-result 'eff-ctx-obs-count))
-  (define sfa-type-eff-ctx-count (hash-ref sfa-type-result 'eff-ctx-count))
-  (define sfa-type-eff-ctx-obs-count (hash-ref sfa-type-result 'eff-ctx-obs-count))
-  (define msfa-type-eff-ctx-count (hash-ref msfa-type-result 'eff-ctx-count))
-  (define msfa-type-eff-ctx-obs-count (hash-ref msfa-type-result 'eff-ctx-obs-count))
+  (define conc-eff-ctx-count (hash-ref conc-result 'eff-fctx-count))
+  (define conc-eff-ctx-obs-count (hash-ref conc-result 'eff-fctx-obs-count))
+  (define a-type-eff-ctx-count (hash-ref a-type-result 'eff-fctx-count))
+  (define a-type-eff-ctx-obs-count (hash-ref a-type-result 'eff-fctx-obs-count))
+  (define sa-type-eff-ctx-count (hash-ref sa-type-result 'eff-fctx-count))
+  (define sa-type-eff-ctx-obs-count (hash-ref sa-type-result 'eff-fctx-obs-count))
+  (define sfa-type-eff-ctx-count (hash-ref sfa-type-result 'eff-fctx-count))
+  (define sfa-type-eff-ctx-obs-count (hash-ref sfa-type-result 'eff-fctx-obs-count))
+  (define msfa-type-eff-ctx-count (hash-ref msfa-type-result 'eff-fctx-count))
+  (define msfa-type-eff-ctx-obs-count (hash-ref msfa-type-result 'eff-fctx-obs-count))
   (printf "\\code{~a} & ~a & ~a & ~a & ~a & ~a\\\\\n"
           (~a name #:min-width 14)
-          (~perc (/ conc-eff-ctx-obs-count conc-eff-ctx-count))
           (~perc (/ a-type-eff-ctx-obs-count a-type-eff-ctx-count))
           (~perc (/ sa-type-eff-ctx-obs-count sa-type-eff-ctx-count))
           (~perc (/ sfa-type-eff-ctx-obs-count sfa-type-eff-ctx-count))
           (~perc (/ msfa-type-eff-ctx-obs-count msfa-type-eff-ctx-count))
+          (~perc (/ conc-eff-ctx-obs-count conc-eff-ctx-count))
           ))
 
 (define (print-se-percs)
@@ -147,7 +147,7 @@
 
 (define (main)
 
-  (purity-test)
+  ;(purity-test)
 
   ; Setting
   (print-flow-conc)
