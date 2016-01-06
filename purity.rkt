@@ -331,7 +331,7 @@
     (freshness-result fresh? time)))
 
 
-
+(define REACHABILITY (make-parameter #t))
 (struct call-state-result (ctx->addrs time) #:transparent)
 (define (call-state-analysis sys)
   (define graph (system-graph sys))
@@ -339,6 +339,7 @@
   (define Ξ (system-Ξ sys))
   (define γ (lattice-γ (system-lattice sys)))
   (define start (current-milliseconds))
+  (define reachability (REACHABILITY))
   (define call-states (for/fold ((call-states (hash))) (((s ts) (in-hash graph)))
                         (match s
                           ((ev (? «app»? e) ρ σi ι κ)
@@ -347,8 +348,11 @@
                                ((transition (ev _ _ _ '() κ*) _)
                                 (let* ((A-existing (hash-ref call-states κ* (set)))
                                        (σ (state-σ σi))
-                                       (A-updated (set-union A-existing (reachable (s-referenced s Ξ) σ γ))))
-                                  ;(A-updated (set-union A-existing (list->set (hash-keys σ)))))
+                                       (A-updated (if reachability
+                                                      (set-union A-existing (reachable (s-referenced s Ξ) σ γ))
+                                                      (set-union A-existing (list->set (hash-keys σ)))
+                                                      )
+                                                  ))
                                   (hash-set call-states κ* A-updated)))
                                (_ call-states))))
                           (_ call-states))))
@@ -666,7 +670,12 @@
   (define state-count (vector-length (system-states sys)))
   (define result-value (answer-value sys))
   (define graph (system-graph sys))
-  (printf "state-count ~a value ~a\n" state-count (~a result-value #:max-width 80))
+  (define edge-count 0)
+  (for (((s ts) graph))
+       (for ((t ts))
+            (match t
+              ((transition s* E) (set! edge-count (+ edge-count (set-count ts)))))))
+  (printf "state/edges ~a/~a value ~a\n" state-count edge-count (~a result-value #:max-width 80))
   (define initial (system-initial sys))
   (define ast (ev-e initial))
   (define Ξ (system-Ξ sys))
@@ -793,7 +802,7 @@
   (define msfa-ser (msfa-side-effect-analysis sys ctx->addrs fresh?-esc esc-lams))
   (define msfa-results (handle-side-effect-result msfa-ser))
 
-  (hash 'exit 'ok 'msg result-value 'flow-time flow-time 'state-count state-count 'lam-count lam-count 'called-count called-count
+  (hash 'exit 'ok 'msg result-value 'flow-time flow-time 'state-count state-count 'edge-count edge-count 'lam-count lam-count 'called-count called-count
         'a a-results 'sa sa-results 'sfa sfa-results 'msfa msfa-results
         'call-state-time call-state-time 'escape-time escape-time 'freshness-time freshness-time 'freshness-esc-time freshness-esc-time
         ))
@@ -1130,7 +1139,7 @@
   )
 
 
-(define (a-se sys)
+(define (a-purity sys)
   (printf "call-state analysis... ")
   (define csr (call-state-analysis sys))
   (define call-state-time (call-state-result-time csr))
