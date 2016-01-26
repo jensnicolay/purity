@@ -549,12 +549,10 @@
 
   (define (walk-stack-read eff res ctx->side-effects R O) ; -> R
     (for/fold ((R R)) (((κ side-effects) (in-hash ctx->side-effects)))
-      (if κ
-          (if (set-member? side-effects eff)
-              (let ((lam (ctx-λ κ)))
-                (add-observer! res lam O)
-                (add-read-dep res lam R))
-              R)
+      (if (set-member? side-effects eff)
+          (let ((lam (ctx-λ κ)))
+            (add-observer! res lam O)
+            (add-read-dep res lam R))
           R)))
                   
   (define (handle-read-effect eff res ctx->side-effects R O)

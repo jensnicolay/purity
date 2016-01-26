@@ -2123,3 +2123,216 @@ type-msfa 3
 benefits from freshness: (1) #<mutable-set: test-treeadd>
 benefits from escape   : (1) #<mutable-set: test-grid>
 benefits from both     : (0) #<mutable-set:>
+
+
+==== 20160118 
+local noUI
+test-fib
+conc states 735     lams 1 called 1 | flow eps   call eps   esc eps   fresh eps   fresh-esc eps   | 21
+a    OK   pure 1  obs 0  proc 0  | gen 0  obs 0  | se eps   purity eps   
+sa   OK   pure 1  obs 0  proc 0  | gen 0  obs 0  | se eps   purity eps   
+sfa  OK   pure 1  obs 0  proc 0  | gen 0  obs 0  | se eps   purity eps   
+msfa OK   pure 1  obs 0  proc 0  | gen 0  obs 0  | se eps   purity eps   
+type states 20      lams 1 called 1 | flow eps   call eps   esc eps   fresh eps   fresh-esc eps   | #<set: NUM>
+a    OK   pure 1  obs 0  proc 0  | gen 0  obs 0  | se eps   purity eps   
+sa   OK   pure 1  obs 0  proc 0  | gen 0  obs 0  | se eps   purity eps   
+sfa  OK   pure 1  obs 0  proc 0  | gen 0  obs 0  | se eps   purity eps   
+msfa OK   pure 1  obs 0  proc 0  | gen 0  obs 0  | se eps   purity eps   
+test-treenode1
+conc states 68      lams 2 called 2 | flow eps   call eps   esc eps   fresh eps   fresh-esc eps   | #(struct:addr 85)
+a    OK   pure 2  obs 0  proc 0  | gen 0  obs 0  | se eps   purity eps   
+sa   OK   pure 2  obs 0  proc 0  | gen 0  obs 0  | se eps   purity eps   
+sfa  OK   pure 2  obs 0  proc 0  | gen 0  obs 0  | se eps   purity eps   
+msfa OK   pure 2  obs 0  proc 0  | gen 0  obs 0  | se eps   purity eps   
+type states 28      lams 2 called 2 | flow eps   call eps   esc eps   fresh eps   fresh-esc eps   | #<set: #(struct:addr (cons 1 2))>
+a    NOK  pure 0  obs 0  proc 2  | gen 2  obs 1  | se eps   purity eps   
+sa   NOK  pure 0  obs 0  proc 2  | gen 2  obs 0  | se eps   purity eps   
+sfa  OK   pure 2  obs 0  proc 0  | gen 0  obs 0  | se eps   purity eps   
+msfa OK   pure 2  obs 0  proc 0  | gen 0  obs 0  | se eps   purity eps   
+test-treeadd
+conc states 696     lams 3 called 3 | flow eps   call eps   esc eps   fresh eps   fresh-esc eps   | 15
+a    OK   pure 3  obs 0  proc 0  | gen 0  obs 0  | se eps   purity eps   
+sa   OK   pure 3  obs 0  proc 0  | gen 0  obs 0  | se eps   purity eps   
+sfa  OK   pure 3  obs 0  proc 0  | gen 0  obs 0  | se eps   purity eps   
+msfa OK   pure 3  obs 0  proc 0  | gen 0  obs 0  | se eps   purity eps   
+type states 68      lams 3 called 3 | flow eps   call eps   esc eps   fresh eps   fresh-esc eps   | #<set: NUM>
+a    NOK  pure 2  obs 0  proc 1  | gen 1  obs 1  | se eps   purity eps   
+sa   OK   pure 3  obs 0  proc 0  | gen 0  obs 0  | se eps   purity eps   
+sfa  OK   pure 3  obs 0  proc 0  | gen 0  obs 0  | se eps   purity eps   
+msfa OK   pure 3  obs 0  proc 0  | gen 0  obs 0  | se eps   purity eps   
+test-treeadd2
+conc states 1028    lams 3 called 3 | flow eps   call eps   esc eps   fresh eps   fresh-esc eps   | 15
+a    OK   pure 3  obs 0  proc 0  | gen 0  obs 0  | se eps   purity eps   
+sa   OK   pure 3  obs 0  proc 0  | gen 0  obs 0  | se eps   purity eps   
+sfa  OK   pure 3  obs 0  proc 0  | gen 0  obs 0  | se eps   purity eps   
+msfa OK   pure 3  obs 0  proc 0  | gen 0  obs 0  | se eps   purity eps   
+type states 81      lams 3 called 3 | flow eps   call eps   esc eps   fresh eps   fresh-esc eps   | #<set: NUM>
+a    NOK  pure 1  obs 0  proc 2  | gen 2  obs 1  | se eps   purity eps   
+sa   NOK  pure 1  obs 1  proc 1  | gen 1  obs 1  | se eps   purity eps   
+sfa  NOK  pure 1  obs 1  proc 1  | gen 1  obs 1  | se eps   purity eps   
+msfa NOK  pure 1  obs 1  proc 1  | gen 1  obs 1  | se eps   purity eps   
+test-treeadd3
+conc states 847     lams 2 called 2 | flow eps   call eps   esc eps   fresh eps   fresh-esc eps   | 15
+a    OK   pure 2  obs 0  proc 0  | gen 0  obs 0  | se eps   purity eps   
+sa   OK   pure 2  obs 0  proc 0  | gen 0  obs 0  | se eps   purity eps   
+sfa  OK   pure 2  obs 0  proc 0  | gen 0  obs 0  | se eps   purity eps   
+msfa OK   pure 2  obs 0  proc 0  | gen 0  obs 0  | se eps   purity eps   
+type states 69      lams 2 called 2 | flow eps   call eps   esc eps   fresh eps   fresh-esc eps   | #<set: NUM>
+a    NOK  pure 0  obs 0  proc 2  | gen 2  obs 1  | se eps   purity eps   
+sa   NOK  pure 0  obs 1  proc 1  | gen 1  obs 1  | se eps   purity eps   
+sfa  NOK  pure 1  obs 1  proc 0  | gen 0  obs 1  | se eps   purity eps   
+msfa NOK  pure 1  obs 1  proc 0  | gen 0  obs 1  | se eps   purity eps   
+test-purity46
+conc states 53      lams 1 called 1 | flow eps   call eps   esc eps   fresh eps   fresh-esc eps   | done
+a    OK   pure 1  obs 0  proc 0  | gen 0  obs 0  | se eps   purity eps   
+sa   OK   pure 1  obs 0  proc 0  | gen 0  obs 0  | se eps   purity eps   
+sfa  OK   pure 1  obs 0  proc 0  | gen 0  obs 0  | se eps   purity eps   
+msfa OK   pure 1  obs 0  proc 0  | gen 0  obs 0  | se eps   purity eps   
+type states 16      lams 1 called 1 | flow eps   call eps   esc eps   fresh eps   fresh-esc eps   | #<set: SYM>
+a    NOK  pure 0  obs 0  proc 1  | gen 1  obs 1  | se eps   purity eps   
+sa   OK   pure 1  obs 0  proc 0  | gen 0  obs 0  | se eps   purity eps   
+sfa  OK   pure 1  obs 0  proc 0  | gen 0  obs 0  | se eps   purity eps   
+msfa OK   pure 1  obs 0  proc 0  | gen 0  obs 0  | se eps   purity eps   
+test-purity47
+conc states 53      lams 1 called 1 | flow eps   call eps   esc eps   fresh eps   fresh-esc eps   | done
+a    OK   pure 1  obs 0  proc 0  | gen 0  obs 0  | se eps   purity eps   
+sa   OK   pure 1  obs 0  proc 0  | gen 0  obs 0  | se eps   purity eps   
+sfa  OK   pure 1  obs 0  proc 0  | gen 0  obs 0  | se eps   purity eps   
+msfa OK   pure 1  obs 0  proc 0  | gen 0  obs 0  | se eps   purity eps   
+type states 16      lams 1 called 1 | flow eps   call eps   esc eps   fresh eps   fresh-esc eps   | #<set: SYM>
+a    NOK  pure 0  obs 0  proc 1  | gen 1  obs 1  | se eps   purity eps   
+sa   OK   pure 1  obs 0  proc 0  | gen 0  obs 0  | se eps   purity eps   
+sfa  OK   pure 1  obs 0  proc 0  | gen 0  obs 0  | se eps   purity eps   
+msfa OK   pure 1  obs 0  proc 0  | gen 0  obs 0  | se eps   purity eps   
+test-purity52
+conc states 65      lams 1 called 1 | flow eps   call eps   esc eps   fresh eps   fresh-esc eps   | done
+a    OK   pure 1  obs 0  proc 0  | gen 0  obs 0  | se eps   purity eps   
+sa   OK   pure 1  obs 0  proc 0  | gen 0  obs 0  | se eps   purity eps   
+sfa  OK   pure 1  obs 0  proc 0  | gen 0  obs 0  | se eps   purity eps   
+msfa OK   pure 1  obs 0  proc 0  | gen 0  obs 0  | se eps   purity eps   
+type states 19      lams 1 called 1 | flow eps   call eps   esc eps   fresh eps   fresh-esc eps   | #<set: SYM>
+a    NOK  pure 0  obs 0  proc 1  | gen 1  obs 0  | se eps   purity eps   
+sa   NOK  pure 0  obs 0  proc 1  | gen 1  obs 0  | se eps   purity eps   
+sfa  OK   pure 1  obs 0  proc 0  | gen 0  obs 0  | se eps   purity eps   
+msfa OK   pure 1  obs 0  proc 0  | gen 0  obs 0  | se eps   purity eps   
+test-purity53
+conc states 65      lams 1 called 1 | flow eps   call eps   esc eps   fresh eps   fresh-esc eps   | done
+a    OK   pure 1  obs 0  proc 0  | gen 0  obs 0  | se eps   purity eps   
+sa   OK   pure 1  obs 0  proc 0  | gen 0  obs 0  | se eps   purity eps   
+sfa  OK   pure 1  obs 0  proc 0  | gen 0  obs 0  | se eps   purity eps   
+msfa OK   pure 1  obs 0  proc 0  | gen 0  obs 0  | se eps   purity eps   
+type states 19      lams 1 called 1 | flow eps   call eps   esc eps   fresh eps   fresh-esc eps   | #<set: SYM>
+a    NOK  pure 0  obs 0  proc 1  | gen 1  obs 0  | se eps   purity eps   
+sa   NOK  pure 0  obs 0  proc 1  | gen 1  obs 0  | se eps   purity eps   
+sfa  OK   pure 1  obs 0  proc 0  | gen 0  obs 0  | se eps   purity eps   
+msfa OK   pure 1  obs 0  proc 0  | gen 0  obs 0  | se eps   purity eps   
+test-purity54
+conc states 77      lams 1 called 1 | flow eps   call eps   esc eps   fresh eps   fresh-esc eps   | #(struct:addr 54)
+a    OK   pure 1  obs 0  proc 0  | gen 0  obs 0  | se eps   purity eps   
+sa   OK   pure 1  obs 0  proc 0  | gen 0  obs 0  | se eps   purity eps   
+sfa  OK   pure 1  obs 0  proc 0  | gen 0  obs 0  | se eps   purity eps   
+msfa OK   pure 1  obs 0  proc 0  | gen 0  obs 0  | se eps   purity eps   
+type states 23      lams 1 called 1 | flow eps   call eps   esc eps   fresh eps   fresh-esc eps   | #<set: SYM #(struct:addr (cons 1 2))>
+a    NOK  pure 0  obs 0  proc 1  | gen 1  obs 0  | se eps   purity eps   
+sa   NOK  pure 0  obs 0  proc 1  | gen 1  obs 0  | se eps   purity eps   
+sfa  OK   pure 1  obs 0  proc 0  | gen 0  obs 0  | se eps   purity eps   
+msfa OK   pure 1  obs 0  proc 0  | gen 0  obs 0  | se eps   purity eps   
+test-purity65
+conc states 20      lams 1 called 1 | flow eps   call eps   esc eps   fresh eps   fresh-esc eps   | #(struct:addr 53)
+a    OK   pure 1  obs 0  proc 0  | gen 0  obs 0  | se eps   purity eps   
+sa   OK   pure 1  obs 0  proc 0  | gen 0  obs 0  | se eps   purity eps   
+sfa  OK   pure 1  obs 0  proc 0  | gen 0  obs 0  | se eps   purity eps   
+msfa OK   pure 1  obs 0  proc 0  | gen 0  obs 0  | se eps   purity eps   
+type states 20      lams 1 called 1 | flow eps   call eps   esc eps   fresh eps   fresh-esc eps   | #<set: SYM #(struct:addr (cons 1 2))>
+a    NOK  pure 0  obs 0  proc 1  | gen 1  obs 0  | se eps   purity eps   
+sa   NOK  pure 0  obs 0  proc 1  | gen 1  obs 0  | se eps   purity eps   
+sfa  OK   pure 1  obs 0  proc 0  | gen 0  obs 0  | se eps   purity eps   
+msfa OK   pure 1  obs 0  proc 0  | gen 0  obs 0  | se eps   purity eps   
+test-nqueens
+conc states 2704    lams 6 called 6 | flow eps   call eps   esc eps   fresh eps   fresh-esc eps   | 2
+a    OK   pure 6  obs 0  proc 0  | gen 0  obs 0  | se eps   purity eps   
+sa   OK   pure 6  obs 0  proc 0  | gen 0  obs 0  | se eps   purity eps   
+sfa  OK   pure 6  obs 0  proc 0  | gen 0  obs 0  | se eps   purity eps   
+msfa OK   pure 6  obs 0  proc 0  | gen 0  obs 0  | se eps   purity eps   
+type states 133     lams 6 called 6 | flow eps   call eps   esc eps   fresh eps   fresh-esc eps   | #<set: NUM>
+a    OK   pure 6  obs 0  proc 0  | gen 0  obs 0  | se eps   purity eps   
+sa   OK   pure 6  obs 0  proc 0  | gen 0  obs 0  | se eps   purity eps   
+sfa  OK   pure 6  obs 0  proc 0  | gen 0  obs 0  | se eps   purity eps   
+msfa OK   pure 6  obs 0  proc 0  | gen 0  obs 0  | se eps   purity eps   
+test-dderiv
+conc states 2871    lams 20 called 10 | flow eps   call eps   esc eps   fresh eps   fresh-esc eps   | #t
+a    OK   pure 9  obs 0  proc 1  | gen 1  obs 1  | se eps   purity eps   
+sa   OK   pure 9  obs 0  proc 1  | gen 1  obs 1  | se eps   purity eps   
+sfa  OK   pure 9  obs 0  proc 1  | gen 1  obs 1  | se eps   purity eps   
+msfa OK   pure 9  obs 0  proc 1  | gen 1  obs 1  | se eps   purity eps   
+type states 342     lams 20 called 14 | flow eps   call eps   esc eps   fresh eps   fresh-esc eps   | #<set: BOOL>
+a    NOK  pure 3  obs 6  proc 1  | gen 1  obs 7  | se eps   purity eps   
+sa   NOK  pure 3  obs 6  proc 1  | gen 1  obs 7  | se eps   purity eps   
+sfa  NOK  pure 3  obs 6  proc 1  | gen 1  obs 7  | se eps   purity eps   
+msfa NOK  pure 3  obs 6  proc 1  | gen 1  obs 7  | se eps   purity eps   
+test-destruct
+conc states 2292    lams 11 called 11 | flow eps   call eps   esc eps   fresh eps   fresh-esc eps   | #(struct:addr 125)
+a    OK   pure 3  obs 1  proc 7  | gen 7  obs 4  | se eps   purity eps   
+sa   OK   pure 3  obs 1  proc 7  | gen 7  obs 4  | se eps   purity eps   
+sfa  OK   pure 3  obs 1  proc 7  | gen 7  obs 4  | se eps   purity eps   
+msfa OK   pure 3  obs 1  proc 7  | gen 7  obs 4  | se eps   purity eps   
+type states 235     lams 11 called 11 | flow eps   call eps   esc eps   fresh eps   fresh-esc eps   | #<set: #(struct:addr (cons #(struct:«quo» 100 ()) _a19)) ()>
+a    NOK  pure 3  obs 1  proc 7  | gen 7  obs 8  | se eps   purity eps   
+sa   NOK  pure 3  obs 1  proc 7  | gen 7  obs 8  | se eps   purity eps   
+sfa  NOK  pure 3  obs 1  proc 7  | gen 7  obs 8  | se eps   purity eps   
+msfa NOK  pure 3  obs 1  proc 7  | gen 7  obs 8  | se eps   purity eps   
+test-grid
+conc states 2019    lams 5 called 5 | flow eps   call eps   esc eps   fresh eps   fresh-esc eps   | #t
+a    OK   pure 2  obs 1  proc 2  | gen 2  obs 1  | se eps   purity eps   
+sa   OK   pure 2  obs 1  proc 2  | gen 2  obs 1  | se eps   purity eps   
+sfa  OK   pure 2  obs 1  proc 2  | gen 2  obs 1  | se eps   purity eps   
+msfa OK   pure 2  obs 1  proc 2  | gen 2  obs 1  | se eps   purity eps   
+type states 239     lams 5 called 5 | flow eps   call eps   esc eps   fresh eps   fresh-esc eps   | #<set: BOOL>
+a    NOK  pure 1  obs 1  proc 3  | gen 3  obs 4  | se eps   purity eps   
+sa   NOK  pure 1  obs 1  proc 3  | gen 3  obs 4  | se eps   purity eps   
+sfa  NOK  pure 1  obs 1  proc 3  | gen 3  obs 4  | se eps   purity eps   
+msfa NOK  pure 2  obs 1  proc 2  | gen 2  obs 3  | se eps   purity eps   
+test-mceval
+conc states 9223    lams 87 called 72 | flow eps   call 7''   esc eps   fresh eps   fresh-esc eps   | 2
+a    OK   pure 60 obs 2  proc 10 | gen 10 obs 7  | se 2''   purity eps   
+sa   OK   pure 60 obs 2  proc 10 | gen 10 obs 7  | se 2''   purity eps   
+sfa  OK   pure 60 obs 2  proc 10 | gen 10 obs 7  | se 3''   purity eps   
+msfa OK   pure 60 obs 2  proc 10 | gen 10 obs 7  | se 4''   purity eps   
+type states 1359    lams 87 called 85 | flow 60''  call 16''  esc 34''  fresh 5''   fresh-esc 5''   | #<set: #(struct:addr ((- n 1))) #(struct:addr (n)) #(struct:addr (cons _
+a    NOK  pure 10 obs 49 proc 13 | gen 13 obs 62 | se 21''  purity 43''  
+sa   NOK  pure 10 obs 49 proc 13 | gen 13 obs 62 | se 21''  purity 43''  
+sfa  NOK  pure 10 obs 49 proc 13 | gen 13 obs 62 | se 21''  purity 39''  
+msfa NOK  pure 10 obs 49 proc 13 | gen 13 obs 62 | se 19''  purity 38''  
+test-fannkuch
+conc states 8990    lams 16 called 16 | flow eps   call eps   esc eps   fresh eps   fresh-esc eps   | 4
+a    OK   pure 5  obs 2  proc 9  | gen 9  obs 10 | se eps   purity eps   
+sa   OK   pure 5  obs 2  proc 9  | gen 9  obs 10 | se 1''   purity eps   
+sfa  OK   pure 5  obs 2  proc 9  | gen 9  obs 10 | se 1''   purity eps   
+msfa OK   pure 5  obs 2  proc 9  | gen 9  obs 10 | se 2''   purity eps   
+type states 236     lams 16 called 16 | flow eps   call eps   esc eps   fresh eps   fresh-esc eps   | #<set: BOOL NUM>
+a    OK   pure 5  obs 2  proc 9  | gen 9  obs 10 | se eps   purity eps   
+sa   OK   pure 5  obs 2  proc 9  | gen 9  obs 10 | se eps   purity eps   
+sfa  OK   pure 5  obs 2  proc 9  | gen 9  obs 10 | se eps   purity eps   
+msfa OK   pure 5  obs 2  proc 9  | gen 9  obs 10 | se eps   purity eps   
+conc-a    17
+conc-sa   17
+conc-sfa  17
+conc-msfa 17
+type-a    3
+type-sa   6
+type-sfa  11
+type-msfa 11
+benefits from freshness: (10) #<mutable-set: test-purity54 test-purity52 test-treeadd2 test-purity46 test-treeadd3 test-purity53 test-treenode1 test-purity47 test-purity65 test-treeadd>
+benefits from escape   : (1) #<mutable-set: test-grid>
+benefits from both     : (0) #<mutable-set:>
+
+
+JS bertha
+sunspider/access-nbody.js      flowTime 0'00" funs 11   called  11   a  time 0'00" pure 1    obs 1    proc 9    fa time 0'00" pure 6    obs 1    proc 4   
+sunspider/controlflow-recursiv flowTime 0'00" funs 3    called  3    a  time 0'00" pure 3    obs 0    proc 0    fa time 0'00" pure 3    obs 0    proc 0   
+sunspider/crypto-sha1.js       flowTime 0'00" funs 17   called  8    a  time 0'00" pure 6    obs 0    proc 2    fa time 0'00" pure 7    obs 0    proc 1   
+sunspider/math-spectral-norm.j flowTime 0'00" funs 5    called  5    a  time 0'00" pure 2    obs 0    proc 3    fa time 0'00" pure 2    obs 0    proc 3   
+jolden/tree-add.js             flowTime 0'00" funs 8    called  6    a  time 0'00" pure 1    obs 0    proc 5    fa time 0'00" pure 3    obs 1    proc 2   
+octane/navier-stokes.js        flowTime 2'50" funs 36   called  29   a  time 5'25" pure 3    obs 1    proc 25   fa time 4'54" pure 3    obs 1    proc 25  
+octane/richards.js             flowTime 4'21" funs 38   called  32   a  time 1'29" pure 4    obs 1    proc 27   fa time 1'08" pure 8    obs 1    proc 23 
+
