@@ -585,11 +585,6 @@
             (let ((oldi lam->summaryi))
               ;(printf "~a ~a\n" (set-count S) (set-count W))
               (let-values (((W* R* O*) (for/fold ((W (set-rest W)) (R R) (O O)) ((t (hash-ref graph s (set))))
-                          (match t
-                            ((transition s* E)
-                             (let-values (((R* O*) (for/fold ((R R) (O O)) ((eff E))
-                                                     (handle-effect eff (hash-ref state->ctx->side-effects s) R O))))
-                               (values (set-add W s*) R* O*)))))))
                 (let* ((unchanged (and (= lam->summaryi oldi) (equal? R R*) (equal? O O*)))
                        (S* (if unchanged (set-add S s) (set))))
                   (traverse-graph S* W* R* O*))))))))
@@ -600,7 +595,6 @@
               (values lam (hash-ref lam->summary lam (set))))))
 
   (define start (current-milliseconds))
-  (traverse-graph (set) (set initial) (hash) (hash))
   (define time (- (current-milliseconds) start))
   (purity-result (extend-to-applied lam->summary) time))
 
