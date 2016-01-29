@@ -155,7 +155,7 @@
 (define test-nqueens (list nqueens (set) (set) (set) (set) (set) (set)))
 (define test-dderiv (list dderiv (set) #f #f #f #f #f #f #f #f (set) (set) (set) (set) (set GENERATES OBSERVES) (set) (set)  #f (set) (set) #f))
 (define test-destruct (list destruct (set OBSERVES) (set GENERATES) (set GENERATES) (set) (set) (set OBSERVES GENERATES) (set OBSERVES GENERATES) (set) (set OBSERVES GENERATES) (set GENERATES) (set GENERATES)))
-(define test-grid (list grid (set) (set) (set GENERATES) (set OBSERVES) (set GENERATES)))
+(define test-grid (list grid (set) (set) (set GENERATES) (set) (set GENERATES))) ; second-to-last had "OBS"
 (define test-mceval (list mceval (set) (set) #f (set) #f #f (set) (set) (set) (set) (set) (set) (set) (set) #f (set) (set) (set) (set) (set) #f (set) (set) (set) (set) (set) (set) (set)
                           (set) #f (set) (set) (set) (set) (set) #f #f (set) (set) (set) (set) (set) (set) (set) #f #f #f #f #f #f (set) #f (set) (set) (set) (set) (set) (set) (set) (set)
                           (set "OBS") (set "OBS") (set "OBS" "GEN") (set) (set) (set) (set) (set "GEN") (set "GEN") (set "GEN") (set "OBS" "GEN") (set "OBS" "GEN")
@@ -177,7 +177,7 @@
 
 (define (server-purity-test . names)
   (when (null? names)
-    (set! names '(test-fib test-treenode1 test-treeadd test-treeadd2 test-treeadd3 test-purity46 test-purity47 test-purity52 test-purity53 test-purity54 test-purity65 test-nqueens test-dderiv test-destruct test-grid test-mceval test-fannkuch)))
+    (set! names '(test-fib test-treenode1 test-treeadd test-treeadd2 test-treeadd3 test-purity46 test-purity47 test-purity52 test-purity53 test-purity54 test-purity65 test-nqueens test-dderiv test-destruct test-grid test-fannkuch)))
   (parameterize ((CESK-TIMELIMIT 60) (THROW #f))
     (let ((results (apply purity-test names))) 
       (printf "Done.\n")

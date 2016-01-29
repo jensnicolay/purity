@@ -519,9 +519,6 @@
   (define lam->summary (hash))
   (define lam->summaryi 0)
 
-  (define (add-read-dep res lam R)
-    ;(printf " R ~a " («lam»-l lam))
-    (hash-set R res (set-add (hash-ref R res (set)) lam)))
 
   (define (add-effect! lam effect)
     ;(printf " OBS! ~a " («lam»-l lam))
@@ -531,8 +528,12 @@
           (set! lam->summaryi (add1 lam->summaryi))
           (set! lam->summary (hash-set lam->summary lam (set-add existing-effects effect))))
         (begin
-          (set! lam->summaryi (add1 lam->summaryi))
+          ;x(set! lam->summaryi (add1 lam->summaryi))
           (set! lam->summary (hash-set lam->summary lam (set effect))))))
+
+  (define (add-read-dep res lam R)
+    ;(printf " R ~a " («lam»-l lam))
+    (hash-set R res (set-add (hash-ref R res (set)) lam)))
 
   (define (add-observer! res lam O)
     (when (set-member? (hash-ref O res (set)) lam)
@@ -581,42 +582,62 @@
       (_ (values R O))))
 
   (define (traverse-graph-precise)
+
+    (define A-cache (hash))
+    
+    (define (gcRO R O s*)
+      (let* ((A-cached (hash-ref A-cache s* #f))
+             (A (or A-cached
+                    (let* ((σ (state-σ ((if (ev? s*) ev-σ ko-σ) s*)))
+                           (AA (reachable (s-referenced s* Ξ) σ γ)))
+                      (set! A-cache (hash-set A-cache s* AA))
+                      AA)))
+             (R↓ (for/fold ((RR (hash))) (((res lams) (in-hash R)))
+                   (match res
+                     ((cons a _) (if (set-member? A a)
+                                     (hash-set RR res lams)
+                                     RR))
+                     (a (if (set-member? A a)
+                            (hash-set RR res lams)
+                            RR)))))
+             (O↓ (for/fold ((OO (hash))) (((res lams) (in-hash O)))
+                   (match res
+                     ((cons a _) (if (set-member? A a)
+                                     (hash-set OO res lams)
+                                     OO))
+                     (a (if (set-member? A a)
+                            (hash-set OO res lams)
+                            OO)))))
+             (RO↓ (cons R↓ O↓)))
+        RO↓))
+
+    (define (dis R)
+      (for/hash (((res lams) (in-hash R)))
+           (values res (set-map lams (lambda (lam) («lam»-l lam))))))
+
+               
+;          (printf "\ns ~a\nR ~a\nO ~a\nafter\nR ~a\nO ~a\nseen\nR ~a\nO ~a\n" (state->statei s) (dis R) (dis O) (dis (car RO)) (dis (cdr RO))
+ ;                 (if RO-S (dis (car RO-S)) #f) (if RO-S (dis (cdr RO-S)) #f))
+    
     (define (traverse-graph S W)
       (unless (set-empty? W)
         (let* ((sRO (set-first W))
                (s (car sRO))
-               (RO (cdr sRO)))
-          (if (set-member? (hash-ref S s (set)) RO)
+               (RO-S (hash-ref S s #f))
+               (RO (gcRO (cadr sRO) (cddr sRO) s)))
+          (if (equal? RO-S RO)
               (traverse-graph S (set-rest W))
-              (let* ((R (car RO))
-                     (O (cdr RO))
-                     (σ (state-σ ((if (ev? s) ev-σ ko-σ) s)))
-                     (A (reachable (s-referenced s Ξ) σ γ))
-                     (R↓ (for/fold ((RR (hash))) (((res lams) (in-hash R)))
-                                   (match res
-                                     ((cons a _) (if (set-member? A a)
-                                                     (hash-set RR res lams)
-                                                     RR))
-                                     (a (if (set-member? A a)
-                                            (hash-set RR res lams)
-                                            RR)))))
-                     (O↓ (for/fold ((OO (hash))) (((res lams) (in-hash O)))
-                                   (match res
-                                     ((cons a _) (if (set-member? A a)
-                                                     (hash-set OO res lams)
-                                                     OO))
-                                     (a (if (set-member? A a)
-                                            (hash-set OO res lams)
-                                            OO))))))
-                (let ((W* (for/fold ((W (set-rest W))) ((t (hash-ref graph s (set))))
-                            (match t
-                              ((transition s* E)
-                               (let-values (((R* O*) (for/fold ((R R↓) (O O↓)) ((eff E))
-                                                       (handle-effect eff (hash-ref state->ctx->side-effects s) R O))))
-                                 (set-add W (cons s* (cons R* O*)))))))))
-                  (let ((S* (hash-set S s (set-add (hash-ref S s (set)) RO))))
-                    (traverse-graph S* W*))))))))
+              (let ((R (if RO-S (hash-⊔ (car RO) (car RO-S) set-union (set)) (car RO)))
+                    (O (if RO-S (hash-⊔ (cdr RO) (cdr RO-S) set-union (set)) (cdr RO))))
+                (let-values (((W*) (for/fold ((W (set-rest W))) ((t (hash-ref graph s (set))))
+                                     (match t
+                                       ((transition s* E)
+                                        (let-values (((R* O*) (for/fold ((R R) (O O)) ((eff E))
+                                                                (handle-effect eff (hash-ref state->ctx->side-effects s) R O))))
+                                          (values (set-add W (cons s* (cons R* O*))))))))))
+                  (traverse-graph (hash-set S s RO) W*)))))))
     (traverse-graph (hash) (set (cons initial (cons (hash) (hash))))))
+  
   
   (define (traverse-graph S W R O)
     (unless (set-empty? W)
@@ -635,10 +656,10 @@
                        (S* (if unchanged (set-add S s) (set))))
                   (traverse-graph S* W* R* O*))))))))
 
-(define (extend-to-applied lam->summary)
-  (for/hash ((κ (hash-keys Ξ)))
-            (let ((lam (ctx-λ κ)))
-              (values lam (hash-ref lam->summary lam (set))))))
+  (define (extend-to-applied lam->summary)
+    (for/hash ((κ (hash-keys Ξ)))
+              (let ((lam (ctx-λ κ)))
+                (values lam (hash-ref lam->summary lam (set))))))
 
   (define start (current-milliseconds))
   (if precise-flag
@@ -1186,6 +1207,7 @@
 
 
 (define (a-purity sys)
+  ;(generate-dot (system-graph sys) "a-purity")
   (printf "call-state analysis... ")
   (define csr (call-state-analysis sys))
   (define call-state-time (call-state-result-time csr))
