@@ -155,7 +155,7 @@
 (define test-nqueens (list nqueens (set) (set) (set) (set) (set) (set)))
 (define test-dderiv (list dderiv (set) #f #f #f #f #f #f #f #f (set) (set) (set) (set) (set GENERATES OBSERVES) (set) (set)  #f (set) (set) #f))
 (define test-destruct (list destruct (set OBSERVES) (set GENERATES) (set GENERATES) (set) (set) (set OBSERVES GENERATES) (set OBSERVES GENERATES) (set) (set OBSERVES GENERATES) (set GENERATES) (set GENERATES)))
-(define test-grid (list grid (set) (set) (set GENERATES) (set) (set GENERATES))) ; second-to-last had "OBS"
+(define test-grid (list grid (set) (set) (set GENERATES) (set OBSERVES) (set GENERATES))) ; second-to-last had "OBS"
 (define test-mceval (list mceval (set) (set) #f (set) #f #f (set) (set) (set) (set) (set) (set) (set) (set) #f (set) (set) (set) (set) (set) #f (set) (set) (set) (set) (set) (set) (set)
                           (set) #f (set) (set) (set) (set) (set) #f #f (set) (set) (set) (set) (set) (set) (set) #f #f #f #f #f #f (set) #f (set) (set) (set) (set) (set) (set) (set) (set)
                           (set "OBS") (set "OBS") (set "OBS" "GEN") (set) (set) (set) (set) (set "GEN") (set "GEN") (set "GEN") (set "OBS" "GEN") (set "OBS" "GEN")
@@ -177,7 +177,7 @@
 
 (define (server-purity-test . names)
   (when (null? names)
-    (set! names '(test-fib test-treenode1 test-treeadd test-treeadd2 test-treeadd3 test-purity46 test-purity47 test-purity52 test-purity53 test-purity54 test-purity65 test-nqueens test-dderiv test-destruct test-grid test-fannkuch)))
+    (set! names '(test-fib test-treenode1 test-treeadd test-treeadd2 test-treeadd3 test-purity46 test-purity47 test-purity52 test-purity53 test-purity54 test-purity65 test-nqueens test-dderiv test-destruct test-grid test-fannkuch test-mceval)))
   (parameterize ((CESK-TIMELIMIT 60) (THROW #f))
     (let ((results (apply purity-test names))) 
       (printf "Done.\n")
@@ -196,21 +196,6 @@
                'test-purity41 'test-purity42 'test-purity43 'test-purity44 'test-purity45 'test-purity46 'test-purity47 'test-purity48 'test-purity49 
                               'test-purity52 'test-purity53 'test-purity54 'test-purity55 'test-purity56 'test-purity57 'test-purity58 'test-purity59 'test-purity60
                'test-purity61 'test-purity62 'test-purity63                'test-purity65 'test-purity66 'test-purity67))
-
-(define (full-purity-test-2)
-  (purity-test 'test-fib 'test-fib-mut 'test-blur 'test-eta 'test-mj09 'test-gcipd 'test-kcfa2 'test-kcfa3 'test-rotate 'test-loop2
-               'test-sat 'test-collatz 'test-rsa 'test-primtest 'test-factor 'test-treenode1
-               'test-treeadd 'test-treeadd2 'test-treeadd3
-               'test-account 'test-fannkuch
-               'test-nqueens 'test-dderiv 'test-destruct
-               'test-purity1 'test-purity2 'test-purity3 'test-purity4 'test-purity5 'test-purity6 'test-purity7 'test-purity8 'test-purity9 'test-purity10
-               'test-purity11              'test-purity13 'test-purity14 'test-purity15 'test-purity16 'test-purity17 'test-purity18 'test-purity19 'test-purity20
-               'test-purity21 'test-purity22 'test-purity23 'test-purity24 'test-purity25 'test-purity26 'test-purity27 'test-purity28 'test-purity29 'test-purity30
-               'test-purity31 'test-purity32 'test-purity33 'test-purity34 'test-purity35 'test-purity36 'test-purity37                'test-purity39 'test-purity40
-               'test-purity41 'test-purity42 'test-purity43 'test-purity44 'test-purity45 'test-purity46 'test-purity47 'test-purity48 'test-purity49 
-                              'test-purity52 'test-purity53 'test-purity54 'test-purity55 'test-purity56 'test-purity57 'test-purity58 'test-purity59 'test-purity60
-               'test-purity61 'test-purity62 'test-purity63                'test-purity65 'test-purity66 'test-purity67))
-
 #|
         (cons 1 (cons '(let ((z #f)) (let ((f (lambda () (set! z #t)))) (f))) '((5 . "PROC"))))
         (cons 2 (cons '(let ((z #f)) (let ((h (lambda () (set! z #t)))) (let ((g (lambda () (h)))) (let ((f (lambda () (g)))) (f))))) '((5 . "PROC") (11 . "PROC") (16 . "PROC"))))

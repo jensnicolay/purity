@@ -2336,3 +2336,10 @@ jolden/tree-add.js             flowTime 0'00" funs 8    called  6    a  time 0'0
 octane/navier-stokes.js        flowTime 2'50" funs 36   called  29   a  time 5'25" pure 3    obs 1    proc 25   fa time 4'54" pure 3    obs 1    proc 25  
 octane/richards.js             flowTime 4'21" funs 38   called  32   a  time 1'29" pure 4    obs 1    proc 27   fa time 1'08" pure 8    obs 1    proc 23 
 
+grid:
+(list (set) (set) (set "GEN") (set "OBS") (set "GEN"))
+(list (set) (set) (set "GEN") (set)       (set "GEN"))
+
+
+
+

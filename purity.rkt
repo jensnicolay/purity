@@ -143,7 +143,7 @@
     (printf "~a\n" λ)))
 
 
-(struct freshness-result (fresh? time))
+(struct freshness-result (fresh? time state->Fs))
 (define (freshness-analysis sys escapes?)
   (define lattice (system-lattice sys))
   (define ⊥ (lattice-⊥ lattice))
@@ -191,9 +191,9 @@
          (let* ((Fκ (hash-ref Fs κ (hash)))
                 (ψ (freshness ae Fκ)))
            (handle-binding ψ ι κ Ξ Fs)))
-        ((ev («quo» _ _) _ _ ι κ)
+        ((ev («quo» _ e) _ _ ι κ)
          (let* ((Fκ (hash-ref Fs κ (hash)))
-                (ψ UNFRESH))
+                (ψ (if (pair? e) UNFRESH ⊥)))
            (handle-binding ψ ι κ Ξ Fs)))
         ((ev («set!» _ x ae) ρ _ ι κ)
          (let ((declx (get-declaration («id»-x x) x parent)))
@@ -328,7 +328,7 @@
     ;(print-fresh-info state->Fs)
 
 
-    (freshness-result fresh? time)))
+    (freshness-result fresh? time state->Fs)))
 
 
 (define REACHABILITY (make-parameter #t))
@@ -360,13 +360,15 @@
   (call-state-result call-states time))
 
 
-(struct side-effect-result (state->ctx->side-effects time) #:transparent)
+(struct side-effect-result (state->ctx->side-effects time observable-count) #:transparent)
 (define (side-effect-analysis sys observable? escapes?)
 
   (define graph (system-graph sys))
   (define initial (system-initial sys))
   (define Ξ (system-Ξ sys))
   (define parent (make-parent (ev-e initial)))
+
+  (define observable-count 0)
 
   (define (traverse-stack eff s S W ctx->side-effects)
     (if (set-empty? W)
@@ -382,6 +384,7 @@
                                  (ικs (stack-lookup Ξ κ))
                                  (dyn* (and dyn (not (escapes? lam))))
                                  (ctx->side-effects* (hash-set ctx->side-effects κ (set-add (hash-ref ctx->side-effects κ (set)) eff))))
+                            (set! observable-count (add1 observable-count))
                             (traverse-stack eff s (set-add S κdyn) (set-union (set-rest W) (for/set ((ικ ικs)) (cons (cdr ικ) dyn*))) ctx->side-effects*))
                           (traverse-stack eff s (set-add S κdyn) (set-rest W) ctx->side-effects)))
                     (traverse-stack eff s S (set-rest W) ctx->side-effects)))))))
@@ -404,7 +407,7 @@
   (define start (current-milliseconds))
   (define state->ctx->side-effects (traverse-graph (set) (set initial) (hash)))
   (define time (- (current-milliseconds) start))
-  (side-effect-result state->ctx->side-effects time))
+  (side-effect-result state->ctx->side-effects time observable-count))
 
 (define (a-observable-effect? call-states)
   (lambda (eff κ s dyn)
@@ -537,7 +540,8 @@
 
   (define (add-observer! res lam O)
     (when (set-member? (hash-ref O res (set)) lam)
-        (add-effect! lam OBSERVES)))
+      ;(printf "O lam ~a  res ~a\n" («lam»-l lam) res)
+      (add-effect! lam OBSERVES)))
 
   (define (update-O-write res R O)
     (let ((λ-rs (hash-ref R res (set))))
@@ -624,7 +628,8 @@
         (let* ((sRO (set-first W))
                (s (car sRO))
                (RO-S (hash-ref S s #f))
-               (RO (gcRO (cadr sRO) (cddr sRO) s)))
+               ;(RO (gcRO (cadr sRO) (cddr sRO) s)))
+               (RO (cons (cadr sRO) (cddr sRO))))
           (if (equal? RO-S RO)
               (traverse-graph S (set-rest W))
               (let ((R (if RO-S (hash-⊔ (car RO) (car RO-S) set-union (set)) (car RO)))
@@ -761,11 +766,31 @@
   (printf "~a ms\n" freshness-time)
   (define fresh? (freshness-result-fresh? fr))
 
+  (define var->fresh (for/fold ((var->fresh (hash))) (((s Fs) (freshness-result-state->Fs fr)))
+                       (for/fold ((var->fresh var->fresh)) (((κ Fκ) Fs))
+                         ;(if (or (not κ) (set-member? called-lams (ctx-λ κ)))
+                             (hash-⊔ var->fresh Fκ ⊔ ⊥)
+                         ;    var->fresh)
+                       )))
+  (define fresh-ref-obj-count (for/sum ((freshness (hash-values var->fresh))) (if (equal? freshness ⊥) 1 0)))
+  (define unfresh-ref-obj-count (for/sum ((freshness (hash-values var->fresh))) (if (equal? freshness ⊥) 0 1)))
+  
+
   (printf "freshness analysis with esc... ")
   (define fr-esc (freshness-analysis sys (lambda (lam) (set-member? esc-lams lam))))
   (define freshness-esc-time (freshness-result-time fr-esc))
   (printf "~a ms\n" freshness-esc-time)
   (define fresh?-esc (freshness-result-fresh? fr-esc))
+
+  (define var->fresh-esc (for/fold ((var->fresh (hash))) (((s Fs) (freshness-result-state->Fs fr-esc)))
+                       (for/fold ((var->fresh var->fresh)) (((κ Fκ) Fs))
+                           ;(if (or (not κ) (set-member? called-lams (ctx-λ κ)))
+                             (hash-⊔ var->fresh Fκ ⊔ ⊥)
+                             ;var->fresh)
+                         )))
+  (define fresh-esc-ref-obj-count (for/sum ((freshness (hash-values var->fresh-esc))) (if (equal? freshness ⊥) 1 0)))
+  (define unfresh-esc-ref-obj-count (for/sum ((freshness (hash-values var->fresh-esc))) (if (equal? freshness ⊥) 0 1)))
+
 
   (printf "call-state analysis... ")
   (define csr (call-state-analysis sys))
@@ -792,39 +817,39 @@
     (define lam->obs-effs (hash)) ;filtered
     
     (for (((s ts) graph))
-         (let ((ctx->side-effects (hash-ref state->ctx->side-effects s))
-               (Es (for/fold ((Es (set))) ((t ts))
-                     (match t
-                       ((transition s* E)
-                        (set! eff-count (+ eff-count (set-count E)))
-                        (set! eff-set (set-union eff-set E))
-                        (set-union Es E))))))
-
-           (for ((eff Es))
-                
-                (match eff
-                  ((wv a x)
-                   (set! mutated-addresses (set-add mutated-addresses a)))
-                  ((wp a n x)
-                   (set! mutated-addresses (set-add mutated-addresses a)))
-                  ((rv a x)
-                   (set! mutated-addresses (set-add mutated-addresses a)))
-                  ((rp a n x)
-                   (set! mutated-addresses (set-add mutated-addresses a))))
-                
-                (for ((τ (hash-keys ctx->side-effects)))
-                     (set! eff-ctx-count (add1 eff-ctx-count))
-                     (when (set-member? (hash-ref ctx->side-effects τ (set)) eff)
-                       (set! eff-ctx-obs-count (add1 eff-ctx-obs-count)))
-                     (when (set-member? called-lams (ctx-λ τ))
-                       (set! eff-fctx-count (add1 eff-fctx-count))
-                       ;(set! lam->effs (hash-set lam->effs (ctx-λ τ) (set-add (hash-ref lam->effs (ctx-τ κ) (set)) eff)))
-                       (when (set-member? (hash-ref ctx->side-effects τ (set)) eff)
-                         ;(set! lam->obs-effs (hash-set lam->obs-effs (ctx-τ κ) (set-add (hash-ref lam->obs-effs (ctx-τ κ) (set)) eff)))
-                         (set! eff-fctx-obs-count (add1 eff-fctx-obs-count))))
-                     )
-                )
-           ))
+         (let ((ctx->side-effects (hash-ref state->ctx->side-effects s)))
+               
+           (for ((t ts))
+                (match t
+                  ((transition s* E)
+                   (set! eff-count (+ eff-count (set-count E)))
+                   (set! eff-set (set-union eff-set E))
+                   
+                   (for ((eff E))
+                        
+                        (match eff
+                          ((wv a x)
+                           (set! mutated-addresses (set-add mutated-addresses a)))
+                          ((wp a n x)
+                           (set! mutated-addresses (set-add mutated-addresses a)))
+                          ((rv a x)
+                           (set! mutated-addresses (set-add mutated-addresses a)))
+                          ((rp a n x)
+                           (set! mutated-addresses (set-add mutated-addresses a))))
+                        
+                        (for ((τ (stack-contexts (state-κ s) Ξ)))
+                             (let ((observable-E (hash-ref ctx->side-effects τ (set))))
+                               (set! eff-ctx-count (add1 eff-ctx-count))
+                               (when (set-member? observable-E eff)
+                                 (set! eff-ctx-obs-count (add1 eff-ctx-obs-count)))
+                               (when (set-member? called-lams (ctx-λ τ))
+                                 (set! eff-fctx-count (add1 eff-fctx-count))
+                                 (when (set-member? observable-E eff)
+                                   (set! eff-fctx-obs-count (add1 eff-fctx-obs-count))))))
+                        )
+                   )
+                  )
+                )))
     (define eff-set-count (set-count eff-set))
     (define lam-eff-set-count (for/sum (((lam effs) lam->effs)) (set-count effs)))
     (define lam-obs-eff-set-count (for/sum (((lam effs) lam->obs-effs)) (set-count effs)))
@@ -847,11 +872,19 @@
                                 ;(printf "expected ~a\ngot ~a\n" expected actual)
                                 "NOK")))
                         "?"))
-   
+
+    (define lam->effect-class-unf (purity-classifier lam->summary gl-classifier))
+    (define class-count-unf (count-classes lam->effect-class-unf))
+
+    (define observable-count (side-effect-result-observable-count ser))
+    
     (hash 'side-effect-time side-effect-time 'lam->effs lam->effs 'lam->obs-effs lam->obs-effs 'eff-set eff-set
           'eff-count eff-count 'eff-ctx-count eff-ctx-count 'eff-ctx-obs-count eff-ctx-obs-count 'eff-fctx-count eff-fctx-count 'eff-fctx-obs-count eff-fctx-obs-count
-          'eff-set-count eff-set-count 'lam-eff-set-cont lam-eff-set-count 'lam-obs-eff-set-cont lam-obs-eff-set-count
-          'purity-time purity-time 'class-count class-count 'gen-count gen-count 'obs-count obs-count 'lam->summary filtered-lam->summary 'correct correct))
+          'eff-set-count eff-set-count 'lam-eff-set-cont lam-eff-set-count 'lam-obs-eff-set-count lam-obs-eff-set-count
+          'purity-time purity-time 'class-count class-count 'gen-count gen-count 'obs-count obs-count 'lam->summary filtered-lam->summary 'correct correct
+          'lam->effect-class-unf lam->effect-class-unf 'class-count-unf class-count-unf
+          'observable-count observable-count
+          ))
 
   (printf "a-side-effect analysis... ")
   (define a-ser (a-side-effect-analysis sys ctx->addrs))
@@ -869,9 +902,11 @@
   (define msfa-ser (msfa-side-effect-analysis sys ctx->addrs fresh?-esc esc-lams))
   (define msfa-results (handle-side-effect-result msfa-ser))
 
-  (hash 'exit 'ok 'msg result-value 'flow-time flow-time 'state-count state-count 'edge-count edge-count 'lam-count lam-count 'called-count called-count
+  (hash 'exit 'ok 'msg result-value 'flow-time flow-time 'state-count state-count 'edge-count edge-count 'lam-count lam-count 'called-count called-count 'called-lams called-lams
         'a a-results 'sa sa-results 'sfa sfa-results 'msfa msfa-results
-        'call-state-time call-state-time 'escape-time escape-time 'freshness-time freshness-time 'freshness-esc-time freshness-esc-time
+        'call-state-time call-state-time
+        'freshness-time freshness-time 'freshness-esc-time freshness-esc-time 'fresh-ref-obj-count fresh-ref-obj-count 'unfresh-ref-obj-count unfresh-ref-obj-count 'fresh-esc-ref-obj-count fresh-esc-ref-obj-count 'unfresh-esc-ref-obj-count unfresh-esc-ref-obj-count 
+        'escape-time escape-time 'esc-lams esc-lams
         ))
 
 (define THROW (make-parameter #t))
@@ -1025,6 +1060,7 @@
        ; (SOUNDNESS) all type results must subsume conc results
        (define α type-α)
        (define ⊑ type-⊑)
+
        (unless (real-ses-⊑ conc-a-eff-set type-a-eff-set α ⊑)
          (error "type-a-eff-set"))
        (unless (real-lses-⊑ conc-a-lam->effs type-a-lam->effs α ⊑)
@@ -1069,7 +1105,15 @@
        (unless (se-subsumes? type-sfa-lam->summary type-msfa-lam->summary)
          (error "type-sfa -> msfa"))
 
-       (list name conc-results type-results)
+
+       ; SOUNDNESS esc
+
+       (define conc-esc-lams (hash-ref conc-results 'esc-lams))
+       (define type-esc-lams (hash-ref type-results 'esc-lams))
+       (unless (subset? conc-esc-lams type-esc-lams)
+         (error "esc-lams"))
+
+       (list (substring (symbol->string name) 5) conc-results type-results)
        ))
   )
 
@@ -1218,7 +1262,7 @@
   (define side-effect-time (side-effect-result-time a-ser))
   (printf "~a ms\n" side-effect-time)
   (printf "purity analysis... ")
-  (define pr (purity-analysis sys (side-effect-result-state->ctx->side-effects a-ser) #t))
+  (define pr (purity-analysis sys (side-effect-result-state->ctx->side-effects a-ser) #f))
   (define purity-time (purity-result-time pr))
   (printf "~a ms\n" purity-time)
   (define lam->side-effect-summary (purity-result-lam->summary pr))

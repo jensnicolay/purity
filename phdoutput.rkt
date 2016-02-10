@@ -15,9 +15,15 @@
        (format "~a''" (inexact->exact (round (/ ms 1000)))))
    #:min-width 5))
 
-(define (~perc n)
+(define (~perc x y)
+  (if (and (zero? x) (zero? y))
+      (~a "0\\%" #:min-width 7)
+      (~a
+       (format "~a\\%" (/ (round (* (exact->inexact (/ x y)) 10000)) 100)) #:min-width 7)))
+
+(define (~perc2 x y)
   (~a
-   (format "~a\\%" (exact->inexact (/ (round (* n 10000)) 100))) #:min-width 7))
+   (format "~a/~a" x y) #:min-width 7))
 
 ;;;;;;;;
 (define (print-flow-row name result)
@@ -26,9 +32,10 @@
   (define edge-count (hash-ref result 'edge-count))
   (printf "\\code{~a} & ~a & ~a & ~a\\\\\n"
           (~a name #:min-width 14)
-          (~time flow-time)
           (~a state-count #:min-width 7)
-          (~a edge-count #:min-width 7)))
+          (~a edge-count #:min-width 7)
+          (~time flow-time)
+          ))
 
 (define (print-flow-conc)
   (printf "flow-conc\n")
@@ -47,8 +54,8 @@
 ;;;;;;;;;
 
 (define (print-se-row name result)
-  (define eff-ctx-count (hash-ref result 'eff-ctx-count))
-  (define eff-ctx-obs-count (hash-ref result 'eff-ctx-obs-count))
+  (define eff-ctx-count (hash-ref result 'eff-fctx-count))
+  (define eff-ctx-obs-count (hash-ref result 'eff-fctx-obs-count))
   (printf "\\code{~a} & ~a & ~a & ~a & ~a\\\\\n"
                  (~a name #:min-width 14)
                  (~time (hash-ref result 'side-effect-time))
@@ -76,10 +83,10 @@
 ;;;;;;;;;;
 
 (define (print-se-conc-type-perc-row name conc-result type-result)
-  (define conc-eff-ctx-count (hash-ref conc-result 'eff-ctx-count))
-  (define conc-eff-ctx-obs-count (hash-ref conc-result 'eff-ctx-obs-count))
-  (define type-eff-ctx-count (hash-ref type-result 'eff-ctx-count))
-  (define type-eff-ctx-obs-count (hash-ref type-result 'eff-ctx-obs-count))
+  (define conc-eff-ctx-count (hash-ref conc-result 'eff-fctx-count))
+  (define conc-eff-ctx-obs-count (hash-ref conc-result 'eff-fctx-obs-count))
+  (define type-eff-ctx-count (hash-ref type-result 'eff-fctx-count))
+  (define type-eff-ctx-obs-count (hash-ref type-result 'eff-fctx-obs-count))
   (printf "\\code{~a} & ~a & ~a\\\\\n"
           (~a name #:min-width 14)
           (~perc (/ conc-eff-ctx-obs-count conc-eff-ctx-count))
@@ -110,23 +117,23 @@
 ;;;;;;;;;;
 
 (define (print-se-percs-row name conc-result a-type-result sa-type-result sfa-type-result msfa-type-result)
-  (define conc-eff-ctx-count (hash-ref conc-result 'eff-ctx-count))
-  (define conc-eff-ctx-obs-count (hash-ref conc-result 'eff-ctx-obs-count))
-  (define a-type-eff-ctx-count (hash-ref a-type-result 'eff-ctx-count))
-  (define a-type-eff-ctx-obs-count (hash-ref a-type-result 'eff-ctx-obs-count))
-  (define sa-type-eff-ctx-count (hash-ref sa-type-result 'eff-ctx-count))
-  (define sa-type-eff-ctx-obs-count (hash-ref sa-type-result 'eff-ctx-obs-count))
-  (define sfa-type-eff-ctx-count (hash-ref sfa-type-result 'eff-ctx-count))
-  (define sfa-type-eff-ctx-obs-count (hash-ref sfa-type-result 'eff-ctx-obs-count))
-  (define msfa-type-eff-ctx-count (hash-ref msfa-type-result 'eff-ctx-count))
-  (define msfa-type-eff-ctx-obs-count (hash-ref msfa-type-result 'eff-ctx-obs-count))
-  (printf "\\code{~a} & ~a & ~a & ~a & ~a & ~a\\\\\n"
+  (define conc-eff-ctx-count (hash-ref conc-result 'eff-fctx-count))
+  (define conc-eff-ctx-obs-count (hash-ref conc-result 'eff-fctx-obs-count))
+  (define a-type-eff-ctx-count (hash-ref a-type-result 'eff-fctx-count))
+  (define a-type-eff-ctx-obs-count (hash-ref a-type-result 'eff-fctx-obs-count))
+  (define sa-type-eff-ctx-count (hash-ref sa-type-result 'eff-fctx-count))
+  (define sa-type-eff-ctx-obs-count (hash-ref sa-type-result 'eff-fctx-obs-count))
+  (define sfa-type-eff-ctx-count (hash-ref sfa-type-result 'eff-fctx-count))
+  (define sfa-type-eff-ctx-obs-count (hash-ref sfa-type-result 'eff-fctx-obs-count))
+  (define msfa-type-eff-ctx-count (hash-ref msfa-type-result 'eff-fctx-count))
+  (define msfa-type-eff-ctx-obs-count (hash-ref msfa-type-result 'eff-fctx-obs-count))
+  (printf "\\code{~a} & ~a & ~a & ~a & ~a & (~a)\\\\\n"
           (~a name #:min-width 14)
-          (~perc (/ a-type-eff-ctx-obs-count a-type-eff-ctx-count))
-          (~perc (/ sa-type-eff-ctx-obs-count sa-type-eff-ctx-count))
-          (~perc (/ sfa-type-eff-ctx-obs-count sfa-type-eff-ctx-count))
-          (~perc (/ msfa-type-eff-ctx-obs-count msfa-type-eff-ctx-count))
-          (~perc (/ conc-eff-ctx-obs-count conc-eff-ctx-count))
+          (~perc a-type-eff-ctx-obs-count a-type-eff-ctx-count)
+          (~perc sa-type-eff-ctx-obs-count sa-type-eff-ctx-count)
+          (~perc sfa-type-eff-ctx-obs-count sfa-type-eff-ctx-count)
+          (~perc msfa-type-eff-ctx-obs-count msfa-type-eff-ctx-count)
+          (~perc conc-eff-ctx-obs-count conc-eff-ctx-count)
           ))
 
 (define (print-se-percs)
@@ -143,7 +150,265 @@
               )
          (print-se-percs-row benchmark-name conc-result a-type-result sa-type-result sfa-type-result msfa-type-result))))
 
+(define (print-se-obs-row name conc-result a-type-result sa-type-result sfa-type-result msfa-type-result)
+  (define conc-eff-ctx-obs-count (hash-ref conc-result 'observable-count))
+  (define a-type-eff-ctx-obs-count (hash-ref a-type-result 'observable-count))
+  (define sa-type-eff-ctx-obs-count (hash-ref sa-type-result 'observable-count))
+  (define sfa-type-eff-ctx-obs-count (hash-ref sfa-type-result 'observable-count))
+  (define msfa-type-eff-ctx-obs-count (hash-ref msfa-type-result 'observable-count))
+  (printf "\\code{~a} & ~a & ~a & ~a & ~a & (~a)\\\\\n"
+          (~a name #:min-width 14)
+          (~a a-type-eff-ctx-obs-count #:min-width 4)
+          (~a sa-type-eff-ctx-obs-count #:min-width 4)
+          (~a sfa-type-eff-ctx-obs-count #:min-width 4)
+          (~a msfa-type-eff-ctx-obs-count #:min-width 4)
+          (~a conc-eff-ctx-obs-count)
+          ))
+
+(define (print-se-obs)
+  (printf "se-obs\n")
+  (for ((r test-result))
+       (let* ((benchmark-name (car r))
+              (conc-results (cadr r))
+              (type-results (caddr r))
+              (conc-result (hash-ref conc-results 'a))
+              (a-type-result (hash-ref type-results 'a))
+              (sa-type-result (hash-ref type-results 'sa))
+              (sfa-type-result (hash-ref type-results 'sfa))
+              (msfa-type-result (hash-ref type-results 'msfa))
+              )
+         (print-se-obs-row benchmark-name conc-result a-type-result sa-type-result sfa-type-result msfa-type-result))))
+
 ;;;;;;;;;;;;;;;;;
+(define (print-type-fresh-row name type-results)
+  (let* (
+         (type-fresh-ref-obj-count (hash-ref type-results 'fresh-ref-obj-count))
+         (type-unfresh-ref-obj-count (hash-ref type-results 'unfresh-ref-obj-count))
+         (type-freshness-time (hash-ref type-results 'freshness-time))
+         (type-fresh-esc-ref-obj-count (hash-ref type-results 'fresh-esc-ref-obj-count))
+         (type-unfresh-esc-ref-obj-count (hash-ref type-results 'unfresh-esc-ref-obj-count))
+         (type-freshness-esc-time (hash-ref type-results 'freshness-esc-time))
+         )
+     (printf "\\code{~a} & ~a & ~a & ~a & ~a & ~a & ~a\\\\\n"
+            (~a name #:min-width 14)
+            (~a type-fresh-ref-obj-count #:min-width 4)
+            (~a type-unfresh-ref-obj-count #:min-width 4)
+            (~time type-freshness-time)
+            (~a type-fresh-esc-ref-obj-count #:min-width 4)
+            (~a type-unfresh-esc-ref-obj-count #:min-width 4)
+            (~time type-freshness-esc-time)
+            )))
+
+(define (print-type-fresh)
+  (printf "type-fresh\n")
+  (for ((r test-result))
+       (let* ((benchmark-name (car r))
+              (type-results (caddr r))
+              )
+         (print-type-fresh-row benchmark-name type-results))))
+
+
+;;;;;;;;;;;;;;;;;
+(define (print-escape-row name conc-results type-results)
+  (let* ((lam-count (hash-ref conc-results 'lam-count))
+         (conc-called-count (hash-ref conc-results 'called-count))
+         (type-called-count (hash-ref type-results 'called-count))
+         (conc-esc-lams (hash-ref conc-results 'esc-lams))
+         (conc-esc-lams-count (set-count conc-esc-lams))
+         (type-escape-time (hash-ref type-results 'escape-time))
+         (type-esc-lams (hash-ref type-results 'esc-lams))
+         (type-esc-lams-count (set-count type-esc-lams)))
+     (printf "\\code{~a} & ~a & ~a (~a) & ~a (~a) & ~a\\\\\n"
+            (~a name #:min-width 14)
+            (~a lam-count #:min-width 4)
+            (~a conc-called-count #:min-width 4)
+            (~a type-called-count #:min-width 4)
+            (~a type-esc-lams-count #:min-width 4)
+            (~a conc-esc-lams-count #:min-width 4)
+            (~time type-escape-time)
+            )))
+
+(define (print-escape)
+  (printf "escape\n")
+  (for ((r test-result))
+       (let* ((benchmark-name (car r))
+              (conc-results (cadr r))
+              (type-results (caddr r))
+              )
+         (print-escape-row benchmark-name conc-results type-results))))
+
+
+;;;;;;;;;;;;;;;;;
+(define (print-purity-row name conc-results conc-result type-results type-result)
+  (let* ((lam-count (hash-ref conc-results 'lam-count))
+         ;(conc-called-count (hash-ref conc-results 'called-count))
+         ;(type-called-count (hash-ref type-results 'called-count))
+         (purity-time (hash-ref type-result 'purity-time))
+         (conc-gen-count (hash-ref conc-result 'gen-count))
+         (conc-obs-count (hash-ref conc-result 'obs-count))
+         (type-gen-count (hash-ref type-result 'gen-count))
+         (type-obs-count (hash-ref type-result 'obs-count)))
+    (printf "\\code{~a} & ~a & ~a (~a) & ~a (~a)\\\\\n"
+            (~a name #:min-width 14)
+            ;(~a lam-count #:min-width 4)
+            ;(~a called-count #:min-width 4)
+            (~a type-gen-count #:min-width 4)
+            (~a conc-gen-count #:min-width 4)
+            (~a type-obs-count #:min-width 4)
+            (~a type-obs-count #:min-width 4)
+            (~time purity-time)
+            )))
+    
+(define (print-a-purity)
+  (printf "a-purity\n")
+  (for ((r test-result))
+       (let* ((benchmark-name (car r))
+              (conc-results (cadr r))
+              (conc-a-result (hash-ref conc-results 'a))
+              (type-results (caddr r))
+              (type-a-result (hash-ref type-results 'a))
+              )
+         (print-purity-row benchmark-name conc-results conc-a-result type-results type-a-result))))
+  
+(define (print-msfa-purity)
+  (printf "msfa-purity\n")
+  (for ((r test-result))
+       (let* ((benchmark-name (car r))
+              (conc-results (cadr r))
+              (conc-a-result (hash-ref conc-results 'a))
+              (type-results (caddr r))
+              (type-msfa-result (hash-ref type-results 'msfa))
+              )
+         (print-purity-row benchmark-name conc-results conc-a-result type-results type-msfa-result))))
+  
+
+;;;;;;;;;;;;;;;;;
+(define (print-purity-class-row name conc-results conc-result type-result)
+  (let* ((lam-count (hash-ref conc-results 'lam-count))
+         (called-count (hash-ref conc-results 'called-count))
+         (purity-time (hash-ref type-result 'purity-time))
+         (conc-class-count (hash-ref conc-result 'class-count))
+         (conc-pure-count (hash-ref conc-class-count PURE 0))
+         (conc-obs-count (hash-ref conc-class-count OBSERVER 0))
+         (conc-proc-count (hash-ref conc-class-count PROCEDURE 0))
+         (type-class-count (hash-ref type-result 'class-count))
+         (type-pure-count (hash-ref type-class-count PURE 0))
+         (type-obs-count (hash-ref type-class-count OBSERVER 0))
+         (type-proc-count (hash-ref type-class-count PROCEDURE 0)))
+    (printf "\\code{~a} & ~a & ~a & ~a & ~a & ~a & ~a & ~a\\\\\n"
+            (~a name #:min-width 14)
+            (~a called-count #:min-width 4)
+            ;(~time purity-time)
+            (~a conc-pure-count #:min-width 4)
+            (~a conc-obs-count #:min-width 4)
+            (~a conc-proc-count #:min-width 4)
+            (~a type-pure-count #:min-width 4)
+            (~a type-obs-count #:min-width 4)
+            (~a type-proc-count #:min-width 4)
+            )))
+      
+(define (print-conc-a-type-msfa-purity-class)
+  (printf "conc-a-type-msfa-purity-class\n")
+  (for ((r test-result))
+       (let* ((benchmark-name (car r))
+              (conc-results (cadr r))
+              (type-results (caddr r))
+              (conc-a-result (hash-ref conc-results 'a))
+              (type-msfa-result (hash-ref type-results 'msfa))
+              )
+         (print-purity-class-row benchmark-name conc-results conc-a-result type-msfa-result))))
+
+(define (print-type-a-type-msfa-purity-class)
+  (printf "type-a-type-msfa-purity-class\n")
+  (for ((r test-result))
+       (let* ((benchmark-name (car r))
+              (conc-results (cadr r))
+              (type-results (caddr r))
+              (type-a-result (hash-ref type-results 'a))
+              (type-msfa-result (hash-ref type-results 'msfa))
+              )
+         (print-purity-class-row benchmark-name conc-results type-a-result type-msfa-result))))
+  
+;;;;;;;;;;;;;;;;;
+(define (print-purity-timing-row name result1 result2)
+  (let* ((purity-time1 (hash-ref result1 'purity-time))
+         (purity-time2 (hash-ref result2 'purity-time)))
+         
+    (printf "\\code{~a} & ~a & ~a\\\\\n"
+            (~a name #:min-width 14)
+            (~time purity-time1)
+            (~time purity-time2)
+            )))
+      
+(define (print-purity-timing)
+  (printf "purity-timing\n")
+  (for ((r test-result))
+       (let* ((benchmark-name (car r))
+              (type-results (caddr r))
+              (type-a-result (hash-ref type-results 'a))
+              (type-msfa-result (hash-ref type-results 'msfa))
+              )
+         (print-purity-timing-row benchmark-name type-a-result type-msfa-result))))
+
+;;;;;;;;;;;;;;;;;
+(define (print-se-timing-row name result1 result2)
+  (let* ((se-time1 (hash-ref result1 'side-effect-time))
+         (se-time2 (hash-ref result2 'side-effect-time)))
+         
+    (printf "\\code{~a} & ~a & ~a\\\\\n"
+            (~a name #:min-width 14)
+            (~time se-time1)
+            (~time se-time2)
+            )))
+      
+(define (print-se-timing)
+  (printf "se-timing\n")
+  (for ((r test-result))
+       (let* ((benchmark-name (car r))
+              (type-results (caddr r))
+              (type-a-result (hash-ref type-results 'a))
+              (type-msfa-result (hash-ref type-results 'msfa))
+              )
+         (print-se-timing-row benchmark-name type-a-result type-msfa-result))))
+
+;;;;;;;;;;;;;;;;;
+(define (print-timing-row name results type-a-result type-sa-result type-sfa-result type-msfa-result)
+  (let* ((flow-time (hash-ref results 'flow-time))
+         (call-state-time (hash-ref results 'call-state-time))
+         (escape-time (hash-ref results 'escape-time))
+         (fresh-time (hash-ref results 'freshness-time))
+         (fresh-esc-time (hash-ref results 'freshness-esc-time))
+         (a-side-effect-time (hash-ref type-a-result 'side-effect-time))
+         (a-purity-time (hash-ref type-a-result 'purity-time))
+         (sa-side-effect-time (hash-ref type-sa-result 'side-effect-time))
+         (sa-purity-time (hash-ref type-sa-result 'purity-time))
+         (sfa-side-effect-time (hash-ref type-sfa-result 'side-effect-time))
+         (sfa-purity-time (hash-ref type-sfa-result 'purity-time))
+         (msfa-side-effect-time (hash-ref type-msfa-result 'side-effect-time))
+         (msfa-purity-time (hash-ref type-msfa-result 'purity-time))
+         )
+         
+    (printf "\\code{~a} & ~a & ~a & ~a & ~a\\\\\n"
+            (~a name #:min-width 14)
+            (~time (+ flow-time call-state-time a-side-effect-time a-purity-time))
+            (~time (+ flow-time call-state-time sa-side-effect-time sa-purity-time))
+            (~time (+ flow-time call-state-time sfa-side-effect-time fresh-time sfa-purity-time))
+            (~time (+ flow-time call-state-time msfa-side-effect-time escape-time fresh-esc-time msfa-purity-time))
+            )))
+      
+(define (print-timing)
+  (printf "timing\n")
+  (for ((r test-result))
+       (let* ((benchmark-name (car r))
+              (type-results (caddr r))
+              (type-a-result (hash-ref type-results 'msfa))
+              (type-sa-result (hash-ref type-results 'sa))
+              (type-sfa-result (hash-ref type-results 'sfa))
+              (type-msfa-result (hash-ref type-results 'msfa))
+              )
+         (print-timing-row benchmark-name type-results type-a-result type-sa-result type-sfa-result type-msfa-result))))
+
+;;;;;;;
 
 (define (main)
 
@@ -159,7 +424,24 @@
   ;(print-se-a-conc-type-perc)
   ;(print-se-msfa-conc-type-perc)
   (print-se-percs)
+  (print-se-obs)
+  (print-se-timing)
 
+  ; Escape
+  (print-escape)
+
+  ; Fresh
+  (print-type-fresh)
+
+  ; Purity
+  (print-a-purity)
+  (print-msfa-purity)
+
+  (print-conc-a-type-msfa-purity-class)
+  (print-type-a-type-msfa-purity-class)
+  (print-purity-timing)
+
+  (print-timing)
   )
 
 
