@@ -720,11 +720,10 @@
       (let ((s1 (car expected)))
         (and (or (not s1) (equal? s1 (car actual))) (summary-patterns-match? (cdr expected) (cdr actual))))))
 
-(define (nodes ast) (for/fold ((cs (list ast))) ((c (children ast))) (append cs (nodes c))))
 (define (lambdas ast) (filter «lam»? (nodes ast)))
 
 (define (purity-benchmark e mach expected)
-  (newline)
+  (newline)  
   (printf "eval... ")
   (define sys (mach e))
   (define flow-time (system-duration sys))
@@ -753,6 +752,14 @@
   (define lam-count (length sorted-lams))
   (define called-lams (list->set (map ctx-λ (hash-keys Ξ))))
   (define called-count (set-count called-lams))
+  (define es (set->list (nodes ast)))
+  (define node-count (length es))
+  (define set!-count (length (filter «set!»? es)))
+  (define set-car!-count (length (filter «set-car!»? es)))
+  (define set-cdr!-count (length (filter «set-cdr!»? es)))
+  (define vector-set!-count (length (filter «vector-set!»? es)))
+  (define cons-count (length (filter «cons»? es)))
+  (define make-vector-count (length (filter «make-vector»? es)))
 
   (printf "escape analysis... ")
   (define er (escape-analysis sys))
@@ -766,14 +773,21 @@
   (printf "~a ms\n" freshness-time)
   (define fresh? (freshness-result-fresh? fr))
 
-  (define var->fresh (for/fold ((var->fresh (hash))) (((s Fs) (freshness-result-state->Fs fr)))
-                       (for/fold ((var->fresh var->fresh)) (((κ Fκ) Fs))
-                         ;(if (or (not κ) (set-member? called-lams (ctx-λ κ)))
-                             (hash-⊔ var->fresh Fκ ⊔ ⊥)
-                         ;    var->fresh)
-                       )))
-  (define fresh-ref-obj-count (for/sum ((freshness (hash-values var->fresh))) (if (equal? freshness ⊥) 1 0)))
-  (define unfresh-ref-obj-count (for/sum ((freshness (hash-values var->fresh))) (if (equal? freshness ⊥) 0 1)))
+  (define fresh-ref-obj-count2d 0)
+  (define unfresh-ref-obj-count2d 0)
+  (define fresh-ref-obj-count2df 0)
+  (define unfresh-ref-obj-count2df 0)
+  (for (((s Fs) (freshness-result-state->Fs fr)))
+       (for (((κ Fκ) Fs))
+            (for (((x freshness) Fκ))
+                 (if (equal? freshness ⊥)
+                   (set! fresh-ref-obj-count2d (add1 fresh-ref-obj-count2d))
+                   (set! unfresh-ref-obj-count2d (add1 unfresh-ref-obj-count2d)))
+                   (when (or (not κ) (set-member? called-lams (ctx-λ κ)))
+                     (if (equal? freshness ⊥)
+                         (set! fresh-ref-obj-count2df (add1 fresh-ref-obj-count2df))
+                         (set! unfresh-ref-obj-count2df (add1 unfresh-ref-obj-count2df)))
+                       ))))
   
 
   (printf "freshness analysis with esc... ")
@@ -782,14 +796,21 @@
   (printf "~a ms\n" freshness-esc-time)
   (define fresh?-esc (freshness-result-fresh? fr-esc))
 
-  (define var->fresh-esc (for/fold ((var->fresh (hash))) (((s Fs) (freshness-result-state->Fs fr-esc)))
-                       (for/fold ((var->fresh var->fresh)) (((κ Fκ) Fs))
-                           ;(if (or (not κ) (set-member? called-lams (ctx-λ κ)))
-                             (hash-⊔ var->fresh Fκ ⊔ ⊥)
-                             ;var->fresh)
-                         )))
-  (define fresh-esc-ref-obj-count (for/sum ((freshness (hash-values var->fresh-esc))) (if (equal? freshness ⊥) 1 0)))
-  (define unfresh-esc-ref-obj-count (for/sum ((freshness (hash-values var->fresh-esc))) (if (equal? freshness ⊥) 0 1)))
+  (define fresh-esc-ref-obj-count2d 0)
+  (define unfresh-esc-ref-obj-count2d 0)
+  (define fresh-esc-ref-obj-count2df 0)
+  (define unfresh-esc-ref-obj-count2df 0)
+  (for (((s Fs) (freshness-result-state->Fs fr-esc)))
+       (for (((κ Fκ) Fs))
+            (for (((x freshness) Fκ))
+                 (if (equal? freshness ⊥)
+                   (set! fresh-esc-ref-obj-count2d (add1 fresh-esc-ref-obj-count2d))
+                   (set! unfresh-esc-ref-obj-count2d (add1 unfresh-esc-ref-obj-count2d)))
+                   (when (or (not κ) (set-member? called-lams (ctx-λ κ)))
+                     (if (equal? freshness ⊥)
+                         (set! fresh-esc-ref-obj-count2df (add1 fresh-esc-ref-obj-count2df))
+                         (set! unfresh-esc-ref-obj-count2df (add1 unfresh-esc-ref-obj-count2df)))
+                       ))))
 
 
   (printf "call-state analysis... ")
@@ -902,10 +923,13 @@
   (define msfa-ser (msfa-side-effect-analysis sys ctx->addrs fresh?-esc esc-lams))
   (define msfa-results (handle-side-effect-result msfa-ser))
 
-  (hash 'exit 'ok 'msg result-value 'flow-time flow-time 'state-count state-count 'edge-count edge-count 'lam-count lam-count 'called-count called-count 'called-lams called-lams
+  (hash 'node-count node-count 'set!-count set!-count 'set-car!-count set-car!-count 'set-cdr!-count set-cdr!-count 'vector-set!-count vector-set!-count 'cons-count cons-count 'make-vector-count make-vector-count
+        'exit 'ok 'msg result-value 'flow-time flow-time 'state-count state-count 'edge-count edge-count 'lam-count lam-count 'called-count called-count 'called-lams called-lams
         'a a-results 'sa sa-results 'sfa sfa-results 'msfa msfa-results
         'call-state-time call-state-time
-        'freshness-time freshness-time 'freshness-esc-time freshness-esc-time 'fresh-ref-obj-count fresh-ref-obj-count 'unfresh-ref-obj-count unfresh-ref-obj-count 'fresh-esc-ref-obj-count fresh-esc-ref-obj-count 'unfresh-esc-ref-obj-count unfresh-esc-ref-obj-count 
+        'freshness-time freshness-time 'freshness-esc-time freshness-esc-time
+        'fresh-ref-obj-count2d fresh-ref-obj-count2d 'unfresh-ref-obj-count2d unfresh-ref-obj-count2d 'fresh-esc-ref-obj-count2d fresh-esc-ref-obj-count2d 'unfresh-esc-ref-obj-count2d unfresh-esc-ref-obj-count2d 
+        'fresh-ref-obj-count2df fresh-ref-obj-count2df 'unfresh-ref-obj-count2df unfresh-ref-obj-count2df 'fresh-esc-ref-obj-count2df fresh-esc-ref-obj-count2df 'unfresh-esc-ref-obj-count2df unfresh-esc-ref-obj-count2df 
         'escape-time escape-time 'esc-lams esc-lams
         ))
 

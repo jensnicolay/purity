@@ -182,20 +182,18 @@
 ;;;;;;;;;;;;;;;;;
 (define (print-type-fresh-row name type-results)
   (let* (
-         (type-fresh-ref-obj-count (hash-ref type-results 'fresh-ref-obj-count))
-         (type-unfresh-ref-obj-count (hash-ref type-results 'unfresh-ref-obj-count))
+         (type-fresh-ref-obj-count2d (hash-ref type-results 'fresh-ref-obj-count2d))
+         (type-unfresh-ref-obj-count2d (hash-ref type-results 'unfresh-ref-obj-count2d))
          (type-freshness-time (hash-ref type-results 'freshness-time))
-         (type-fresh-esc-ref-obj-count (hash-ref type-results 'fresh-esc-ref-obj-count))
-         (type-unfresh-esc-ref-obj-count (hash-ref type-results 'unfresh-esc-ref-obj-count))
+         (type-fresh-esc-ref-obj-count2d (hash-ref type-results 'fresh-esc-ref-obj-count2d))
+         (type-unfresh-esc-ref-obj-count2d (hash-ref type-results 'unfresh-esc-ref-obj-count2d))
          (type-freshness-esc-time (hash-ref type-results 'freshness-esc-time))
          )
-     (printf "\\code{~a} & ~a & ~a & ~a & ~a & ~a & ~a\\\\\n"
+     (printf "\\code{~a} & ~a & ~a & ~a & ~a\\\\\n"
             (~a name #:min-width 14)
-            (~a type-fresh-ref-obj-count #:min-width 4)
-            (~a type-unfresh-ref-obj-count #:min-width 4)
+            (~perc type-fresh-ref-obj-count2d (+ type-fresh-ref-obj-count2d type-unfresh-ref-obj-count2d))
             (~time type-freshness-time)
-            (~a type-fresh-esc-ref-obj-count #:min-width 4)
-            (~a type-unfresh-esc-ref-obj-count #:min-width 4)
+            (~perc type-fresh-esc-ref-obj-count2d (+ type-fresh-esc-ref-obj-count2d type-unfresh-esc-ref-obj-count2d))
             (~time type-freshness-esc-time)
             )))
 
@@ -206,6 +204,30 @@
               (type-results (caddr r))
               )
          (print-type-fresh-row benchmark-name type-results))))
+
+
+;;;;;;;;;;;;;;;;;
+(define (print-conc-type-esc-fresh-row name conc-results type-results)
+  (let* (
+         (conc-fresh-esc-ref-obj-count2df (hash-ref conc-results 'fresh-esc-ref-obj-count2df))
+         (conc-unfresh-esc-ref-obj-count2df (hash-ref conc-results 'unfresh-esc-ref-obj-count2df))
+         (type-fresh-esc-ref-obj-count2df (hash-ref type-results 'fresh-esc-ref-obj-count2df))
+         (type-unfresh-esc-ref-obj-count2df (hash-ref type-results 'unfresh-esc-ref-obj-count2df))
+         )
+     (printf "\\code{~a} & ~a & ~a\\\\\n"
+            (~a name #:min-width 14)
+            (~perc conc-fresh-esc-ref-obj-count2df (+ conc-fresh-esc-ref-obj-count2df conc-unfresh-esc-ref-obj-count2df))
+            (~perc type-fresh-esc-ref-obj-count2df (+ type-fresh-esc-ref-obj-count2df type-unfresh-esc-ref-obj-count2df))
+            )))
+
+(define (print-conc-type-esc-fresh)
+  (printf "conc-type-esc-fresh\n")
+  (for ((r test-result))
+       (let* ((benchmark-name (car r))
+              (conc-results (cadr r))
+              (type-results (caddr r))
+              )
+         (print-conc-type-esc-fresh-row benchmark-name conc-results type-results))))
 
 
 ;;;;;;;;;;;;;;;;;
@@ -432,6 +454,7 @@
 
   ; Fresh
   (print-type-fresh)
+  (print-conc-type-esc-fresh)
 
   ; Purity
   (print-a-purity)

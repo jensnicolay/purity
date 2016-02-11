@@ -229,3 +229,6 @@
   (let ((P (parent-map ast)))
     (lambda (e)
       (hash-ref P e #f))))
+
+(define (nodes ast) (for/fold ((cs (list ast))) ((c (children ast))) (append cs (nodes c))))
+
