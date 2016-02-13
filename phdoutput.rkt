@@ -26,14 +26,46 @@
    (format "~a/~a" x y) #:min-width 7))
 
 ;;;;;;;;
+(define (print-benchmark-row name results)
+  (define node-count (hash-ref results 'node-count))
+  (define lam-count (hash-ref results 'lam-count))
+  (define set!-count (hash-ref results 'set!-count))
+  (define set-car!-count (hash-ref results 'set-car!-count))
+  (define set-cdr!-count (hash-ref results 'set-cdr!-count))
+  (define vector-set!-count (hash-ref results 'vector-set!-count))
+  (define cons-count (hash-ref results 'cons-count))
+  (define make-vector-count (hash-ref results 'make-vector-count))
+  (printf "\\code{~a} & ~a & ~a & ~a & ~a & ~a & ~a & ~a & ~a\\\\\n"
+          (~a name #:min-width 14)
+          (~a node-count #:min-width 6)
+          (~a lam-count #:min-width 3)
+          (~a set!-count #:min-width 3)
+          (~a cons-count #:min-width 3)
+          (~a set-car!-count #:min-width 3)
+          (~a set-cdr!-count #:min-width 3)
+          (~a make-vector-count #:min-width 3)
+          (~a vector-set!-count #:min-width 3)
+          ))
+
+(define (print-benchmarks)
+  (printf "benchmarks\n")
+  (for ((r test-result))
+       (let* ((benchmark-name (car r))
+              (results (cadr r)))
+         (print-benchmark-row benchmark-name results))))
+
+;;;;;;;;
 (define (print-flow-row name result)
   (define flow-time (hash-ref result 'flow-time))
   (define state-count (hash-ref result 'state-count))
   (define edge-count (hash-ref result 'edge-count))
-  (printf "\\code{~a} & ~a & ~a & ~a\\\\\n"
+  (define node-count (hash-ref result 'node-count))
+  (define covered-count (hash-ref result 'covered-count))
+  (printf "\\code{~a} & ~a & ~a & ~a & ~a\\\\\n"
           (~a name #:min-width 14)
           (~a state-count #:min-width 7)
           (~a edge-count #:min-width 7)
+          (~perc covered-count node-count)
           (~time flow-time)
           ))
 
@@ -435,6 +467,9 @@
 (define (main)
 
   ;(purity-test)
+
+  ; Benchmarks
+  (print-benchmarks)
 
   ; Setting
   (print-flow-conc)

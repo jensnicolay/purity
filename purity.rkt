@@ -737,10 +737,32 @@
   (define result-value (answer-value sys))
   (define graph (system-graph sys))
   (define edge-count 0)
+  (define nodes-covered (set))
+  (define (cover e)
+    (match e
+      ((«lam» _ x e0) (set-union (set e) (list->set x)))
+      ((«let» _ x e0 e1) (set-union (set e x) (cover e0)))
+      ((«letrec» _ x e0 e1) (set-union (set e x) (cover e0)))
+      ((«if» _ ae e1 e2) (set-union (set e) (cover ae)))
+      ((«car» _ x) (set e x))
+      ((«cdr» _ x) (set e x))
+      ((«set!» _ x ae) (set-union (set e x) (cover ae)))
+      ((«set-car!» _ x ae) (set-union (set e x) (cover ae)))
+      ((«set-cdr!» _ x ae) (set-union (set e x) (cover ae)))
+      ((«cons» _ ae1 ae2) (set-union (set e) (cover ae1) (cover ae2)))
+      ((«make-vector» _ ae1 ae2) (set-union (set e) (cover ae1) (cover ae2)))
+      ((«vector-ref» _ x ae) (set-union (set e x) (cover ae)))
+      ((«vector-set!» _ x ae1 ae2) (set-union (set e x) (cover ae1) (cover ae2)))
+      ((«app» _ rator rands) (apply set-union (append (list (set e) (cover rator)) (map cover rands))))
+      (_ (set e))))
   (for (((s ts) graph))
+       (when (ev? s)
+         (let ((e (ev-e s)))
+           (set! nodes-covered (set-union nodes-covered (cover e)))))
        (for ((t ts))
             (match t
               ((transition s* E) (set! edge-count (+ edge-count (set-count ts)))))))
+  (define covered-count (set-count nodes-covered))  
   (printf "state/edges ~a/~a value ~a\n" state-count edge-count (~a result-value #:max-width 80))
   (define initial (system-initial sys))
   (define ast (ev-e initial))
@@ -752,8 +774,9 @@
   (define lam-count (length sorted-lams))
   (define called-lams (list->set (map ctx-λ (hash-keys Ξ))))
   (define called-count (set-count called-lams))
-  (define es (set->list (nodes ast)))
+  (define es (nodes ast))
   (define node-count (length es))
+  ;(printf "not covered ~a\n" (set-subtract (list->set es) nodes-covered)) 
   (define set!-count (length (filter «set!»? es)))
   (define set-car!-count (length (filter «set-car!»? es)))
   (define set-cdr!-count (length (filter «set-cdr!»? es)))
@@ -923,7 +946,7 @@
   (define msfa-ser (msfa-side-effect-analysis sys ctx->addrs fresh?-esc esc-lams))
   (define msfa-results (handle-side-effect-result msfa-ser))
 
-  (hash 'node-count node-count 'set!-count set!-count 'set-car!-count set-car!-count 'set-cdr!-count set-cdr!-count 'vector-set!-count vector-set!-count 'cons-count cons-count 'make-vector-count make-vector-count
+  (hash 'node-count node-count 'covered-count covered-count 'set!-count set!-count 'set-car!-count set-car!-count 'set-cdr!-count set-cdr!-count 'vector-set!-count vector-set!-count 'cons-count cons-count 'make-vector-count make-vector-count
         'exit 'ok 'msg result-value 'flow-time flow-time 'state-count state-count 'edge-count edge-count 'lam-count lam-count 'called-count called-count 'called-lams called-lams
         'a a-results 'sa sa-results 'sfa sfa-results 'msfa msfa-results
         'call-state-time call-state-time
@@ -996,7 +1019,6 @@
                         ok
                         )))
 
-;(define DEB1 #f)(define DEB2 #f)
 (define (perform-purity-test tests)
 
   (set! test-result

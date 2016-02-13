@@ -181,7 +181,8 @@
 
 (define (children e)
   (match e
-    ((«id» _ x) (set))
+    ((«id» _ _) (set))
+    ((«lit» _ _) (set))
     ((«lam» _ x e) (set-add (list->set x) e))
     ((«let» _ x e0 e1) (set x e0 e1))
     ((«letrec» _ x e0 e1) (set x e0 e1))
@@ -197,8 +198,6 @@
     ((«vector-set!» _ x ae1 ae2) (set x ae1 ae2))
     ((«quo» _ _) (set))
     ((«app» _ rator rands) (set-add (list->set rands) rator))
-    ((«id» _ _) (set))
-    ((«lit» _ _) (set))
     (_ (error "cannot handle expression" e))))
 
 
