@@ -97,7 +97,7 @@
     (define (check-values ae ρ σ M)
       (let ((d (eval-atom ae ρ σ)))
         (let-values (((A L) (touchesd d)))
-          (set-union M (reachabled A L σ)))))
+          (set-union M L))))
 
     (define (handle-state s M)
         (match s
@@ -128,14 +128,14 @@
     (define (traverse-graph graph)
       (for/fold ((M (set))) (((s t) (in-hash graph)))
         (let ((M* (handle-state s M)))
-          (printf "state ~a contributes ~a\n" (state-repr s) (set-map (set-subtract M* M) «lam»-l))
+          ;(printf "state ~a contributes ~a\n" (state-repr s) (set-map (set-subtract M* M) «lam»-l))
           M*)))
 
 
     (define start (current-milliseconds))
     (define M (traverse-graph graph))
     (define time (- (current-milliseconds) start))
-    (for ((lam M)) (printf "~a ~a\n" («lam»-l lam) (~a lam #:max-width 40)))
+    ;(for ((lam M)) (printf "~a ~a\n" («lam»-l lam) (~a lam #:max-width 40)))
     (escape-result M time)))
 
 

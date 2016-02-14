@@ -196,6 +196,20 @@
                'test-purity41 'test-purity42 'test-purity43 'test-purity44 'test-purity45 'test-purity46 'test-purity47 'test-purity48 'test-purity49 
                               'test-purity52 'test-purity53 'test-purity54 'test-purity55 'test-purity56 'test-purity57 'test-purity58 'test-purity59 'test-purity60
                'test-purity61 'test-purity62 'test-purity63                'test-purity65 'test-purity66 'test-purity67))
+
+(define (esc-test)
+  (define (check e expected)
+    (let ((conc-actual (set-map (escape-result-lams (escape-analysis (conc-mach e))) «lam»-l)))
+      (unless (equal? expected (list->set conc-actual))
+        (printf "~a\nexp ~a\nact ~a\n\n" e expected (list->set conc-actual)))))
+  (check '(let ((f (lambda () 123))) (let ((o (cons f f))) o)) (set 2))
+  (check '(let ((o (cons (lambda () 123) 456))) o) (set 3))
+  (check '(let ((f (lambda () (let ((g (lambda () 123))) 456)))) (f)) (set))
+  (check '(let ((f (lambda () (let ((g (lambda () 123))) g)))) 456) (set))
+  (check '(let ((f (lambda () (let ((g (lambda () 123))) g)))) (f)) (set 5))
+  )
+
+  
 #|
         (cons 1 (cons '(let ((z #f)) (let ((f (lambda () (set! z #t)))) (f))) '((5 . "PROC"))))
         (cons 2 (cons '(let ((z #f)) (let ((h (lambda () (set! z #t)))) (let ((g (lambda () (h)))) (let ((f (lambda () (g)))) (f))))) '((5 . "PROC") (11 . "PROC") (16 . "PROC"))))
