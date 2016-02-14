@@ -275,8 +275,8 @@
      (printf "\\code{~a} & ~a & ~a (~a) & ~a (~a) & ~a\\\\\n"
             (~a name #:min-width 14)
             (~a lam-count #:min-width 4)
-            (~a conc-called-count #:min-width 4)
             (~a type-called-count #:min-width 4)
+            (~a conc-called-count #:min-width 4)
             (~a type-esc-lams-count #:min-width 4)
             (~a conc-esc-lams-count #:min-width 4)
             (~time type-escape-time)
@@ -492,8 +492,8 @@
   (print-conc-type-esc-fresh)
 
   ; Purity
-  (print-a-purity)
-  (print-msfa-purity)
+  ;(print-a-purity)
+  ;(print-msfa-purity)
 
   (print-conc-a-type-msfa-purity-class)
   (print-type-a-type-msfa-purity-class)
