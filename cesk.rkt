@@ -326,9 +326,9 @@
          (printf "κ ~a ~a\n" (ctx->ctxi κ) κ))))
     
     (define (step q)
-      (printf "\nexploring ~a\n" (state->statei q))
-      (print-state q)
-      (printf "σ ~a ~a\n" (store->storei σ) σ)
+      ;(printf "\nexploring ~a\n" (state->statei q))
+      ;(print-state q)
+      ;(printf "σ ~a ~a\n" (store->storei σ) σ)
       ;(read)
       (match q
         ((ev (? ae? ae) ρ _ ι κ)
