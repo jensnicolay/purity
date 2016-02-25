@@ -22,8 +22,10 @@
 (define (conc-⊔ current new) ; ordered!
   new)
 
-(define conc-⊑ eq?)
-
+(define (conc-⊑ v1 v2)
+  (or (eq? v1 conc-⊥)
+      (eq? v1 v2)))
+              
 (define (conc-true? v)
   v)
 
@@ -43,14 +45,14 @@
     ("*" . ,(conc-α (prim2 "*" *)))
     ("/" . ,(conc-α (prim2 "/" /)))
     ("not" . ,(conc-α (prim2 "not" not)))
-    ("and" . ,(conc-α (prim2 "and" (lambda l
-                                     (for/fold ((res #t))
-                                               ((el l))
-                                       (and res el))))))
-    ("or" . ,(conc-α (prim2 "or" (lambda l
-                                   (for/fold ((res #f))
-                                             ((el l))
-                                     (or res el))))))
+    ;("and" . ,(conc-α (prim2 "and" (lambda l
+                                     ;(for/fold ((res #t))
+                                     ;          ((el l))
+                                     ;  (and res el))))))
+    ;("or" . ,(conc-α (prim2 "or" (lambda l
+                                   ;(for/fold ((res #f))
+                                   ;          ((el l))
+                                   ;  (or res el))))))
     ("gcd" . ,(conc-α (prim2 "gcd" gcd)))
     ("modulo" . ,(conc-α (prim2 "modulo" modulo)))
     ("remainder" . ,(conc-α (prim2 "remainder" remainder)))
@@ -160,8 +162,8 @@
       ("*" . ,(type-α (prim2 "*" ->num)))
       ("/" . ,(type-α (prim2 "/" ->num)))
       ("not" . ,(type-α (prim2 "not" ->bool)))
-      ("and" . ,(type-α (prim2 "and" ->bool)))
-      ("or" . ,(type-α (prim2 "or" ->bool)))
+      ;("and" . ,(type-α (prim2 "and" ->bool)))
+      ;("or" . ,(type-α (prim2 "or" ->bool)))
       ("gcd" . ,(type-α (prim2 "gcd" ->num)))
       ("modulo" . ,(type-α (prim2 "modulo" ->num)))
       ("remainder" . ,(type-α (prim2 "remainder" ->num)))
@@ -241,8 +243,8 @@
       ("*" . ,(pt-α (prim2 "*" ->prim)))
       ("/" . ,(pt-α (prim2 "/" ->prim)))
       ("not" . ,(pt-α (prim2 "not" ->prim)))
-      ("and" . ,(pt-α (prim2 "and" ->prim)))
-      ("or" . ,(pt-α (prim2 "or" ->prim)))
+      ;("and" . ,(pt-α (prim2 "and" ->prim)))
+      ;("or" . ,(pt-α (prim2 "or" ->prim)))
       ("gcd" . ,(pt-α (prim2 "gcd" ->prim)))
       ("modulo" . ,(pt-α (prim2 "modulo" ->prim)))
       ("remainder" . ,(pt-α (prim2 "remainder" ->prim)))

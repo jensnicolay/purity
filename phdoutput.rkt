@@ -428,7 +428,7 @@
 ;;;;;;;;;;;;;;;;;
 (define (print-timing-row name results type-a-result type-sa-result type-sfa-result type-msfa-result)
   (let* ((flow-time (hash-ref results 'flow-time))
-         (call-state-time (hash-ref results 'call-state-time))
+         (call-store-time (hash-ref results 'call-store-time))
          (escape-time (hash-ref results 'escape-time))
          (fresh-time (hash-ref results 'freshness-time))
          (fresh-esc-time (hash-ref results 'freshness-esc-time))
@@ -444,10 +444,10 @@
          
     (printf "\\code{~a} & ~a & ~a & ~a & ~a\\\\\n"
             (~a name #:min-width 14)
-            (~time (+ flow-time call-state-time a-side-effect-time a-purity-time))
-            (~time (+ flow-time call-state-time sa-side-effect-time sa-purity-time))
-            (~time (+ flow-time call-state-time sfa-side-effect-time fresh-time sfa-purity-time))
-            (~time (+ flow-time call-state-time msfa-side-effect-time escape-time fresh-esc-time msfa-purity-time))
+            (~time (+ flow-time call-store-time a-side-effect-time a-purity-time))
+            (~time (+ flow-time call-store-time sa-side-effect-time sa-purity-time))
+            (~time (+ flow-time call-store-time sfa-side-effect-time fresh-time sfa-purity-time))
+            (~time (+ flow-time call-store-time msfa-side-effect-time escape-time fresh-esc-time msfa-purity-time))
             )))
       
 (define (print-timing)

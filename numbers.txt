@@ -3166,3 +3166,13 @@ timing
 \code{grid          } & \eps  & \eps  & \eps  & \eps \\
 \code{fannkuch      } & \eps  & \eps  & \eps  & \eps \\
 \code{mceval        } & 298'' & 261'' & 272'' & 302''\\
+
+===== 20160220
+
+(generate-dot (system-graph (type-mach-0 '(let ((g (lambda (x) (let ((h (lambda (y) (+ x y)))) (h x))))) (let ((f (lambda () (g 2)))) (f))))) "example")
+                                                                                      
+(generate-dot (system-graph (conc-mach '(let ((g (lambda (x) (let ((h (lambda (y) (+ x y)))) (h x))))) (let ((f (lambda () (g 2)))) (f))))) "example-conc")
+
+'(let ((g (lambda (x) (let ((h (lambda (y) (+ x y)))) (h x))))) (let ((f (lambda () (g 2)))) (f)))
+
+(let ((h (lambda (y) y))) (let ((f (lambda () (let ((g (lambda (x) (x x)))) (g h))))) (f)))

@@ -22,12 +22,14 @@
           i))))
 (define frameis (make-vector 1000))
 (define (frame->framei frame) (index frameis frame))
+(define envis (make-vector 1000))
+(define (env->envi env) (index envis env))
 (define ctxis (make-vector 1000))
 (define (ctx->ctxi ctx) (index ctxis ctx))
 (define stateis (make-vector 2000))
 (define (state->statei q) (index stateis q))
-;(define storeis (make-vector 1000))
-;(define (store->storei σ) (index storeis σ))
+(define storeis (make-vector 1000))
+(define (store->storei σ) (index storeis σ))
 
 ;; domain helpers
 (define (env-lookup ρ x)
@@ -311,12 +313,22 @@
     
     (define (print-state q)
       (match q
-        ((ev e ρ σ ι κ) (printf "EV ~a\nρ ~a σ ~a\nι ~a κ ~a frames ~a\n" (~a e #:max-width 40) ρ "σ" (map frame->framei ι) (ctx->ctxi κ) (set-map (stack-frames ι κ Ξ) frame->framei)))
-        ((ko v σ ι κ) (printf "KO ~a σ ~a\nι ~a κ ~a frames ~a\n" v "σ" (map frame->framei ι) (ctx->ctxi κ) (set-map (stack-frames ι κ Ξ) frame->framei)))))
+        ((ev e ρ σ ι κ)
+         (printf "EV ~a\n" (~a e #:max-width 40))
+         (printf "ρ ~a ~a\n" (env->envi ρ) ρ)
+         ;(printf "σ ~a ~a\n" σ (store->storei σ))
+         (printf "ι    ~a\n" (map frame->framei ι))
+         (printf "κ ~a ~a\n" (ctx->ctxi κ) κ))
+        ((ko v σ ι κ)
+         (printf "KO ~a\n" (~a v #:max-width 40))
+         ;(printf "σ ~a ~a\n" σ (store->storei σ))
+         (printf "ι    ~a\n" (map frame->framei ι))
+         (printf "κ ~a ~a\n" (ctx->ctxi κ) κ))))
     
     (define (step q)
-      ;(printf "exploring ~a\n" (state->statei q))
-      ;(print-state q)
+      (printf "\nexploring ~a\n" (state->statei q))
+      (print-state q)
+      (printf "σ ~a ~a\n" (store->storei σ) σ)
       ;(read)
       (match q
         ((ev (? ae? ae) ρ _ ι κ)
