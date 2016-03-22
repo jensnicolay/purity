@@ -121,7 +121,6 @@
 (define test-purity59 (list purity59 (set GENERATES) (set) (set)))
 (define purity60 '(let ((f (lambda (h) (h)))) (let ((z #t)) (let ((g (lambda () (set! z #f)))) (f g)))))
 (define test-purity60 (list purity60 (set GENERATES) (set GENERATES)))
-;add to JS ==>
 (define purity61 '(letrec ((f (lambda (h) (let ((z #t)) (if h (h) (f (lambda () (set! z #f)))))))) (f #f)))
 (define test-purity61 (list purity61 (set GENERATES) (set GENERATES)))
 (define purity62 '(letrec ((f (lambda (h) (let ((z (cons 1 2))) (if h (h) (f (lambda () (set-car! z 3)))))))) (f #f)))
@@ -166,7 +165,7 @@
 (define test-treeadd3 (list treeadd3 (set) (set)))
 (define test-account (list account (set) (set GENERATES OBSERVES) (set GENERATES OBSERVES) (set)))
 (define test-fannkuch (list fannkuch (set) (set) (set OBSERVES) (set OBSERVES) (set OBSERVES GENERATES) (set OBSERVES GENERATES) (set OBSERVES GENERATES) (set) (set GENERATES OBSERVES) (set) (set GENERATES) (set OBSERVES GENERATES) (set) (set OBSERVES GENERATES) (set OBSERVES GENERATES) (set OBSERVES GENERATES)))
-
+(define test-scm2java (list scm2java #f #f (set) #f (set) #f #f #f (set) (set) (set) #f #f (set) (set) (set) #f #f (set) #f #f (set) #f #f (set) #f #f #f #f #f #f (set) #f #f (set) (set) (set) #f #f #f #f #f #f #f #f #f (set GENERATES) #f #f (set GENERATES) (set) (set) (set) #f #f #f #f (set) #f #f (set) #f #f (set)))
 
 (define (purity-test . names)
   (when (null? names)

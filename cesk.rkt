@@ -195,6 +195,7 @@
       (let ((global* (append (lattice-global lattice) ; all fresh (freshness analysis supposes this: UNWANTED DEP!)
                              `(("eq?" . ,(α (prim "eq?" prim-eq?)))
                                ("~a" . ,(α (prim "~a" prim-to-string)))
+                               ("list->string" . ,(α (prim "list->string" prim-to-string)))
                                ("error" . ,(α (prim "error" prim-error)))
                                ("pair?" . ,(α (prim "pair?" prim-pair)))
                                ("vector-length" . ,(α (prim "vector-length" prim-vector-length)))

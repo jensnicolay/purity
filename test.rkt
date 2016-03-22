@@ -130,7 +130,7 @@
 (define fib-mut (file->value "test/fib-mut.scm"))
 (define account (file->value "test/account.scm"))
 (define collatz (file->value "test/collatz.scm"))
-(define scm2java (add-list? (file->value "test/scm2java.scm")))
+(define scm2java (add-length (add-list? (file->value "test/scm2java.scm"))))
 (define mceval (add-length (add-cars (add-map (file->value "test/mceval.scm")))))
 (define mceval2 (add-equal? (add-cars (add-assoc (add-map (file->value "test/mceval2.scm"))))))
 (define boyer (add-equal? (add-cars (file->value "test/boyer.scm"))))
