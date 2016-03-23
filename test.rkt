@@ -157,3 +157,4 @@
 (define grid1 (add-equal? (file->value "test/grid1.scm")))
 (define fannkuch (file->value "test/fannkuch.scm"))
 (define matrix (file->value "test/matrix.scm"))
+(define spectralnorm (file->value "test/spectralnorm.scm"))
