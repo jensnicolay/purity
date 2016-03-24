@@ -158,3 +158,5 @@
 (define fannkuch (file->value "test/fannkuch.scm"))
 (define matrix (file->value "test/matrix.scm"))
 (define spectralnorm (file->value "test/spectralnorm.scm"))
+(define sieve (file->value "test/sieve.scm"))
+(define mandelbrot (file->value "test/mandelbrot.scm"))

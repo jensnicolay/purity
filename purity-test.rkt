@@ -167,7 +167,9 @@
 (define test-fannkuch (list fannkuch (set) (set) (set OBSERVES) (set OBSERVES) (set OBSERVES GENERATES) (set OBSERVES GENERATES) (set OBSERVES GENERATES) (set) (set GENERATES OBSERVES) (set) (set GENERATES) (set OBSERVES GENERATES) (set) (set OBSERVES GENERATES) (set OBSERVES GENERATES) (set OBSERVES GENERATES)))
 (define test-scm2java (list scm2java #f #f (set) #f (set) #f #f #f (set) (set) (set) #f #f (set) (set) (set) #f #f (set) #f #f (set) #f #f (set) #f #f #f #f #f #f (set) #f #f (set) (set) (set) #f #f #f #f #f #f #f #f #f (set GENERATES) #f #f (set GENERATES) (set) (set) (set) #f #f #f #f (set) #f #f (set) #f #f (set)))
 (define test-matrix (list matrix (set) (set) (set OBSERVES GENERATES) (set OBSERVES GENERATES) #f (set) (set GENERATES) (set GENERATES) (set OBSERVES GENERATES) (set) (set GENERATES)))
-(define test-spectralnorm (list spectralnorm (set) (set OBSERVES GENERATES) (set OBSERVES GENERATES) (set) (set OBSERVES GENERATES) (set OBSERVES GENERATES) (set OBSERVES GENERATES) (set OBSERVES GENERATES) (set OBSERVES GENERATES) (set OBSERVES GENERATES) (set OBSERVES GENERATES) (set)))
+(define test-spectralnorm (list spectralnorm (set) (set OBSERVES GENERATES) (set OBSERVES GENERATES) (set OBSERVES GENERATES) (set OBSERVES GENERATES) (set OBSERVES GENERATES) (set OBSERVES GENERATES) (set OBSERVES GENERATES) (set) (set OBSERVES GENERATES) (set OBSERVES GENERATES) (set)))
+(define test-sieve (list sieve (set) (set OBSERVES GENERATES) (set GENERATES) (set OBSERVES GENERATES) (set GENERATES)))
+(define test-mandelbrot (list mandelbrot  (set) (set) (set) (set) (set OBSERVES GENERATES) (set OBSERVES GENERATES)))
 
 (define (purity-test . names)
   (when (null? names)
