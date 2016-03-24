@@ -160,3 +160,4 @@
 (define spectralnorm (file->value "test/spectralnorm.scm"))
 (define sieve (file->value "test/sieve.scm"))
 (define mandelbrot (file->value "test/mandelbrot.scm"))
+(define partialsums (file->value "test/partialsums.scm"))

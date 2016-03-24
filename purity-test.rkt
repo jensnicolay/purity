@@ -170,6 +170,7 @@
 (define test-spectralnorm (list spectralnorm (set) (set OBSERVES GENERATES) (set OBSERVES GENERATES) (set OBSERVES GENERATES) (set OBSERVES GENERATES) (set OBSERVES GENERATES) (set OBSERVES GENERATES) (set OBSERVES GENERATES) (set) (set OBSERVES GENERATES) (set OBSERVES GENERATES) (set)))
 (define test-sieve (list sieve (set) (set OBSERVES GENERATES) (set GENERATES) (set OBSERVES GENERATES) (set GENERATES)))
 (define test-mandelbrot (list mandelbrot  (set) (set) (set) (set) (set OBSERVES GENERATES) (set OBSERVES GENERATES)))
+(define test-partialsums (list partialsums (set) (set OBSERVES GENERATES)))
 
 (define (purity-test . names)
   (when (null? names)
@@ -180,7 +181,8 @@
 
 (define (server-purity-test . names)
   (when (null? names)
-    (set! names '(test-fib test-treenode1 test-treeadd test-treeadd2 test-treeadd3 test-purity46 test-purity47 test-purity52 test-purity53 test-purity54 test-purity65 test-nqueens test-dderiv test-destruct test-grid test-fannkuch test-mceval test-scm2java test-matrix)))
+    (set! names '(test-fib test-treenode1 test-treeadd test-treeadd2 test-treeadd3 test-purity46 test-purity47 test-purity52 test-purity53 test-purity54 test-purity65 test-nqueens test-dderiv test-destruct test-grid test-fannkuch test-mceval
+                           test-scm2java test-matrix test-spectralnorm test-sieve test-mandelbrot test-partialsums)))
   (parameterize ((CESK-TIMELIMIT 60) (THROW #f))
     (let ((results (apply purity-test names))) 
       (printf "Done.\n")
