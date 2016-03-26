@@ -188,13 +188,13 @@
   (define sa-type-eff-ctx-obs-count (hash-ref sa-type-result 'observable-count))
   (define sfa-type-eff-ctx-obs-count (hash-ref sfa-type-result 'observable-count))
   (define msfa-type-eff-ctx-obs-count (hash-ref msfa-type-result 'observable-count))
-  (printf "\\code{~a} & ~a & ~a & ~a & ~a & (~a)\\\\\n"
+  (printf "\\code{~a} & ~a & ~a & ~a & ~a \\\\\n"
           (~a name #:min-width 14)
           (~a a-type-eff-ctx-obs-count #:min-width 4)
           (~a sa-type-eff-ctx-obs-count #:min-width 4)
           (~a sfa-type-eff-ctx-obs-count #:min-width 4)
           (~a msfa-type-eff-ctx-obs-count #:min-width 4)
-          (~a conc-eff-ctx-obs-count)
+          ;(~a conc-eff-ctx-obs-count)
           ))
 
 (define (print-se-obs)
@@ -223,9 +223,9 @@
          )
      (printf "\\code{~a} & ~a & ~a & ~a & ~a\\\\\n"
             (~a name #:min-width 14)
-            (~perc type-fresh-ref-obj-count2d (+ type-fresh-ref-obj-count2d type-unfresh-ref-obj-count2d))
+            (~a type-fresh-ref-obj-count2d)
             (~time type-freshness-time)
-            (~perc type-fresh-esc-ref-obj-count2d (+ type-fresh-esc-ref-obj-count2d type-unfresh-esc-ref-obj-count2d))
+            (~a type-fresh-esc-ref-obj-count2d)
             (~time type-freshness-esc-time)
             )))
 
@@ -293,49 +293,39 @@
 
 
 ;;;;;;;;;;;;;;;;;
-(define (print-purity-row name conc-results conc-result type-results type-result)
-  (let* ((lam-count (hash-ref conc-results 'lam-count))
+(define (print-purity-row name conc-result type-a-result type-msfa-result)
+  (let* (;(lam-count (hash-ref conc-results 'lam-count))
          ;(conc-called-count (hash-ref conc-results 'called-count))
          ;(type-called-count (hash-ref type-results 'called-count))
-         (purity-time (hash-ref type-result 'purity-time))
+         ;(purity-time (hash-ref type-result 'purity-time))
          (conc-gen-count (hash-ref conc-result 'gen-count))
          (conc-obs-count (hash-ref conc-result 'obs-count))
-         (type-gen-count (hash-ref type-result 'gen-count))
-         (type-obs-count (hash-ref type-result 'obs-count)))
-    (printf "\\code{~a} & ~a & ~a (~a) & ~a (~a)\\\\\n"
+         (type-a-gen-count (hash-ref type-a-result 'gen-count))
+         (type-a-obs-count (hash-ref type-a-result 'obs-count))
+         (type-msfa-gen-count (hash-ref type-msfa-result 'gen-count))
+         (type-msfa-obs-count (hash-ref type-msfa-result 'obs-count)))
+    (printf "\\code{~a} & ~a & ~a & ~a & ~a & ~a & ~a\\\\\n"
             (~a name #:min-width 14)
-            ;(~a lam-count #:min-width 4)
-            ;(~a called-count #:min-width 4)
-            (~a type-gen-count #:min-width 4)
-            (~a conc-gen-count #:min-width 4)
-            (~a type-obs-count #:min-width 4)
-            (~a type-obs-count #:min-width 4)
-            (~time purity-time)
+            (~a type-a-obs-count #:min-width 4)
+            (~a type-a-obs-count #:min-width 4)
+            (~a type-msfa-obs-count #:min-width 4)
+            (~a type-msfa-obs-count #:min-width 4)
+            (~a conc-obs-count #:min-width 4)
+            (~a conc-obs-count #:min-width 4)
             )))
     
-(define (print-a-purity)
-  (printf "a-purity\n")
+(define (print-purity)
+  (printf "purity\n")
   (for ((r test-result))
        (let* ((benchmark-name (car r))
               (conc-results (cadr r))
               (conc-a-result (hash-ref conc-results 'a))
               (type-results (caddr r))
               (type-a-result (hash-ref type-results 'a))
-              )
-         (print-purity-row benchmark-name conc-results conc-a-result type-results type-a-result))))
-  
-(define (print-msfa-purity)
-  (printf "msfa-purity\n")
-  (for ((r test-result))
-       (let* ((benchmark-name (car r))
-              (conc-results (cadr r))
-              (conc-a-result (hash-ref conc-results 'a))
-              (type-results (caddr r))
               (type-msfa-result (hash-ref type-results 'msfa))
               )
-         (print-purity-row benchmark-name conc-results conc-a-result type-results type-msfa-result))))
+         (print-purity-row benchmark-name conc-a-result type-a-result type-msfa-result))))
   
-
 ;;;;;;;;;;;;;;;;;
 (define (print-purity-class-row name conc-results conc-result type-result)
   (let* ((lam-count (hash-ref conc-results 'lam-count))
@@ -476,13 +466,13 @@
   (print-flow-type)
 
   ; Side-effects
-  (print-se-a-conc-result)
-  (print-se-a-type-result)
+  ;(print-se-a-conc-result)
+  ;(print-se-a-type-result)
   ;(print-se-a-conc-type-perc)
   ;(print-se-msfa-conc-type-perc)
   (print-se-percs)
   (print-se-obs)
-  (print-se-timing)
+  ;(print-se-timing)
 
   ; Escape
   (print-escape)
@@ -492,12 +482,11 @@
   (print-conc-type-esc-fresh)
 
   ; Purity
-  ;(print-a-purity)
-  ;(print-msfa-purity)
+  (print-purity)
 
   (print-conc-a-type-msfa-purity-class)
   (print-type-a-type-msfa-purity-class)
-  (print-purity-timing)
+  ;(print-purity-timing)
 
   (print-timing)
   )

@@ -907,7 +907,13 @@
     (define lam->effect-class-unf (purity-classifier lam->summary gl-classifier))
     (define class-count-unf (count-classes lam->effect-class-unf))
 
-    (define observable-count (side-effect-result-observable-count ser))
+    ;(define observable-count (side-effect-result-observable-count ser))
+    ; NEW
+    (define observable-count (for/sum (((state ctx->side-effects) state->ctx->side-effects))
+                                      (for/sum (((ctx side-effects) ctx->side-effects))
+                                               (set-count side-effects))))
+    ;
+
     
     (hash 'side-effect-time side-effect-time 'lam->effs lam->effs 'lam->obs-effs lam->obs-effs 'eff-set eff-set
           'eff-count eff-count 'eff-ctx-count eff-ctx-count 'eff-ctx-obs-count eff-ctx-obs-count 'eff-fctx-count eff-fctx-count 'eff-fctx-obs-count eff-fctx-obs-count

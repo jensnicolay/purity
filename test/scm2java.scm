@@ -439,6 +439,6 @@
                                                                                                                                   (let ((_java-compile-program145 (lambda (_exp146)
                                                                                                                                                                     (let ((_p376 (_java-compile-exp133 _exp146)))
                                                                                                                                                                       (string-append "public class BOut extends RuntimeEnvironment {n" " public static void main (String[] args) {n" _p376 " ;n" " }n" "}n")))))
-                                                                                                                                    (let ((_input-program147 '(set! x 3)))
+                                                                                                                                    (let ((_input-program147 '(let ((x 10)) (letrec ((f (lambda (n) (if n (set! x 3) (begin x n f))))) (f 10)))))
                                                                                                                                       (let ((_$377 (_analyze-mutable-variables112 _input-program147)))
                                                                                                                                         (_java-compile-program145 _input-program147)))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))

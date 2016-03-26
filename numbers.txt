@@ -3988,4 +3988,2018 @@ timing
 \code{fannkuch      } & \eps  & \eps  & \eps  & \eps \\
 \code{mceval        } & 190'' & 202'' & 207'' & 193''\\
 
+==== 20160324 
+New benchmarks
+benchmarks
+\code{fib           } & 42     & 1   & 0   & 0   & 0   & 0   & 0   & 0  \\
+\code{treenode1     } & 58     & 2   & 2   & 1   & 1   & 0   & 0   & 0  \\
+\code{treeadd       } & 131    & 3   & 2   & 2   & 0   & 0   & 0   & 0  \\
+\code{treeadd2      } & 138    & 3   & 2   & 2   & 1   & 1   & 0   & 0  \\
+\code{treeadd3      } & 119    & 2   & 2   & 1   & 1   & 1   & 0   & 0  \\
+\code{purity46      } & 29     & 1   & 1   & 0   & 0   & 0   & 0   & 0  \\
+\code{purity47      } & 32     & 1   & 1   & 0   & 0   & 0   & 0   & 0  \\
+\code{purity52      } & 37     & 1   & 0   & 1   & 1   & 0   & 0   & 0  \\
+\code{purity53      } & 37     & 1   & 0   & 1   & 1   & 0   & 0   & 0  \\
+\code{purity54      } & 37     & 1   & 0   & 1   & 1   & 0   & 0   & 0  \\
+\code{purity65      } & 29     & 1   & 0   & 1   & 1   & 0   & 0   & 0  \\
+\code{nqueens       } & 247    & 6   & 0   & 4   & 0   & 0   & 0   & 0  \\
+\code{dderiv        } & 616    & 20  & 1   & 29  & 0   & 2   & 0   & 0  \\
+\code{destruct      } & 420    & 11  & 0   & 3   & 4   & 3   & 0   & 0  \\
+\code{grid          } & 382    & 5   & 3   & 3   & 0   & 0   & 1   & 2  \\
+\code{fannkuch      } & 500    & 16  & 10  & 0   & 0   & 0   & 2   & 7  \\
+\code{mceval        } & 1687   & 87  & 0   & 28  & 3   & 1   & 0   & 0  \\
+\code{scm2java      } & 1972   & 64  & 6   & 66  & 0   & 0   & 0   & 0  \\
+\code{matrix        } & 385    & 11  & 3   & 3   & 0   & 0   & 4   & 4  \\
+\code{spectralnorm  } & 453    & 12  & 2   & 0   & 0   & 0   & 3   & 4  \\
+\code{sieve         } & 183    & 5   & 2   & 0   & 0   & 0   & 1   & 2  \\
+\code{mandelbrot    } & 359    & 6   & 6   & 0   & 0   & 0   & 0   & 0  \\
+\code{partialsums   } & 367    & 2   & 14  & 0   & 0   & 0   & 0   & 0  \\
+flow-conc
+\code{fib           } & 735     & 734     & 100.0\% & \eps \\
+\code{treenode1     } & 68      & 67      & 100.0\% & \eps \\
+\code{treeadd       } & 696     & 695     & 100.0\% & \eps \\
+\code{treeadd2      } & 1028    & 1027    & 100.0\% & \eps \\
+\code{treeadd3      } & 847     & 846     & 100.0\% & \eps \\
+\code{purity46      } & 53      & 52      & 100.0\% & \eps \\
+\code{purity47      } & 53      & 52      & 100.0\% & \eps \\
+\code{purity52      } & 65      & 64      & 100.0\% & \eps \\
+\code{purity53      } & 65      & 64      & 100.0\% & \eps \\
+\code{purity54      } & 77      & 76      & 100.0\% & \eps \\
+\code{purity65      } & 20      & 19      & 100.0\% & \eps \\
+\code{nqueens       } & 2704    & 2703    & 100.0\% & \eps \\
+\code{dderiv        } & 2871    & 2870    & 63.15\% & \eps \\
+\code{destruct      } & 2292    & 2291    & 95.95\% & \eps \\
+\code{grid          } & 2019    & 2018    & 89.53\% & \eps \\
+\code{fannkuch      } & 8990    & 8989    & 99.8\%  & \eps \\
+\code{mceval        } & 9223    & 9222    & 83.17\% & \eps \\
+\code{scm2java      } & 358     & 357     & 32.86\% & \eps \\
+\code{matrix        } & 9401    & 9400    & 97.92\% & \eps \\
+\code{spectralnorm  } & 10443   & 10442   & 98.45\% & \eps \\
+\code{sieve         } & 9060    & 9059    & 96.17\% & \eps \\
+\code{mandelbrot    } & 229     & 228     & 93.87\% & \eps \\
+\code{partialsums   } & 3841    & 3840    & 99.73\% & \eps \\
+flow-type
+\code{fib           } & 20      & 30      & 100.0\% & \eps \\
+\code{treenode1     } & 28      & 33      & 100.0\% & \eps \\
+\code{treeadd       } & 69      & 99      & 100.0\% & \eps \\
+\code{treeadd2      } & 80      & 112     & 100.0\% & \eps \\
+\code{treeadd3      } & 68      & 102     & 100.0\% & \eps \\
+\code{purity46      } & 16      & 18      & 100.0\% & \eps \\
+\code{purity47      } & 16      & 18      & 100.0\% & \eps \\
+\code{purity52      } & 19      & 21      & 100.0\% & \eps \\
+\code{purity53      } & 19      & 21      & 100.0\% & \eps \\
+\code{purity54      } & 23      & 30      & 100.0\% & \eps \\
+\code{purity65      } & 20      & 27      & 100.0\% & \eps \\
+\code{nqueens       } & 133     & 189     & 100.0\% & \eps \\
+\code{dderiv        } & 356     & 1439    & 90.42\% & \eps \\
+\code{destruct      } & 238     & 337     & 100.0\% & \eps \\
+\code{grid          } & 237     & 424     & 93.46\% & \eps \\
+\code{fannkuch      } & 236     & 371     & 100.0\% & \eps \\
+\code{mceval        } & 1237    & 12857   & 97.45\% & 28'' \\
+\code{scm2java      } & 1282    & 10064   & 95.79\% & 27'' \\
+\code{matrix        } & 188     & 239     & 97.92\% & \eps \\
+\code{spectralnorm  } & 214     & 239     & 99.34\% & \eps \\
+\code{sieve         } & 94      & 110     & 98.36\% & \eps \\
+\code{mandelbrot    } & 170     & 204     & 99.16\% & \eps \\
+\code{partialsums   } & 190     & 195     & 100.0\% & \eps \\
+se-a-conc
+\code{fib           } & \eps  & 599   & 2914  & 1096 \\
+\code{treenode1     } & \eps  & 44    & 96    & 18   \\
+\code{treeadd       } & \eps  & 502   & 1561  & 511  \\
+\code{treeadd2      } & \eps  & 674   & 2208  & 687  \\
+\code{treeadd3      } & \eps  & 554   & 1801  & 540  \\
+\code{purity46      } & \eps  & 40    & 105   & 35   \\
+\code{purity47      } & \eps  & 40    & 105   & 35   \\
+\code{purity52      } & \eps  & 48    & 125   & 35   \\
+\code{purity53      } & \eps  & 48    & 125   & 35   \\
+\code{purity54      } & \eps  & 44    & 115   & 35   \\
+\code{purity65      } & \eps  & 8     & 8     & 1    \\
+\code{nqueens       } & \eps  & 2253  & 16703 & 4764 \\
+\code{dderiv        } & \eps  & 2432  & 18740 & 6658 \\
+\code{destruct      } & \eps  & 1810  & 16076 & 5468 \\
+\code{grid          } & \eps  & 1511  & 9018  & 2580 \\
+\code{fannkuch      } & \eps  & 8933  & 154119 & 56790\\
+\code{mceval        } & 2''   & 8308  & 149836 & 52915\\
+\code{scm2java      } & \eps  & 258   & 817   & 314  \\
+\code{matrix        } & \eps  & 9122  & 105802 & 37422\\
+\code{spectralnorm  } & \eps  & 9744  & 121929 & 41616\\
+\code{sieve         } & 3''   & 7951  & 565228 & 265692\\
+\code{mandelbrot    } & \eps  & 195   & 831   & 331  \\
+\code{partialsums   } & \eps  & 3065  & 42817 & 24356\\
+se-a-type
+\code{fib           } & \eps  & 17    & 16    & 15   \\
+\code{treenode1     } & \eps  & 19    & 23    & 14   \\
+\code{treeadd       } & \eps  & 56    & 57    & 44   \\
+\code{treeadd2      } & \eps  & 55    & 53    & 46   \\
+\code{treeadd3      } & \eps  & 48    & 45    & 40   \\
+\code{purity46      } & \eps  & 11    & 10    & 7    \\
+\code{purity47      } & \eps  & 11    & 10    & 6    \\
+\code{purity52      } & \eps  & 13    & 12    & 7    \\
+\code{purity53      } & \eps  & 13    & 12    & 7    \\
+\code{purity54      } & \eps  & 12    & 11    & 11   \\
+\code{purity65      } & \eps  & 8     & 7     & 6    \\
+\code{nqueens       } & \eps  & 134   & 334   & 138  \\
+\code{dderiv        } & \eps  & 1250  & 2977  & 2279 \\
+\code{destruct      } & \eps  & 222   & 737   & 252  \\
+\code{grid          } & \eps  & 368   & 476   & 385  \\
+\code{fannkuch      } & \eps  & 205   & 746   & 260  \\
+\code{mceval        } & 14''  & 15902 & 167795 & 157480\\
+\code{scm2java      } & 5''   & 6317  & 70112 & 61699\\
+\code{matrix        } & \eps  & 152   & 533   & 157  \\
+\code{spectralnorm  } & \eps  & 189   & 1047  & 343  \\
+\code{sieve         } & \eps  & 65    & 177   & 59   \\
+\code{mandelbrot    } & \eps  & 135   & 459   & 189  \\
+\code{partialsums   } & \eps  & 135   & 256   & 112  \\
+se-percs
+\code{fib           } & 93.75\% & 37.5\%  & 37.5\%  & 37.5\%  & (37.61\%)\\
+\code{treenode1     } & 60.87\% & 26.09\% & 17.39\% & 17.39\% & (18.75\%)\\
+\code{treeadd       } & 77.19\% & 31.58\% & 31.58\% & 31.58\% & (32.74\%)\\
+\code{treeadd2      } & 86.79\% & 33.96\% & 32.08\% & 32.08\% & (31.11\%)\\
+\code{treeadd3      } & 88.89\% & 31.11\% & 26.67\% & 26.67\% & (29.98\%)\\
+\code{purity46      } & 70.0\%  & 30.0\%  & 30.0\%  & 30.0\%  & (33.33\%)\\
+\code{purity47      } & 60.0\%  & 30.0\%  & 30.0\%  & 30.0\%  & (33.33\%)\\
+\code{purity52      } & 58.33\% & 33.33\% & 25.0\%  & 25.0\%  & (28.0\% )\\
+\code{purity53      } & 58.33\% & 33.33\% & 25.0\%  & 25.0\%  & (28.0\% )\\
+\code{purity54      } & 100.0\% & 36.36\% & 27.27\% & 27.27\% & (30.43\%)\\
+\code{purity65      } & 85.71\% & 28.57\% & 14.29\% & 14.29\% & (12.5\% )\\
+\code{nqueens       } & 41.32\% & 28.44\% & 28.44\% & 28.44\% & (28.52\%)\\
+\code{dderiv        } & 76.55\% & 63.25\% & 63.25\% & 63.25\% & (35.53\%)\\
+\code{destruct      } & 34.19\% & 30.94\% & 30.94\% & 30.94\% & (34.01\%)\\
+\code{grid          } & 80.88\% & 65.55\% & 65.55\% & 63.66\% & (28.61\%)\\
+\code{fannkuch      } & 34.85\% & 32.04\% & 32.04\% & 31.9\%  & (36.85\%)\\
+\code{mceval        } & 93.85\% & 93.25\% & 93.25\% & 93.24\% & (35.32\%)\\
+\code{scm2java      } & 88.0\%  & 86.9\%  & 86.9\%  & 86.9\%  & (38.43\%)\\
+\code{matrix        } & 29.46\% & 28.33\% & 28.33\% & 27.77\% & (35.37\%)\\
+\code{spectralnorm  } & 32.76\% & 32.19\% & 32.19\% & 32.19\% & (34.13\%)\\
+\code{sieve         } & 33.33\% & 31.07\% & 31.07\% & 31.07\% & (47.01\%)\\
+\code{mandelbrot    } & 41.18\% & 40.09\% & 40.09\% & 40.09\% & (39.83\%)\\
+\code{partialsums   } & 43.75\% & 43.36\% & 43.36\% & 43.36\% & (56.88\%)\\
+se-obs
+\code{fib           } & 30   & 12   & 12   & 6    & (1096)\\
+\code{treenode1     } & 26   & 10   & 8    & 4    & (18)\\
+\code{treeadd       } & 88   & 36   & 36   & 18   & (511)\\
+\code{treeadd2      } & 92   & 36   & 34   & 17   & (687)\\
+\code{treeadd3      } & 80   & 28   & 24   & 12   & (540)\\
+\code{purity46      } & 14   & 6    & 6    & 3    & (35)\\
+\code{purity47      } & 12   & 6    & 6    & 3    & (35)\\
+\code{purity52      } & 14   & 8    & 6    & 3    & (35)\\
+\code{purity53      } & 14   & 8    & 6    & 3    & (35)\\
+\code{purity54      } & 22   & 8    & 6    & 3    & (35)\\
+\code{purity65      } & 12   & 4    & 2    & 1    & (1)\\
+\code{nqueens       } & 230  & 144  & 144  & 95   & (4764)\\
+\code{dderiv        } & 3351 & 2847 & 2847 & 2130 & (6658)\\
+\code{destruct      } & 366  & 318  & 318  & 228  & (5468)\\
+\code{grid          } & 643  & 530  & 530  & 303  & (2580)\\
+\code{fannkuch      } & 357  & 315  & 315  & 238  & (56790)\\
+\code{mceval        } & 160880 & 159666 & 159666 & 156460 & (52915)\\
+\code{scm2java      } & 65096 & 63984 & 63984 & 91002 & (314)\\
+\code{matrix        } & 221  & 209  & 209  & 148  & (37422)\\
+\code{spectralnorm  } & 428  & 416  & 416  & 337  & (41616)\\
+\code{sieve         } & 87   & 79   & 79   & 55   & (265692)\\
+\code{mandelbrot    } & 248  & 238  & 238  & 184  & (331)\\
+\code{partialsums   } & 185  & 183  & 183  & 111  & (24356)\\
+se-timing
+\code{fib           } & \eps  & \eps \\
+\code{treenode1     } & \eps  & \eps \\
+\code{treeadd       } & \eps  & \eps \\
+\code{treeadd2      } & \eps  & \eps \\
+\code{treeadd3      } & \eps  & \eps \\
+\code{purity46      } & \eps  & \eps \\
+\code{purity47      } & \eps  & \eps \\
+\code{purity52      } & \eps  & \eps \\
+\code{purity53      } & \eps  & \eps \\
+\code{purity54      } & \eps  & \eps \\
+\code{purity65      } & \eps  & \eps \\
+\code{nqueens       } & \eps  & \eps \\
+\code{dderiv        } & \eps  & \eps \\
+\code{destruct      } & \eps  & \eps \\
+\code{grid          } & \eps  & \eps \\
+\code{fannkuch      } & \eps  & \eps \\
+\code{mceval        } & 14''  & 16'' \\
+\code{scm2java      } & 5''   & 8''  \\
+\code{matrix        } & \eps  & \eps \\
+\code{spectralnorm  } & \eps  & \eps \\
+\code{sieve         } & \eps  & \eps \\
+\code{mandelbrot    } & \eps  & \eps \\
+\code{partialsums   } & \eps  & \eps \\
+escape
+\code{fib           } & 1    & 1    (1   ) & 0    (0   ) & \eps \\
+\code{treenode1     } & 2    & 2    (2   ) & 0    (0   ) & \eps \\
+\code{treeadd       } & 3    & 3    (3   ) & 0    (0   ) & \eps \\
+\code{treeadd2      } & 3    & 3    (3   ) & 0    (0   ) & \eps \\
+\code{treeadd3      } & 2    & 2    (2   ) & 0    (0   ) & \eps \\
+\code{purity46      } & 1    & 1    (1   ) & 0    (0   ) & \eps \\
+\code{purity47      } & 1    & 1    (1   ) & 0    (0   ) & \eps \\
+\code{purity52      } & 1    & 1    (1   ) & 0    (0   ) & \eps \\
+\code{purity53      } & 1    & 1    (1   ) & 0    (0   ) & \eps \\
+\code{purity54      } & 1    & 1    (1   ) & 0    (0   ) & \eps \\
+\code{purity65      } & 1    & 1    (1   ) & 0    (0   ) & \eps \\
+\code{nqueens       } & 6    & 6    (6   ) & 0    (0   ) & \eps \\
+\code{dderiv        } & 20   & 14   (10  ) & 6    (6   ) & \eps \\
+\code{destruct      } & 11   & 11   (11  ) & 0    (0   ) & \eps \\
+\code{grid          } & 5    & 5    (5   ) & 0    (0   ) & \eps \\
+\code{fannkuch      } & 16   & 16   (16  ) & 8    (8   ) & \eps \\
+\code{mceval        } & 87   & 85   (72  ) & 2    (2   ) & \eps \\
+\code{scm2java      } & 64   & 61   (23  ) & 8    (5   ) & \eps \\
+\code{matrix        } & 11   & 10   (10  ) & 0    (0   ) & \eps \\
+\code{spectralnorm  } & 12   & 12   (12  ) & 0    (0   ) & \eps \\
+\code{sieve         } & 5    & 5    (5   ) & 0    (0   ) & \eps \\
+\code{mandelbrot    } & 6    & 6    (6   ) & 0    (0   ) & \eps \\
+\code{partialsums   } & 2    & 2    (2   ) & 0    (0   ) & \eps \\
+type-fresh
+\code{fib           } & 44.31\% & \eps  & 44.31\% & \eps \\
+\code{treenode1     } & 56.23\% & \eps  & 62.35\% & \eps \\
+\code{treeadd       } & 44.34\% & \eps  & 44.34\% & \eps \\
+\code{treeadd2      } & 44.96\% & \eps  & 44.96\% & \eps \\
+\code{treeadd3      } & 57.21\% & \eps  & 67.87\% & \eps \\
+\code{purity46      } & 56.31\% & \eps  & 56.31\% & \eps \\
+\code{purity47      } & 49.15\% & \eps  & 49.15\% & \eps \\
+\code{purity52      } & 54.72\% & \eps  & 54.72\% & \eps \\
+\code{purity53      } & 54.72\% & \eps  & 54.72\% & \eps \\
+\code{purity54      } & 55.15\% & \eps  & 55.15\% & \eps \\
+\code{purity65      } & 56.92\% & \eps  & 56.92\% & \eps \\
+\code{nqueens       } & 34.74\% & \eps  & 34.74\% & \eps \\
+\code{dderiv        } & 22.13\% & \eps  & 22.13\% & \eps \\
+\code{destruct      } & 22.19\% & \eps  & 22.19\% & \eps \\
+\code{grid          } & 37.8\%  & \eps  & 37.8\%  & \eps \\
+\code{fannkuch      } & 17.87\% & \eps  & 17.87\% & \eps \\
+\code{mceval        } & 4.07\%  & 4''   & 4.07\%  & 4''  \\
+\code{scm2java      } & 10.18\% & 4''   & 10.18\% & 5''  \\
+\code{matrix        } & 28.33\% & \eps  & 28.33\% & \eps \\
+\code{spectralnorm  } & 35.62\% & \eps  & 35.62\% & \eps \\
+\code{sieve         } & 32.07\% & \eps  & 32.07\% & \eps \\
+\code{mandelbrot    } & 43.13\% & \eps  & 43.13\% & \eps \\
+\code{partialsums   } & 58.45\% & \eps  & 58.45\% & \eps \\
+conc-type-esc-fresh
+\code{fib           } & 41.04\% & 44.31\%\\
+\code{treenode1     } & 49.94\% & 62.35\%\\
+\code{treeadd       } & 30.67\% & 44.34\%\\
+\code{treeadd2      } & 43.42\% & 44.96\%\\
+\code{treeadd3      } & 54.14\% & 67.87\%\\
+\code{purity46      } & 48.1\%  & 56.31\%\\
+\code{purity47      } & 41.0\%  & 49.15\%\\
+\code{purity52      } & 47.18\% & 54.72\%\\
+\code{purity53      } & 47.18\% & 54.72\%\\
+\code{purity54      } & 55.57\% & 55.15\%\\
+\code{purity65      } & 54.78\% & 56.92\%\\
+\code{nqueens       } & 30.85\% & 34.74\%\\
+\code{dderiv        } & 15.36\% & 22.13\%\\
+\code{destruct      } & 17.08\% & 22.19\%\\
+\code{grid          } & 34.63\% & 37.8\% \\
+\code{fannkuch      } & 8.81\%  & 17.87\%\\
+\code{mceval        } & 3.08\%  & 4.07\% \\
+\code{scm2java      } & 15.83\% & 10.18\%\\
+\code{matrix        } & 17.4\%  & 28.33\%\\
+\code{spectralnorm  } & 36.76\% & 35.62\%\\
+\code{sieve         } & 17.29\% & 32.07\%\\
+\code{mandelbrot    } & 32.54\% & 43.13\%\\
+\code{partialsums   } & 69.38\% & 58.45\%\\
+conc-a-type-msfa-purity-class
+\code{fib           } & 1    & 1    & 0    & 0    & 1    & 0    & 0   \\
+\code{treenode1     } & 2    & 2    & 0    & 0    & 2    & 0    & 0   \\
+\code{treeadd       } & 3    & 3    & 0    & 0    & 3    & 0    & 0   \\
+\code{treeadd2      } & 3    & 3    & 0    & 0    & 2    & 0    & 1   \\
+\code{treeadd3      } & 2    & 2    & 0    & 0    & 2    & 0    & 0   \\
+\code{purity46      } & 1    & 1    & 0    & 0    & 1    & 0    & 0   \\
+\code{purity47      } & 1    & 1    & 0    & 0    & 1    & 0    & 0   \\
+\code{purity52      } & 1    & 1    & 0    & 0    & 1    & 0    & 0   \\
+\code{purity53      } & 1    & 1    & 0    & 0    & 1    & 0    & 0   \\
+\code{purity54      } & 1    & 1    & 0    & 0    & 1    & 0    & 0   \\
+\code{purity65      } & 1    & 1    & 0    & 0    & 1    & 0    & 0   \\
+\code{nqueens       } & 6    & 6    & 0    & 0    & 6    & 0    & 0   \\
+\code{dderiv        } & 10   & 9    & 0    & 1    & 3    & 6    & 1   \\
+\code{destruct      } & 11   & 3    & 1    & 7    & 3    & 1    & 7   \\
+\code{grid          } & 5    & 2    & 1    & 2    & 2    & 1    & 2   \\
+\code{fannkuch      } & 16   & 5    & 2    & 9    & 5    & 2    & 9   \\
+\code{mceval        } & 72   & 60   & 2    & 10   & 10   & 49   & 13  \\
+\code{scm2java      } & 23   & 21   & 0    & 2    & 18   & 0    & 5   \\
+\code{matrix        } & 10   & 4    & 0    & 6    & 3    & 1    & 6   \\
+\code{spectralnorm  } & 12   & 3    & 0    & 9    & 3    & 0    & 9   \\
+\code{sieve         } & 5    & 1    & 0    & 4    & 1    & 0    & 4   \\
+\code{mandelbrot    } & 6    & 4    & 0    & 2    & 4    & 0    & 2   \\
+\code{partialsums   } & 2    & 1    & 0    & 1    & 1    & 0    & 1   \\
+type-a-type-msfa-purity-class
+\code{fib           } & 1    & 1    & 0    & 0    & 1    & 0    & 0   \\
+\code{treenode1     } & 2    & 0    & 0    & 2    & 2    & 0    & 0   \\
+\code{treeadd       } & 3    & 2    & 0    & 1    & 3    & 0    & 0   \\
+\code{treeadd2      } & 3    & 1    & 0    & 2    & 2    & 0    & 1   \\
+\code{treeadd3      } & 2    & 0    & 0    & 2    & 2    & 0    & 0   \\
+\code{purity46      } & 1    & 0    & 0    & 1    & 1    & 0    & 0   \\
+\code{purity47      } & 1    & 0    & 0    & 1    & 1    & 0    & 0   \\
+\code{purity52      } & 1    & 0    & 0    & 1    & 1    & 0    & 0   \\
+\code{purity53      } & 1    & 0    & 0    & 1    & 1    & 0    & 0   \\
+\code{purity54      } & 1    & 0    & 0    & 1    & 1    & 0    & 0   \\
+\code{purity65      } & 1    & 0    & 0    & 1    & 1    & 0    & 0   \\
+\code{nqueens       } & 6    & 6    & 0    & 0    & 6    & 0    & 0   \\
+\code{dderiv        } & 10   & 3    & 6    & 1    & 3    & 6    & 1   \\
+\code{destruct      } & 11   & 3    & 1    & 7    & 3    & 1    & 7   \\
+\code{grid          } & 5    & 1    & 1    & 3    & 2    & 1    & 2   \\
+\code{fannkuch      } & 16   & 5    & 2    & 9    & 5    & 2    & 9   \\
+\code{mceval        } & 72   & 10   & 49   & 13   & 10   & 49   & 13  \\
+\code{scm2java      } & 23   & 18   & 0    & 5    & 18   & 0    & 5   \\
+\code{matrix        } & 10   & 2    & 0    & 8    & 3    & 1    & 6   \\
+\code{spectralnorm  } & 12   & 3    & 0    & 9    & 3    & 0    & 9   \\
+\code{sieve         } & 5    & 1    & 0    & 4    & 1    & 0    & 4   \\
+\code{mandelbrot    } & 6    & 4    & 0    & 2    & 4    & 0    & 2   \\
+\code{partialsums   } & 2    & 1    & 0    & 1    & 1    & 0    & 1   \\
+purity-timing
+\code{fib           } & \eps  & \eps \\
+\code{treenode1     } & \eps  & \eps \\
+\code{treeadd       } & \eps  & \eps \\
+\code{treeadd2      } & \eps  & \eps \\
+\code{treeadd3      } & \eps  & \eps \\
+\code{purity46      } & \eps  & \eps \\
+\code{purity47      } & \eps  & \eps \\
+\code{purity52      } & \eps  & \eps \\
+\code{purity53      } & \eps  & \eps \\
+\code{purity54      } & \eps  & \eps \\
+\code{purity65      } & \eps  & \eps \\
+\code{nqueens       } & \eps  & \eps \\
+\code{dderiv        } & 2''   & \eps \\
+\code{destruct      } & \eps  & \eps \\
+\code{grid          } & \eps  & \eps \\
+\code{fannkuch      } & \eps  & \eps \\
+\code{mceval        } & 155'' & 168''\\
+\code{scm2java      } & 66''  & 77'' \\
+\code{matrix        } & \eps  & \eps \\
+\code{spectralnorm  } & \eps  & \eps \\
+\code{sieve         } & \eps  & \eps \\
+\code{mandelbrot    } & \eps  & \eps \\
+\code{partialsums   } & \eps  & \eps \\
+timing
+\code{fib           } & \eps  & \eps  & \eps  & \eps \\
+\code{treenode1     } & \eps  & \eps  & \eps  & \eps \\
+\code{treeadd       } & \eps  & \eps  & \eps  & \eps \\
+\code{treeadd2      } & \eps  & \eps  & \eps  & \eps \\
+\code{treeadd3      } & \eps  & \eps  & \eps  & \eps \\
+\code{purity46      } & \eps  & \eps  & \eps  & \eps \\
+\code{purity47      } & \eps  & \eps  & \eps  & \eps \\
+\code{purity52      } & \eps  & \eps  & \eps  & \eps \\
+\code{purity53      } & \eps  & \eps  & \eps  & \eps \\
+\code{purity54      } & \eps  & \eps  & \eps  & \eps \\
+\code{purity65      } & \eps  & \eps  & \eps  & \eps \\
+\code{nqueens       } & \eps  & \eps  & \eps  & \eps \\
+\code{dderiv        } & 1''   & 1''   & 1''   & 1''  \\
+\code{destruct      } & \eps  & \eps  & \eps  & \eps \\
+\code{grid          } & \eps  & \eps  & \eps  & \eps \\
+\code{fannkuch      } & \eps  & \eps  & \eps  & \eps \\
+\code{mceval        } & 226'' & 226'' & 229'' & 230''\\
+\code{scm2java      } & 113'' & 109'' & 117'' & 117''\\
+\code{matrix        } & \eps  & \eps  & \eps  & \eps \\
+\code{spectralnorm  } & \eps  & \eps  & \eps  & \eps \\
+\code{sieve         } & \eps  & \eps  & \eps  & \eps \\
+\code{mandelbrot    } & \eps  & \eps  & \eps  & \eps \\
+\code{partialsums   } & \eps  & \eps  & \eps  & \eps \\
 
+
+==== 20160325
+Changed se-obs to simple leaf-set-counting in state->ctx->effs
+Changed type-fresh to simple counting as well
+
+benchmarks
+\code{fib           } & 42     & 1   & 0   & 0   & 0   & 0   & 0   & 0  \\
+\code{treenode1     } & 58     & 2   & 2   & 1   & 1   & 0   & 0   & 0  \\
+\code{treeadd       } & 131    & 3   & 2   & 2   & 0   & 0   & 0   & 0  \\
+\code{treeadd2      } & 138    & 3   & 2   & 2   & 1   & 1   & 0   & 0  \\
+\code{treeadd3      } & 119    & 2   & 2   & 1   & 1   & 1   & 0   & 0  \\
+\code{purity46      } & 29     & 1   & 1   & 0   & 0   & 0   & 0   & 0  \\
+\code{purity47      } & 32     & 1   & 1   & 0   & 0   & 0   & 0   & 0  \\
+\code{purity52      } & 37     & 1   & 0   & 1   & 1   & 0   & 0   & 0  \\
+\code{purity53      } & 37     & 1   & 0   & 1   & 1   & 0   & 0   & 0  \\
+\code{purity54      } & 37     & 1   & 0   & 1   & 1   & 0   & 0   & 0  \\
+\code{purity65      } & 29     & 1   & 0   & 1   & 1   & 0   & 0   & 0  \\
+\code{nqueens       } & 247    & 6   & 0   & 4   & 0   & 0   & 0   & 0  \\
+\code{dderiv        } & 616    & 20  & 1   & 29  & 0   & 2   & 0   & 0  \\
+\code{destruct      } & 420    & 11  & 0   & 3   & 4   & 3   & 0   & 0  \\
+\code{grid          } & 382    & 5   & 3   & 3   & 0   & 0   & 1   & 2  \\
+\code{fannkuch      } & 500    & 16  & 10  & 0   & 0   & 0   & 2   & 7  \\
+\code{mceval        } & 1687   & 87  & 0   & 28  & 3   & 1   & 0   & 0  \\
+\code{scm2java      } & 1972   & 64  & 6   & 66  & 0   & 0   & 0   & 0  \\
+\code{matrix        } & 385    & 11  & 3   & 3   & 0   & 0   & 4   & 4  \\
+\code{spectralnorm  } & 453    & 12  & 2   & 0   & 0   & 0   & 3   & 4  \\
+\code{sieve         } & 183    & 5   & 2   & 0   & 0   & 0   & 1   & 2  \\
+\code{mandelbrot    } & 359    & 6   & 6   & 0   & 0   & 0   & 0   & 0  \\
+\code{partialsums   } & 367    & 2   & 14  & 0   & 0   & 0   & 0   & 0  \\
+flow-conc
+\code{fib           } & 735     & 734     & 100.0\% & \eps \\
+\code{treenode1     } & 68      & 67      & 100.0\% & \eps \\
+\code{treeadd       } & 696     & 695     & 100.0\% & \eps \\
+\code{treeadd2      } & 1028    & 1027    & 100.0\% & \eps \\
+\code{treeadd3      } & 847     & 846     & 100.0\% & \eps \\
+\code{purity46      } & 53      & 52      & 100.0\% & \eps \\
+\code{purity47      } & 53      & 52      & 100.0\% & \eps \\
+\code{purity52      } & 65      & 64      & 100.0\% & \eps \\
+\code{purity53      } & 65      & 64      & 100.0\% & \eps \\
+\code{purity54      } & 77      & 76      & 100.0\% & \eps \\
+\code{purity65      } & 20      & 19      & 100.0\% & \eps \\
+\code{nqueens       } & 2704    & 2703    & 100.0\% & \eps \\
+\code{dderiv        } & 2871    & 2870    & 63.15\% & \eps \\
+\code{destruct      } & 2292    & 2291    & 95.95\% & \eps \\
+\code{grid          } & 2019    & 2018    & 89.53\% & \eps \\
+\code{fannkuch      } & 8990    & 8989    & 99.8\%  & \eps \\
+\code{mceval        } & 9223    & 9222    & 83.17\% & \eps \\
+\code{scm2java      } & 358     & 357     & 32.86\% & \eps \\
+\code{matrix        } & 9401    & 9400    & 97.92\% & \eps \\
+\code{spectralnorm  } & 10443   & 10442   & 98.45\% & \eps \\
+\code{sieve         } & 9060    & 9059    & 96.17\% & \eps \\
+\code{mandelbrot    } & 229     & 228     & 93.87\% & \eps \\
+\code{partialsums   } & 3841    & 3840    & 99.73\% & \eps \\
+flow-type
+\code{fib           } & 20      & 30      & 100.0\% & \eps \\
+\code{treenode1     } & 28      & 33      & 100.0\% & \eps \\
+\code{treeadd       } & 69      & 99      & 100.0\% & \eps \\
+\code{treeadd2      } & 80      & 112     & 100.0\% & \eps \\
+\code{treeadd3      } & 68      & 102     & 100.0\% & \eps \\
+\code{purity46      } & 16      & 18      & 100.0\% & \eps \\
+\code{purity47      } & 16      & 18      & 100.0\% & \eps \\
+\code{purity52      } & 19      & 21      & 100.0\% & \eps \\
+\code{purity53      } & 19      & 21      & 100.0\% & \eps \\
+\code{purity54      } & 23      & 30      & 100.0\% & \eps \\
+\code{purity65      } & 20      & 27      & 100.0\% & \eps \\
+\code{nqueens       } & 133     & 189     & 100.0\% & \eps \\
+\code{dderiv        } & 351     & 1324    & 90.42\% & \eps \\
+\code{destruct      } & 238     & 337     & 100.0\% & \eps \\
+\code{grid          } & 237     & 424     & 93.46\% & \eps \\
+\code{fannkuch      } & 236     & 371     & 100.0\% & \eps \\
+\code{mceval        } & 1237    & 12857   & 97.45\% & 28'' \\
+\code{scm2java      } & 1282    & 10064   & 95.79\% & 25'' \\
+\code{matrix        } & 188     & 239     & 97.92\% & \eps \\
+\code{spectralnorm  } & 214     & 239     & 99.34\% & \eps \\
+\code{sieve         } & 94      & 110     & 98.36\% & \eps \\
+\code{mandelbrot    } & 170     & 204     & 99.16\% & \eps \\
+\code{partialsums   } & 190     & 195     & 100.0\% & \eps \\
+se-a-conc
+\code{fib           } & \eps  & 599   & 2914  & 1096 \\
+\code{treenode1     } & \eps  & 44    & 96    & 18   \\
+\code{treeadd       } & \eps  & 502   & 1561  & 511  \\
+\code{treeadd2      } & \eps  & 674   & 2208  & 687  \\
+\code{treeadd3      } & \eps  & 554   & 1801  & 540  \\
+\code{purity46      } & \eps  & 40    & 105   & 35   \\
+\code{purity47      } & \eps  & 40    & 105   & 35   \\
+\code{purity52      } & \eps  & 48    & 125   & 35   \\
+\code{purity53      } & \eps  & 48    & 125   & 35   \\
+\code{purity54      } & \eps  & 44    & 115   & 35   \\
+\code{purity65      } & \eps  & 8     & 8     & 1    \\
+\code{nqueens       } & \eps  & 2253  & 16703 & 4764 \\
+\code{dderiv        } & \eps  & 2432  & 18740 & 6658 \\
+\code{destruct      } & \eps  & 1810  & 16076 & 5468 \\
+\code{grid          } & \eps  & 1511  & 9018  & 2580 \\
+\code{fannkuch      } & \eps  & 8933  & 154119 & 56790\\
+\code{mceval        } & 2''   & 8308  & 149836 & 52915\\
+\code{scm2java      } & \eps  & 258   & 817   & 314  \\
+\code{matrix        } & \eps  & 9122  & 105802 & 37422\\
+\code{spectralnorm  } & \eps  & 9744  & 121929 & 41616\\
+\code{sieve         } & 3''   & 7951  & 565228 & 265692\\
+\code{mandelbrot    } & \eps  & 195   & 831   & 331  \\
+\code{partialsums   } & \eps  & 3065  & 42817 & 24356\\
+se-a-type
+\code{fib           } & \eps  & 17    & 16    & 15   \\
+\code{treenode1     } & \eps  & 19    & 23    & 14   \\
+\code{treeadd       } & \eps  & 56    & 57    & 44   \\
+\code{treeadd2      } & \eps  & 55    & 53    & 46   \\
+\code{treeadd3      } & \eps  & 48    & 45    & 40   \\
+\code{purity46      } & \eps  & 11    & 10    & 7    \\
+\code{purity47      } & \eps  & 11    & 10    & 6    \\
+\code{purity52      } & \eps  & 13    & 12    & 7    \\
+\code{purity53      } & \eps  & 13    & 12    & 7    \\
+\code{purity54      } & \eps  & 12    & 11    & 11   \\
+\code{purity65      } & \eps  & 8     & 7     & 6    \\
+\code{nqueens       } & \eps  & 134   & 334   & 138  \\
+\code{dderiv        } & \eps  & 1179  & 2899  & 2209 \\
+\code{destruct      } & \eps  & 222   & 737   & 252  \\
+\code{grid          } & \eps  & 368   & 476   & 385  \\
+\code{fannkuch      } & \eps  & 205   & 746   & 260  \\
+\code{mceval        } & 16''  & 15902 & 167795 & 157480\\
+\code{scm2java      } & 4''   & 6317  & 70112 & 61699\\
+\code{matrix        } & \eps  & 152   & 533   & 157  \\
+\code{spectralnorm  } & \eps  & 189   & 1047  & 343  \\
+\code{sieve         } & \eps  & 65    & 177   & 59   \\
+\code{mandelbrot    } & \eps  & 135   & 459   & 189  \\
+\code{partialsums   } & \eps  & 135   & 256   & 112  \\
+se-percs
+\code{fib           } & 93.75\% & 37.5\%  & 37.5\%  & 37.5\%  & (37.61\%)\\
+\code{treenode1     } & 60.87\% & 26.09\% & 17.39\% & 17.39\% & (18.75\%)\\
+\code{treeadd       } & 77.19\% & 31.58\% & 31.58\% & 31.58\% & (32.74\%)\\
+\code{treeadd2      } & 86.79\% & 33.96\% & 32.08\% & 32.08\% & (31.11\%)\\
+\code{treeadd3      } & 88.89\% & 31.11\% & 26.67\% & 26.67\% & (29.98\%)\\
+\code{purity46      } & 70.0\%  & 30.0\%  & 30.0\%  & 30.0\%  & (33.33\%)\\
+\code{purity47      } & 60.0\%  & 30.0\%  & 30.0\%  & 30.0\%  & (33.33\%)\\
+\code{purity52      } & 58.33\% & 33.33\% & 25.0\%  & 25.0\%  & (28.0\% )\\
+\code{purity53      } & 58.33\% & 33.33\% & 25.0\%  & 25.0\%  & (28.0\% )\\
+\code{purity54      } & 100.0\% & 36.36\% & 27.27\% & 27.27\% & (30.43\%)\\
+\code{purity65      } & 85.71\% & 28.57\% & 14.29\% & 14.29\% & (12.5\% )\\
+\code{nqueens       } & 41.32\% & 28.44\% & 28.44\% & 28.44\% & (28.52\%)\\
+\code{dderiv        } & 76.2\%  & 62.68\% & 62.68\% & 62.68\% & (35.53\%)\\
+\code{destruct      } & 34.19\% & 30.94\% & 30.94\% & 30.94\% & (34.01\%)\\
+\code{grid          } & 80.88\% & 65.55\% & 65.55\% & 63.66\% & (28.61\%)\\
+\code{fannkuch      } & 34.85\% & 32.04\% & 32.04\% & 31.9\%  & (36.85\%)\\
+\code{mceval        } & 93.85\% & 93.25\% & 93.25\% & 93.24\% & (35.32\%)\\
+\code{scm2java      } & 88.0\%  & 86.9\%  & 86.9\%  & 86.9\%  & (38.43\%)\\
+\code{matrix        } & 29.46\% & 28.33\% & 28.33\% & 27.77\% & (35.37\%)\\
+\code{spectralnorm  } & 32.76\% & 32.19\% & 32.19\% & 32.19\% & (34.13\%)\\
+\code{sieve         } & 33.33\% & 31.07\% & 31.07\% & 31.07\% & (47.01\%)\\
+\code{mandelbrot    } & 41.18\% & 40.09\% & 40.09\% & 40.09\% & (39.83\%)\\
+\code{partialsums   } & 43.75\% & 43.36\% & 43.36\% & 43.36\% & (56.88\%)\\
+se-obs
+\code{fib           } & 14   & 6    & 6    & 6    & (1096)\\
+\code{treenode1     } & 13   & 6    & 4    & 4    & (18)\\
+\code{treeadd       } & 37   & 16   & 16   & 16   & (511)\\
+\code{treeadd2      } & 43   & 18   & 17   & 17   & (687)\\
+\code{treeadd3      } & 36   & 14   & 12   & 12   & (540)\\
+\code{purity46      } & 7    & 3    & 3    & 3    & (35)\\
+\code{purity47      } & 6    & 3    & 3    & 3    & (35)\\
+\code{purity52      } & 7    & 4    & 3    & 3    & (35)\\
+\code{purity53      } & 7    & 4    & 3    & 3    & (35)\\
+\code{purity54      } & 10   & 4    & 3    & 3    & (35)\\
+\code{purity65      } & 5    & 2    & 1    & 1    & (1)\\
+\code{nqueens       } & 125  & 89   & 89   & 89   & (4764)\\
+\code{dderiv        } & 1154 & 901  & 901  & 901  & (6658)\\
+\code{destruct      } & 214  & 194  & 194  & 194  & (5468)\\
+\code{grid          } & 241  & 190  & 190  & 184  & (2580)\\
+\code{fannkuch      } & 260  & 239  & 239  & 238  & (56790)\\
+\code{mceval        } & 32752 & 32108 & 32108 & 32091 & (52915)\\
+\code{scm2java      } & 15871 & 15455 & 15455 & 15455 & (314)\\
+\code{matrix        } & 151  & 145  & 145  & 142  & (37422)\\
+\code{spectralnorm  } & 343  & 337  & 337  & 337  & (41616)\\
+\code{sieve         } & 59   & 55   & 55   & 55   & (265692)\\
+\code{mandelbrot    } & 189  & 184  & 184  & 184  & (331)\\
+\code{partialsums   } & 112  & 111  & 111  & 111  & (24356)\\
+se-timing
+\code{fib           } & \eps  & \eps \\
+\code{treenode1     } & \eps  & \eps \\
+\code{treeadd       } & \eps  & \eps \\
+\code{treeadd2      } & \eps  & \eps \\
+\code{treeadd3      } & \eps  & \eps \\
+\code{purity46      } & \eps  & \eps \\
+\code{purity47      } & \eps  & \eps \\
+\code{purity52      } & \eps  & \eps \\
+\code{purity53      } & \eps  & \eps \\
+\code{purity54      } & \eps  & \eps \\
+\code{purity65      } & \eps  & \eps \\
+\code{nqueens       } & \eps  & \eps \\
+\code{dderiv        } & \eps  & \eps \\
+\code{destruct      } & \eps  & \eps \\
+\code{grid          } & \eps  & \eps \\
+\code{fannkuch      } & \eps  & \eps \\
+\code{mceval        } & 16''  & 15'' \\
+\code{scm2java      } & 4''   & 8''  \\
+\code{matrix        } & \eps  & \eps \\
+\code{spectralnorm  } & \eps  & \eps \\
+\code{sieve         } & \eps  & \eps \\
+\code{mandelbrot    } & \eps  & \eps \\
+\code{partialsums   } & \eps  & \eps \\
+escape
+\code{fib           } & 1    & 1    (1   ) & 0    (0   ) & \eps \\
+\code{treenode1     } & 2    & 2    (2   ) & 0    (0   ) & \eps \\
+\code{treeadd       } & 3    & 3    (3   ) & 0    (0   ) & \eps \\
+\code{treeadd2      } & 3    & 3    (3   ) & 0    (0   ) & \eps \\
+\code{treeadd3      } & 2    & 2    (2   ) & 0    (0   ) & \eps \\
+\code{purity46      } & 1    & 1    (1   ) & 0    (0   ) & \eps \\
+\code{purity47      } & 1    & 1    (1   ) & 0    (0   ) & \eps \\
+\code{purity52      } & 1    & 1    (1   ) & 0    (0   ) & \eps \\
+\code{purity53      } & 1    & 1    (1   ) & 0    (0   ) & \eps \\
+\code{purity54      } & 1    & 1    (1   ) & 0    (0   ) & \eps \\
+\code{purity65      } & 1    & 1    (1   ) & 0    (0   ) & \eps \\
+\code{nqueens       } & 6    & 6    (6   ) & 0    (0   ) & \eps \\
+\code{dderiv        } & 20   & 14   (10  ) & 6    (6   ) & \eps \\
+\code{destruct      } & 11   & 11   (11  ) & 0    (0   ) & \eps \\
+\code{grid          } & 5    & 5    (5   ) & 0    (0   ) & \eps \\
+\code{fannkuch      } & 16   & 16   (16  ) & 8    (8   ) & \eps \\
+\code{mceval        } & 87   & 85   (72  ) & 2    (2   ) & \eps \\
+\code{scm2java      } & 64   & 61   (23  ) & 8    (5   ) & \eps \\
+\code{matrix        } & 11   & 10   (10  ) & 0    (0   ) & \eps \\
+\code{spectralnorm  } & 12   & 12   (12  ) & 0    (0   ) & \eps \\
+\code{sieve         } & 5    & 5    (5   ) & 0    (0   ) & \eps \\
+\code{mandelbrot    } & 6    & 6    (6   ) & 0    (0   ) & \eps \\
+\code{partialsums   } & 2    & 2    (2   ) & 0    (0   ) & \eps \\
+type-fresh
+\code{fib           } & 44.31\% & \eps  & 44.31\% & \eps \\
+\code{treenode1     } & 56.23\% & \eps  & 62.35\% & \eps \\
+\code{treeadd       } & 44.34\% & \eps  & 44.34\% & \eps \\
+\code{treeadd2      } & 44.96\% & \eps  & 44.96\% & \eps \\
+\code{treeadd3      } & 57.21\% & \eps  & 67.87\% & \eps \\
+\code{purity46      } & 56.31\% & \eps  & 56.31\% & \eps \\
+\code{purity47      } & 49.15\% & \eps  & 49.15\% & \eps \\
+\code{purity52      } & 54.72\% & \eps  & 54.72\% & \eps \\
+\code{purity53      } & 54.72\% & \eps  & 54.72\% & \eps \\
+\code{purity54      } & 55.15\% & \eps  & 55.15\% & \eps \\
+\code{purity65      } & 56.92\% & \eps  & 56.92\% & \eps \\
+\code{nqueens       } & 34.74\% & \eps  & 34.74\% & \eps \\
+\code{dderiv        } & 22.14\% & \eps  & 22.14\% & \eps \\
+\code{destruct      } & 22.19\% & \eps  & 22.19\% & \eps \\
+\code{grid          } & 37.8\%  & \eps  & 37.8\%  & \eps \\
+\code{fannkuch      } & 17.87\% & \eps  & 17.87\% & \eps \\
+\code{mceval        } & 4.07\%  & 4''   & 4.07\%  & 4''  \\
+\code{scm2java      } & 10.18\% & 4''   & 10.18\% & 4''  \\
+\code{matrix        } & 28.33\% & \eps  & 28.33\% & \eps \\
+\code{spectralnorm  } & 35.62\% & \eps  & 35.62\% & \eps \\
+\code{sieve         } & 32.07\% & \eps  & 32.07\% & \eps \\
+\code{mandelbrot    } & 43.13\% & \eps  & 43.13\% & \eps \\
+\code{partialsums   } & 58.45\% & \eps  & 58.45\% & \eps \\
+conc-type-esc-fresh
+\code{fib           } & 41.04\% & 44.31\%\\
+\code{treenode1     } & 49.94\% & 62.35\%\\
+\code{treeadd       } & 30.67\% & 44.34\%\\
+\code{treeadd2      } & 43.42\% & 44.96\%\\
+\code{treeadd3      } & 54.14\% & 67.87\%\\
+\code{purity46      } & 48.1\%  & 56.31\%\\
+\code{purity47      } & 41.0\%  & 49.15\%\\
+\code{purity52      } & 47.18\% & 54.72\%\\
+\code{purity53      } & 47.18\% & 54.72\%\\
+\code{purity54      } & 55.57\% & 55.15\%\\
+\code{purity65      } & 54.78\% & 56.92\%\\
+\code{nqueens       } & 30.85\% & 34.74\%\\
+\code{dderiv        } & 15.36\% & 22.14\%\\
+\code{destruct      } & 17.08\% & 22.19\%\\
+\code{grid          } & 34.63\% & 37.8\% \\
+\code{fannkuch      } & 8.81\%  & 17.87\%\\
+\code{mceval        } & 3.08\%  & 4.07\% \\
+\code{scm2java      } & 15.83\% & 10.18\%\\
+\code{matrix        } & 17.4\%  & 28.33\%\\
+\code{spectralnorm  } & 36.76\% & 35.62\%\\
+\code{sieve         } & 17.29\% & 32.07\%\\
+\code{mandelbrot    } & 32.54\% & 43.13\%\\
+\code{partialsums   } & 69.38\% & 58.45\%\\
+conc-a-type-msfa-purity-class
+\code{fib           } & 1    & 1    & 0    & 0    & 1    & 0    & 0   \\
+\code{treenode1     } & 2    & 2    & 0    & 0    & 2    & 0    & 0   \\
+\code{treeadd       } & 3    & 3    & 0    & 0    & 3    & 0    & 0   \\
+\code{treeadd2      } & 3    & 3    & 0    & 0    & 2    & 0    & 1   \\
+\code{treeadd3      } & 2    & 2    & 0    & 0    & 2    & 0    & 0   \\
+\code{purity46      } & 1    & 1    & 0    & 0    & 1    & 0    & 0   \\
+\code{purity47      } & 1    & 1    & 0    & 0    & 1    & 0    & 0   \\
+\code{purity52      } & 1    & 1    & 0    & 0    & 1    & 0    & 0   \\
+\code{purity53      } & 1    & 1    & 0    & 0    & 1    & 0    & 0   \\
+\code{purity54      } & 1    & 1    & 0    & 0    & 1    & 0    & 0   \\
+\code{purity65      } & 1    & 1    & 0    & 0    & 1    & 0    & 0   \\
+\code{nqueens       } & 6    & 6    & 0    & 0    & 6    & 0    & 0   \\
+\code{dderiv        } & 10   & 9    & 0    & 1    & 3    & 6    & 1   \\
+\code{destruct      } & 11   & 3    & 1    & 7    & 3    & 1    & 7   \\
+\code{grid          } & 5    & 2    & 1    & 2    & 2    & 1    & 2   \\
+\code{fannkuch      } & 16   & 5    & 2    & 9    & 5    & 2    & 9   \\
+\code{mceval        } & 72   & 60   & 2    & 10   & 10   & 49   & 13  \\
+\code{scm2java      } & 23   & 21   & 0    & 2    & 18   & 0    & 5   \\
+\code{matrix        } & 10   & 4    & 0    & 6    & 3    & 1    & 6   \\
+\code{spectralnorm  } & 12   & 3    & 0    & 9    & 3    & 0    & 9   \\
+\code{sieve         } & 5    & 1    & 0    & 4    & 1    & 0    & 4   \\
+\code{mandelbrot    } & 6    & 4    & 0    & 2    & 4    & 0    & 2   \\
+\code{partialsums   } & 2    & 1    & 0    & 1    & 1    & 0    & 1   \\
+type-a-type-msfa-purity-class
+\code{fib           } & 1    & 1    & 0    & 0    & 1    & 0    & 0   \\
+\code{treenode1     } & 2    & 0    & 0    & 2    & 2    & 0    & 0   \\
+\code{treeadd       } & 3    & 2    & 0    & 1    & 3    & 0    & 0   \\
+\code{treeadd2      } & 3    & 1    & 0    & 2    & 2    & 0    & 1   \\
+\code{treeadd3      } & 2    & 0    & 0    & 2    & 2    & 0    & 0   \\
+\code{purity46      } & 1    & 0    & 0    & 1    & 1    & 0    & 0   \\
+\code{purity47      } & 1    & 0    & 0    & 1    & 1    & 0    & 0   \\
+\code{purity52      } & 1    & 0    & 0    & 1    & 1    & 0    & 0   \\
+\code{purity53      } & 1    & 0    & 0    & 1    & 1    & 0    & 0   \\
+\code{purity54      } & 1    & 0    & 0    & 1    & 1    & 0    & 0   \\
+\code{purity65      } & 1    & 0    & 0    & 1    & 1    & 0    & 0   \\
+\code{nqueens       } & 6    & 6    & 0    & 0    & 6    & 0    & 0   \\
+\code{dderiv        } & 10   & 3    & 6    & 1    & 3    & 6    & 1   \\
+\code{destruct      } & 11   & 3    & 1    & 7    & 3    & 1    & 7   \\
+\code{grid          } & 5    & 1    & 1    & 3    & 2    & 1    & 2   \\
+\code{fannkuch      } & 16   & 5    & 2    & 9    & 5    & 2    & 9   \\
+\code{mceval        } & 72   & 10   & 49   & 13   & 10   & 49   & 13  \\
+\code{scm2java      } & 23   & 18   & 0    & 5    & 18   & 0    & 5   \\
+\code{matrix        } & 10   & 2    & 0    & 8    & 3    & 1    & 6   \\
+\code{spectralnorm  } & 12   & 3    & 0    & 9    & 3    & 0    & 9   \\
+\code{sieve         } & 5    & 1    & 0    & 4    & 1    & 0    & 4   \\
+\code{mandelbrot    } & 6    & 4    & 0    & 2    & 4    & 0    & 2   \\
+\code{partialsums   } & 2    & 1    & 0    & 1    & 1    & 0    & 1   \\
+purity-timing
+\code{fib           } & \eps  & \eps \\
+\code{treenode1     } & \eps  & \eps \\
+\code{treeadd       } & \eps  & \eps \\
+\code{treeadd2      } & \eps  & \eps \\
+\code{treeadd3      } & \eps  & \eps \\
+\code{purity46      } & \eps  & \eps \\
+\code{purity47      } & \eps  & \eps \\
+\code{purity52      } & \eps  & \eps \\
+\code{purity53      } & \eps  & \eps \\
+\code{purity54      } & \eps  & \eps \\
+\code{purity65      } & \eps  & \eps \\
+\code{nqueens       } & \eps  & \eps \\
+\code{dderiv        } & \eps  & \eps \\
+\code{destruct      } & \eps  & \eps \\
+\code{grid          } & \eps  & \eps \\
+\code{fannkuch      } & \eps  & \eps \\
+\code{mceval        } & 154'' & 160''\\
+\code{scm2java      } & 64''  & 78'' \\
+\code{matrix        } & \eps  & \eps \\
+\code{spectralnorm  } & \eps  & \eps \\
+\code{sieve         } & \eps  & \eps \\
+\code{mandelbrot    } & \eps  & \eps \\
+\code{partialsums   } & \eps  & \eps \\
+timing
+\code{fib           } & \eps  & \eps  & \eps  & \eps \\
+\code{treenode1     } & \eps  & \eps  & \eps  & \eps \\
+\code{treeadd       } & \eps  & \eps  & \eps  & \eps \\
+\code{treeadd2      } & \eps  & \eps  & \eps  & \eps \\
+\code{treeadd3      } & \eps  & \eps  & \eps  & \eps \\
+\code{purity46      } & \eps  & \eps  & \eps  & \eps \\
+\code{purity47      } & \eps  & \eps  & \eps  & \eps \\
+\code{purity52      } & \eps  & \eps  & \eps  & \eps \\
+\code{purity53      } & \eps  & \eps  & \eps  & \eps \\
+\code{purity54      } & \eps  & \eps  & \eps  & \eps \\
+\code{purity65      } & \eps  & \eps  & \eps  & \eps \\
+\code{nqueens       } & \eps  & \eps  & \eps  & \eps \\
+\code{dderiv        } & 1''   & 1''   & 1''   & 1''  \\
+\code{destruct      } & \eps  & \eps  & \eps  & \eps \\
+\code{grid          } & \eps  & \eps  & \eps  & \eps \\
+\code{fannkuch      } & \eps  & \eps  & \eps  & \eps \\
+\code{mceval        } & 218'' & 215'' & 219'' & 222''\\
+\code{scm2java      } & 113'' & 109'' & 115'' & 117''\\
+\code{matrix        } & \eps  & \eps  & \eps  & \eps \\
+\code{spectralnorm  } & \eps  & \eps  & \eps  & \eps \\
+\code{sieve         } & \eps  & \eps  & \eps  & \eps \\
+\code{mandelbrot    } & \eps  & \eps  & \eps  & \eps \\
+\code{partialsums   } & \eps  & \eps  & \eps  & \eps \\
+
+==== 20160326
+Changed some counting stuff in phdoutput
+
+benchmarks
+\code{fib           } & 42     & 1   & 0   & 0   & 0   & 0   & 0   & 0  \\
+\code{treenode1     } & 58     & 2   & 2   & 1   & 1   & 0   & 0   & 0  \\
+\code{treeadd       } & 131    & 3   & 2   & 2   & 0   & 0   & 0   & 0  \\
+\code{treeadd2      } & 138    & 3   & 2   & 2   & 1   & 1   & 0   & 0  \\
+\code{treeadd3      } & 119    & 2   & 2   & 1   & 1   & 1   & 0   & 0  \\
+\code{purity46      } & 29     & 1   & 1   & 0   & 0   & 0   & 0   & 0  \\
+\code{purity47      } & 32     & 1   & 1   & 0   & 0   & 0   & 0   & 0  \\
+\code{purity52      } & 37     & 1   & 0   & 1   & 1   & 0   & 0   & 0  \\
+\code{purity53      } & 37     & 1   & 0   & 1   & 1   & 0   & 0   & 0  \\
+\code{purity54      } & 37     & 1   & 0   & 1   & 1   & 0   & 0   & 0  \\
+\code{purity65      } & 29     & 1   & 0   & 1   & 1   & 0   & 0   & 0  \\
+\code{nqueens       } & 247    & 6   & 0   & 4   & 0   & 0   & 0   & 0  \\
+\code{dderiv        } & 616    & 20  & 1   & 29  & 0   & 2   & 0   & 0  \\
+\code{destruct      } & 420    & 11  & 0   & 3   & 4   & 3   & 0   & 0  \\
+\code{grid          } & 382    & 5   & 3   & 3   & 0   & 0   & 1   & 2  \\
+\code{fannkuch      } & 500    & 16  & 10  & 0   & 0   & 0   & 2   & 7  \\
+\code{mceval        } & 1687   & 87  & 0   & 28  & 3   & 1   & 0   & 0  \\
+\code{scm2java      } & 1972   & 64  & 6   & 66  & 0   & 0   & 0   & 0  \\
+\code{matrix        } & 385    & 11  & 3   & 3   & 0   & 0   & 4   & 4  \\
+\code{spectralnorm  } & 453    & 12  & 2   & 0   & 0   & 0   & 3   & 4  \\
+\code{sieve         } & 183    & 5   & 2   & 0   & 0   & 0   & 1   & 2  \\
+\code{mandelbrot    } & 359    & 6   & 6   & 0   & 0   & 0   & 0   & 0  \\
+\code{partialsums   } & 367    & 2   & 14  & 0   & 0   & 0   & 0   & 0  \\
+flow-conc
+\code{fib           } & 735     & 734     & 100.0\% & \eps \\
+\code{treenode1     } & 68      & 67      & 100.0\% & \eps \\
+\code{treeadd       } & 696     & 695     & 100.0\% & \eps \\
+\code{treeadd2      } & 1028    & 1027    & 100.0\% & \eps \\
+\code{treeadd3      } & 847     & 846     & 100.0\% & \eps \\
+\code{purity46      } & 53      & 52      & 100.0\% & \eps \\
+\code{purity47      } & 53      & 52      & 100.0\% & \eps \\
+\code{purity52      } & 65      & 64      & 100.0\% & \eps \\
+\code{purity53      } & 65      & 64      & 100.0\% & \eps \\
+\code{purity54      } & 77      & 76      & 100.0\% & \eps \\
+\code{purity65      } & 20      & 19      & 100.0\% & \eps \\
+\code{nqueens       } & 2704    & 2703    & 100.0\% & \eps \\
+\code{dderiv        } & 2871    & 2870    & 63.15\% & \eps \\
+\code{destruct      } & 2292    & 2291    & 95.95\% & \eps \\
+\code{grid          } & 2019    & 2018    & 89.53\% & \eps \\
+\code{fannkuch      } & 8990    & 8989    & 99.8\%  & \eps \\
+\code{mceval        } & 9223    & 9222    & 83.17\% & \eps \\
+\code{scm2java      } & 358     & 357     & 32.86\% & \eps \\
+\code{matrix        } & 9401    & 9400    & 97.92\% & \eps \\
+\code{spectralnorm  } & 10443   & 10442   & 98.45\% & \eps \\
+\code{sieve         } & 9060    & 9059    & 96.17\% & \eps \\
+\code{mandelbrot    } & 229     & 228     & 93.87\% & \eps \\
+\code{partialsums   } & 3841    & 3840    & 99.73\% & \eps \\
+flow-type
+\code{fib           } & 20      & 30      & 100.0\% & \eps \\
+\code{treenode1     } & 28      & 33      & 100.0\% & \eps \\
+\code{treeadd       } & 69      & 99      & 100.0\% & \eps \\
+\code{treeadd2      } & 80      & 112     & 100.0\% & \eps \\
+\code{treeadd3      } & 68      & 102     & 100.0\% & \eps \\
+\code{purity46      } & 16      & 18      & 100.0\% & \eps \\
+\code{purity47      } & 16      & 18      & 100.0\% & \eps \\
+\code{purity52      } & 19      & 21      & 100.0\% & \eps \\
+\code{purity53      } & 19      & 21      & 100.0\% & \eps \\
+\code{purity54      } & 23      & 30      & 100.0\% & \eps \\
+\code{purity65      } & 20      & 27      & 100.0\% & \eps \\
+\code{nqueens       } & 133     & 189     & 100.0\% & \eps \\
+\code{dderiv        } & 354     & 1405    & 90.42\% & \eps \\
+\code{destruct      } & 238     & 337     & 100.0\% & \eps \\
+\code{grid          } & 237     & 424     & 93.46\% & \eps \\
+\code{fannkuch      } & 236     & 371     & 100.0\% & \eps \\
+\code{mceval        } & 1237    & 12857   & 97.45\% & 28'' \\
+\code{scm2java      } & 1282    & 10064   & 95.79\% & 24'' \\
+\code{matrix        } & 188     & 239     & 97.92\% & \eps \\
+\code{spectralnorm  } & 214     & 239     & 99.34\% & \eps \\
+\code{sieve         } & 94      & 110     & 98.36\% & \eps \\
+\code{mandelbrot    } & 170     & 204     & 99.16\% & \eps \\
+\code{partialsums   } & 190     & 195     & 100.0\% & \eps \\
+se-a-conc
+\code{fib           } & \eps  & 599   & 2914  & 1096 \\
+\code{treenode1     } & \eps  & 44    & 96    & 18   \\
+\code{treeadd       } & \eps  & 502   & 1561  & 511  \\
+\code{treeadd2      } & \eps  & 674   & 2208  & 687  \\
+\code{treeadd3      } & \eps  & 554   & 1801  & 540  \\
+\code{purity46      } & \eps  & 40    & 105   & 35   \\
+\code{purity47      } & \eps  & 40    & 105   & 35   \\
+\code{purity52      } & \eps  & 48    & 125   & 35   \\
+\code{purity53      } & \eps  & 48    & 125   & 35   \\
+\code{purity54      } & \eps  & 44    & 115   & 35   \\
+\code{purity65      } & \eps  & 8     & 8     & 1    \\
+\code{nqueens       } & \eps  & 2253  & 16703 & 4764 \\
+\code{dderiv        } & \eps  & 2432  & 18740 & 6658 \\
+\code{destruct      } & \eps  & 1810  & 16076 & 5468 \\
+\code{grid          } & \eps  & 1511  & 9018  & 2580 \\
+\code{fannkuch      } & \eps  & 8933  & 154119 & 56790\\
+\code{mceval        } & 2''   & 8308  & 149836 & 52915\\
+\code{scm2java      } & \eps  & 258   & 817   & 314  \\
+\code{matrix        } & \eps  & 9122  & 105802 & 37422\\
+\code{spectralnorm  } & \eps  & 9744  & 121929 & 41616\\
+\code{sieve         } & 2''   & 7951  & 565228 & 265692\\
+\code{mandelbrot    } & \eps  & 195   & 831   & 331  \\
+\code{partialsums   } & \eps  & 3065  & 42817 & 24356\\
+se-a-type
+\code{fib           } & \eps  & 17    & 16    & 15   \\
+\code{treenode1     } & \eps  & 19    & 23    & 14   \\
+\code{treeadd       } & \eps  & 56    & 57    & 44   \\
+\code{treeadd2      } & \eps  & 55    & 53    & 46   \\
+\code{treeadd3      } & \eps  & 48    & 45    & 40   \\
+\code{purity46      } & \eps  & 11    & 10    & 7    \\
+\code{purity47      } & \eps  & 11    & 10    & 6    \\
+\code{purity52      } & \eps  & 13    & 12    & 7    \\
+\code{purity53      } & \eps  & 13    & 12    & 7    \\
+\code{purity54      } & \eps  & 12    & 11    & 11   \\
+\code{purity65      } & \eps  & 8     & 7     & 6    \\
+\code{nqueens       } & \eps  & 134   & 334   & 138  \\
+\code{dderiv        } & \eps  & 1239  & 2966  & 2268 \\
+\code{destruct      } & \eps  & 222   & 737   & 252  \\
+\code{grid          } & \eps  & 368   & 476   & 385  \\
+\code{fannkuch      } & \eps  & 205   & 746   & 260  \\
+\code{mceval        } & 15''  & 15902 & 167795 & 157480\\
+\code{scm2java      } & 4''   & 6317  & 70112 & 61699\\
+\code{matrix        } & \eps  & 152   & 533   & 157  \\
+\code{spectralnorm  } & \eps  & 189   & 1047  & 343  \\
+\code{sieve         } & \eps  & 65    & 177   & 59   \\
+\code{mandelbrot    } & \eps  & 135   & 459   & 189  \\
+\code{partialsums   } & \eps  & 135   & 256   & 112  \\
+se-percs
+\code{fib           } & 93.75\% & 37.5\%  & 37.5\%  & 37.5\%  & (37.61\%)\\
+\code{treenode1     } & 60.87\% & 26.09\% & 17.39\% & 17.39\% & (18.75\%)\\
+\code{treeadd       } & 77.19\% & 31.58\% & 31.58\% & 31.58\% & (32.74\%)\\
+\code{treeadd2      } & 86.79\% & 33.96\% & 32.08\% & 32.08\% & (31.11\%)\\
+\code{treeadd3      } & 88.89\% & 31.11\% & 26.67\% & 26.67\% & (29.98\%)\\
+\code{purity46      } & 70.0\%  & 30.0\%  & 30.0\%  & 30.0\%  & (33.33\%)\\
+\code{purity47      } & 60.0\%  & 30.0\%  & 30.0\%  & 30.0\%  & (33.33\%)\\
+\code{purity52      } & 58.33\% & 33.33\% & 25.0\%  & 25.0\%  & (28.0\% )\\
+\code{purity53      } & 58.33\% & 33.33\% & 25.0\%  & 25.0\%  & (28.0\% )\\
+\code{purity54      } & 100.0\% & 36.36\% & 27.27\% & 27.27\% & (30.43\%)\\
+\code{purity65      } & 85.71\% & 28.57\% & 14.29\% & 14.29\% & (12.5\% )\\
+\code{nqueens       } & 41.32\% & 28.44\% & 28.44\% & 28.44\% & (28.52\%)\\
+\code{dderiv        } & 76.47\% & 63.18\% & 63.18\% & 63.18\% & (35.53\%)\\
+\code{destruct      } & 34.19\% & 30.94\% & 30.94\% & 30.94\% & (34.01\%)\\
+\code{grid          } & 80.88\% & 65.55\% & 65.55\% & 63.66\% & (28.61\%)\\
+\code{fannkuch      } & 34.85\% & 32.04\% & 32.04\% & 31.9\%  & (36.85\%)\\
+\code{mceval        } & 93.85\% & 93.25\% & 93.25\% & 93.24\% & (35.32\%)\\
+\code{scm2java      } & 88.0\%  & 86.9\%  & 86.9\%  & 86.9\%  & (38.43\%)\\
+\code{matrix        } & 29.46\% & 28.33\% & 28.33\% & 27.77\% & (35.37\%)\\
+\code{spectralnorm  } & 32.76\% & 32.19\% & 32.19\% & 32.19\% & (34.13\%)\\
+\code{sieve         } & 33.33\% & 31.07\% & 31.07\% & 31.07\% & (47.01\%)\\
+\code{mandelbrot    } & 41.18\% & 40.09\% & 40.09\% & 40.09\% & (39.83\%)\\
+\code{partialsums   } & 43.75\% & 43.36\% & 43.36\% & 43.36\% & (56.88\%)\\
+se-obs
+\code{fib           } & 14   & 6    & 6    & 6    & (1096)\\
+\code{treenode1     } & 13   & 6    & 4    & 4    & (18)\\
+\code{treeadd       } & 37   & 16   & 16   & 16   & (511)\\
+\code{treeadd2      } & 43   & 18   & 17   & 17   & (687)\\
+\code{treeadd3      } & 36   & 14   & 12   & 12   & (540)\\
+\code{purity46      } & 7    & 3    & 3    & 3    & (35)\\
+\code{purity47      } & 6    & 3    & 3    & 3    & (35)\\
+\code{purity52      } & 7    & 4    & 3    & 3    & (35)\\
+\code{purity53      } & 7    & 4    & 3    & 3    & (35)\\
+\code{purity54      } & 10   & 4    & 3    & 3    & (35)\\
+\code{purity65      } & 5    & 2    & 1    & 1    & (1)\\
+\code{nqueens       } & 125  & 89   & 89   & 89   & (4764)\\
+\code{dderiv        } & 1154 & 901  & 901  & 901  & (6658)\\
+\code{destruct      } & 214  & 194  & 194  & 194  & (5468)\\
+\code{grid          } & 241  & 190  & 190  & 184  & (2580)\\
+\code{fannkuch      } & 260  & 239  & 239  & 238  & (56790)\\
+\code{mceval        } & 32752 & 32108 & 32108 & 32091 & (52915)\\
+\code{scm2java      } & 15871 & 15455 & 15455 & 15455 & (314)\\
+\code{matrix        } & 151  & 145  & 145  & 142  & (37422)\\
+\code{spectralnorm  } & 343  & 337  & 337  & 337  & (41616)\\
+\code{sieve         } & 59   & 55   & 55   & 55   & (265692)\\
+\code{mandelbrot    } & 189  & 184  & 184  & 184  & (331)\\
+\code{partialsums   } & 112  & 111  & 111  & 111  & (24356)\\
+se-timing
+\code{fib           } & \eps  & \eps \\
+\code{treenode1     } & \eps  & \eps \\
+\code{treeadd       } & \eps  & \eps \\
+\code{treeadd2      } & \eps  & \eps \\
+\code{treeadd3      } & \eps  & \eps \\
+\code{purity46      } & \eps  & \eps \\
+\code{purity47      } & \eps  & \eps \\
+\code{purity52      } & \eps  & \eps \\
+\code{purity53      } & \eps  & \eps \\
+\code{purity54      } & \eps  & \eps \\
+\code{purity65      } & \eps  & \eps \\
+\code{nqueens       } & \eps  & \eps \\
+\code{dderiv        } & \eps  & \eps \\
+\code{destruct      } & \eps  & \eps \\
+\code{grid          } & \eps  & \eps \\
+\code{fannkuch      } & \eps  & \eps \\
+\code{mceval        } & 15''  & 14'' \\
+\code{scm2java      } & 4''   & 6''  \\
+\code{matrix        } & \eps  & \eps \\
+\code{spectralnorm  } & \eps  & \eps \\
+\code{sieve         } & \eps  & \eps \\
+\code{mandelbrot    } & \eps  & \eps \\
+\code{partialsums   } & \eps  & \eps \\
+escape
+\code{fib           } & 1    & 1    (1   ) & 0    (0   ) & \eps \\
+\code{treenode1     } & 2    & 2    (2   ) & 0    (0   ) & \eps \\
+\code{treeadd       } & 3    & 3    (3   ) & 0    (0   ) & \eps \\
+\code{treeadd2      } & 3    & 3    (3   ) & 0    (0   ) & \eps \\
+\code{treeadd3      } & 2    & 2    (2   ) & 0    (0   ) & \eps \\
+\code{purity46      } & 1    & 1    (1   ) & 0    (0   ) & \eps \\
+\code{purity47      } & 1    & 1    (1   ) & 0    (0   ) & \eps \\
+\code{purity52      } & 1    & 1    (1   ) & 0    (0   ) & \eps \\
+\code{purity53      } & 1    & 1    (1   ) & 0    (0   ) & \eps \\
+\code{purity54      } & 1    & 1    (1   ) & 0    (0   ) & \eps \\
+\code{purity65      } & 1    & 1    (1   ) & 0    (0   ) & \eps \\
+\code{nqueens       } & 6    & 6    (6   ) & 0    (0   ) & \eps \\
+\code{dderiv        } & 20   & 14   (10  ) & 6    (6   ) & \eps \\
+\code{destruct      } & 11   & 11   (11  ) & 0    (0   ) & \eps \\
+\code{grid          } & 5    & 5    (5   ) & 0    (0   ) & \eps \\
+\code{fannkuch      } & 16   & 16   (16  ) & 8    (8   ) & \eps \\
+\code{mceval        } & 87   & 85   (72  ) & 2    (2   ) & \eps \\
+\code{scm2java      } & 64   & 61   (23  ) & 8    (5   ) & \eps \\
+\code{matrix        } & 11   & 10   (10  ) & 0    (0   ) & \eps \\
+\code{spectralnorm  } & 12   & 12   (12  ) & 0    (0   ) & \eps \\
+\code{sieve         } & 5    & 5    (5   ) & 0    (0   ) & \eps \\
+\code{mandelbrot    } & 6    & 6    (6   ) & 0    (0   ) & \eps \\
+\code{partialsums   } & 2    & 2    (2   ) & 0    (0   ) & \eps \\
+type-fresh
+\code{fib           } & 74 & \eps  & 74 & \eps \\
+\code{treenode1     } & 230 & \eps  & 255 & \eps \\
+\code{treeadd       } & 972 & \eps  & 972 & \eps \\
+\code{treeadd2      } & 945 & \eps  & 945 & \eps \\
+\code{treeadd3      } & 1031 & \eps  & 1223 & \eps \\
+\code{purity46      } & 58 & \eps  & 58 & \eps \\
+\code{purity47      } & 58 & \eps  & 58 & \eps \\
+\code{purity52      } & 87 & \eps  & 87 & \eps \\
+\code{purity53      } & 87 & \eps  & 87 & \eps \\
+\code{purity54      } & 107 & \eps  & 107 & \eps \\
+\code{purity65      } & 74 & \eps  & 74 & \eps \\
+\code{nqueens       } & 3102 & \eps  & 3102 & \eps \\
+\code{dderiv        } & 21873 & \eps  & 21873 & \eps \\
+\code{destruct      } & 10416 & \eps  & 10416 & \eps \\
+\code{grid          } & 9150 & \eps  & 9150 & \eps \\
+\code{fannkuch      } & 13626 & \eps  & 13626 & \eps \\
+\code{mceval        } & 194198 & 4''   & 194198 & 4''  \\
+\code{scm2java      } & 294688 & 4''   & 294688 & 4''  \\
+\code{matrix        } & 8948 & \eps  & 8948 & \eps \\
+\code{spectralnorm  } & 11511 & \eps  & 11511 & \eps \\
+\code{sieve         } & 2009 & \eps  & 2009 & \eps \\
+\code{mandelbrot    } & 7834 & \eps  & 7834 & \eps \\
+\code{partialsums   } & 9190 & \eps  & 9190 & \eps \\
+conc-type-esc-fresh
+\code{fib           } & 41.04\% & 44.31\%\\
+\code{treenode1     } & 49.94\% & 62.35\%\\
+\code{treeadd       } & 30.67\% & 44.34\%\\
+\code{treeadd2      } & 43.42\% & 44.96\%\\
+\code{treeadd3      } & 54.14\% & 67.87\%\\
+\code{purity46      } & 48.1\%  & 56.31\%\\
+\code{purity47      } & 41.0\%  & 49.15\%\\
+\code{purity52      } & 47.18\% & 54.72\%\\
+\code{purity53      } & 47.18\% & 54.72\%\\
+\code{purity54      } & 55.57\% & 55.15\%\\
+\code{purity65      } & 54.78\% & 56.92\%\\
+\code{nqueens       } & 30.85\% & 34.74\%\\
+\code{dderiv        } & 15.36\% & 22.14\%\\
+\code{destruct      } & 17.08\% & 22.19\%\\
+\code{grid          } & 34.63\% & 37.8\% \\
+\code{fannkuch      } & 8.81\%  & 17.87\%\\
+\code{mceval        } & 3.08\%  & 4.07\% \\
+\code{scm2java      } & 15.83\% & 10.18\%\\
+\code{matrix        } & 17.4\%  & 28.33\%\\
+\code{spectralnorm  } & 36.76\% & 35.62\%\\
+\code{sieve         } & 17.29\% & 32.07\%\\
+\code{mandelbrot    } & 32.54\% & 43.13\%\\
+\code{partialsums   } & 69.38\% & 58.45\%\\
+conc-a-type-msfa-purity-class
+\code{fib           } & 1    & 1    & 0    & 0    & 1    & 0    & 0   \\
+\code{treenode1     } & 2    & 2    & 0    & 0    & 2    & 0    & 0   \\
+\code{treeadd       } & 3    & 3    & 0    & 0    & 3    & 0    & 0   \\
+\code{treeadd2      } & 3    & 3    & 0    & 0    & 2    & 0    & 1   \\
+\code{treeadd3      } & 2    & 2    & 0    & 0    & 2    & 0    & 0   \\
+\code{purity46      } & 1    & 1    & 0    & 0    & 1    & 0    & 0   \\
+\code{purity47      } & 1    & 1    & 0    & 0    & 1    & 0    & 0   \\
+\code{purity52      } & 1    & 1    & 0    & 0    & 1    & 0    & 0   \\
+\code{purity53      } & 1    & 1    & 0    & 0    & 1    & 0    & 0   \\
+\code{purity54      } & 1    & 1    & 0    & 0    & 1    & 0    & 0   \\
+\code{purity65      } & 1    & 1    & 0    & 0    & 1    & 0    & 0   \\
+\code{nqueens       } & 6    & 6    & 0    & 0    & 6    & 0    & 0   \\
+\code{dderiv        } & 10   & 9    & 0    & 1    & 3    & 6    & 1   \\
+\code{destruct      } & 11   & 3    & 1    & 7    & 3    & 1    & 7   \\
+\code{grid          } & 5    & 2    & 1    & 2    & 2    & 1    & 2   \\
+\code{fannkuch      } & 16   & 5    & 2    & 9    & 5    & 2    & 9   \\
+\code{mceval        } & 72   & 60   & 2    & 10   & 10   & 49   & 13  \\
+\code{scm2java      } & 23   & 21   & 0    & 2    & 18   & 0    & 5   \\
+\code{matrix        } & 10   & 4    & 0    & 6    & 3    & 1    & 6   \\
+\code{spectralnorm  } & 12   & 3    & 0    & 9    & 3    & 0    & 9   \\
+\code{sieve         } & 5    & 1    & 0    & 4    & 1    & 0    & 4   \\
+\code{mandelbrot    } & 6    & 4    & 0    & 2    & 4    & 0    & 2   \\
+\code{partialsums   } & 2    & 1    & 0    & 1    & 1    & 0    & 1   \\
+type-a-type-msfa-purity-class
+\code{fib           } & 1    & 1    & 0    & 0    & 1    & 0    & 0   \\
+\code{treenode1     } & 2    & 0    & 0    & 2    & 2    & 0    & 0   \\
+\code{treeadd       } & 3    & 2    & 0    & 1    & 3    & 0    & 0   \\
+\code{treeadd2      } & 3    & 1    & 0    & 2    & 2    & 0    & 1   \\
+\code{treeadd3      } & 2    & 0    & 0    & 2    & 2    & 0    & 0   \\
+\code{purity46      } & 1    & 0    & 0    & 1    & 1    & 0    & 0   \\
+\code{purity47      } & 1    & 0    & 0    & 1    & 1    & 0    & 0   \\
+\code{purity52      } & 1    & 0    & 0    & 1    & 1    & 0    & 0   \\
+\code{purity53      } & 1    & 0    & 0    & 1    & 1    & 0    & 0   \\
+\code{purity54      } & 1    & 0    & 0    & 1    & 1    & 0    & 0   \\
+\code{purity65      } & 1    & 0    & 0    & 1    & 1    & 0    & 0   \\
+\code{nqueens       } & 6    & 6    & 0    & 0    & 6    & 0    & 0   \\
+\code{dderiv        } & 10   & 3    & 6    & 1    & 3    & 6    & 1   \\
+\code{destruct      } & 11   & 3    & 1    & 7    & 3    & 1    & 7   \\
+\code{grid          } & 5    & 1    & 1    & 3    & 2    & 1    & 2   \\
+\code{fannkuch      } & 16   & 5    & 2    & 9    & 5    & 2    & 9   \\
+\code{mceval        } & 72   & 10   & 49   & 13   & 10   & 49   & 13  \\
+\code{scm2java      } & 23   & 18   & 0    & 5    & 18   & 0    & 5   \\
+\code{matrix        } & 10   & 2    & 0    & 8    & 3    & 1    & 6   \\
+\code{spectralnorm  } & 12   & 3    & 0    & 9    & 3    & 0    & 9   \\
+\code{sieve         } & 5    & 1    & 0    & 4    & 1    & 0    & 4   \\
+\code{mandelbrot    } & 6    & 4    & 0    & 2    & 4    & 0    & 2   \\
+\code{partialsums   } & 2    & 1    & 0    & 1    & 1    & 0    & 1   \\
+purity-timing
+\code{fib           } & \eps  & \eps \\
+\code{treenode1     } & \eps  & \eps \\
+\code{treeadd       } & \eps  & \eps \\
+\code{treeadd2      } & \eps  & \eps \\
+\code{treeadd3      } & \eps  & \eps \\
+\code{purity46      } & \eps  & \eps \\
+\code{purity47      } & \eps  & \eps \\
+\code{purity52      } & \eps  & \eps \\
+\code{purity53      } & \eps  & \eps \\
+\code{purity54      } & \eps  & \eps \\
+\code{purity65      } & \eps  & \eps \\
+\code{nqueens       } & \eps  & \eps \\
+\code{dderiv        } & 1''   & \eps \\
+\code{destruct      } & \eps  & \eps \\
+\code{grid          } & \eps  & \eps \\
+\code{fannkuch      } & \eps  & \eps \\
+\code{mceval        } & 155'' & 148''\\
+\code{scm2java      } & 60''  & 70'' \\
+\code{matrix        } & \eps  & \eps \\
+\code{spectralnorm  } & \eps  & \eps \\
+\code{sieve         } & \eps  & \eps \\
+\code{mandelbrot    } & \eps  & \eps \\
+\code{partialsums   } & \eps  & \eps \\
+timing
+\code{fib           } & \eps  & \eps  & \eps  & \eps \\
+\code{treenode1     } & \eps  & \eps  & \eps  & \eps \\
+\code{treeadd       } & \eps  & \eps  & \eps  & \eps \\
+\code{treeadd2      } & \eps  & \eps  & \eps  & \eps \\
+\code{treeadd3      } & \eps  & \eps  & \eps  & \eps \\
+\code{purity46      } & \eps  & \eps  & \eps  & \eps \\
+\code{purity47      } & \eps  & \eps  & \eps  & \eps \\
+\code{purity52      } & \eps  & \eps  & \eps  & \eps \\
+\code{purity53      } & \eps  & \eps  & \eps  & \eps \\
+\code{purity54      } & \eps  & \eps  & \eps  & \eps \\
+\code{purity65      } & \eps  & \eps  & \eps  & \eps \\
+\code{nqueens       } & \eps  & \eps  & \eps  & \eps \\
+\code{dderiv        } & 1''   & 1''   & 2''   & 1''  \\
+\code{destruct      } & \eps  & \eps  & \eps  & \eps \\
+\code{grid          } & \eps  & \eps  & \eps  & \eps \\
+\code{fannkuch      } & \eps  & \eps  & \eps  & \eps \\
+\code{mceval        } & 205'' & 216'' & 216'' & 209''\\
+\code{scm2java      } & 101'' & 99''  & 103'' & 105''\\
+\code{matrix        } & \eps  & \eps  & \eps  & \eps \\
+\code{spectralnorm  } & \eps  & \eps  & \eps  & \eps \\
+\code{sieve         } & \eps  & \eps  & \eps  & \eps \\
+\code{mandelbrot    } & \eps  & \eps  & \eps  & \eps \\
+\code{partialsums   } & \eps  & \eps  & \eps  & \eps \\
+
+
+
+===== added purity
+benchmarks
+\code{fib           } & 42     & 1   & 0   & 0   & 0   & 0   & 0   & 0  \\
+\code{treenode1     } & 58     & 2   & 2   & 1   & 1   & 0   & 0   & 0  \\
+\code{treeadd       } & 131    & 3   & 2   & 2   & 0   & 0   & 0   & 0  \\
+\code{treeadd2      } & 138    & 3   & 2   & 2   & 1   & 1   & 0   & 0  \\
+\code{treeadd3      } & 119    & 2   & 2   & 1   & 1   & 1   & 0   & 0  \\
+\code{purity46      } & 29     & 1   & 1   & 0   & 0   & 0   & 0   & 0  \\
+\code{purity47      } & 32     & 1   & 1   & 0   & 0   & 0   & 0   & 0  \\
+\code{purity52      } & 37     & 1   & 0   & 1   & 1   & 0   & 0   & 0  \\
+\code{purity53      } & 37     & 1   & 0   & 1   & 1   & 0   & 0   & 0  \\
+\code{purity54      } & 37     & 1   & 0   & 1   & 1   & 0   & 0   & 0  \\
+\code{purity65      } & 29     & 1   & 0   & 1   & 1   & 0   & 0   & 0  \\
+\code{nqueens       } & 247    & 6   & 0   & 4   & 0   & 0   & 0   & 0  \\
+\code{dderiv        } & 616    & 20  & 1   & 29  & 0   & 2   & 0   & 0  \\
+\code{destruct      } & 420    & 11  & 0   & 3   & 4   & 3   & 0   & 0  \\
+\code{grid          } & 382    & 5   & 3   & 3   & 0   & 0   & 1   & 2  \\
+\code{fannkuch      } & 500    & 16  & 10  & 0   & 0   & 0   & 2   & 7  \\
+\code{mceval        } & 1687   & 87  & 0   & 28  & 3   & 1   & 0   & 0  \\
+\code{scm2java      } & 1972   & 64  & 6   & 66  & 0   & 0   & 0   & 0  \\
+\code{matrix        } & 385    & 11  & 3   & 3   & 0   & 0   & 4   & 4  \\
+\code{spectralnorm  } & 453    & 12  & 2   & 0   & 0   & 0   & 3   & 4  \\
+\code{sieve         } & 183    & 5   & 2   & 0   & 0   & 0   & 1   & 2  \\
+\code{mandelbrot    } & 359    & 6   & 6   & 0   & 0   & 0   & 0   & 0  \\
+\code{partialsums   } & 367    & 2   & 14  & 0   & 0   & 0   & 0   & 0  \\
+flow-conc
+\code{fib           } & 735     & 734     & 100.0\% & \eps \\
+\code{treenode1     } & 68      & 67      & 100.0\% & \eps \\
+\code{treeadd       } & 696     & 695     & 100.0\% & \eps \\
+\code{treeadd2      } & 1028    & 1027    & 100.0\% & \eps \\
+\code{treeadd3      } & 847     & 846     & 100.0\% & \eps \\
+\code{purity46      } & 53      & 52      & 100.0\% & \eps \\
+\code{purity47      } & 53      & 52      & 100.0\% & \eps \\
+\code{purity52      } & 65      & 64      & 100.0\% & \eps \\
+\code{purity53      } & 65      & 64      & 100.0\% & \eps \\
+\code{purity54      } & 77      & 76      & 100.0\% & \eps \\
+\code{purity65      } & 20      & 19      & 100.0\% & \eps \\
+\code{nqueens       } & 2704    & 2703    & 100.0\% & \eps \\
+\code{dderiv        } & 2871    & 2870    & 63.15\% & \eps \\
+\code{destruct      } & 2292    & 2291    & 95.95\% & \eps \\
+\code{grid          } & 2019    & 2018    & 89.53\% & \eps \\
+\code{fannkuch      } & 8990    & 8989    & 99.8\%  & \eps \\
+\code{mceval        } & 9223    & 9222    & 83.17\% & \eps \\
+\code{scm2java      } & 358     & 357     & 32.86\% & \eps \\
+\code{matrix        } & 9401    & 9400    & 97.92\% & \eps \\
+\code{spectralnorm  } & 10443   & 10442   & 98.45\% & \eps \\
+\code{sieve         } & 9060    & 9059    & 96.17\% & \eps \\
+\code{mandelbrot    } & 229     & 228     & 93.87\% & \eps \\
+\code{partialsums   } & 3841    & 3840    & 99.73\% & \eps \\
+flow-type
+\code{fib           } & 20      & 30      & 100.0\% & \eps \\
+\code{treenode1     } & 28      & 33      & 100.0\% & \eps \\
+\code{treeadd       } & 69      & 99      & 100.0\% & \eps \\
+\code{treeadd2      } & 80      & 112     & 100.0\% & \eps \\
+\code{treeadd3      } & 68      & 102     & 100.0\% & \eps \\
+\code{purity46      } & 16      & 18      & 100.0\% & \eps \\
+\code{purity47      } & 16      & 18      & 100.0\% & \eps \\
+\code{purity52      } & 19      & 21      & 100.0\% & \eps \\
+\code{purity53      } & 19      & 21      & 100.0\% & \eps \\
+\code{purity54      } & 23      & 30      & 100.0\% & \eps \\
+\code{purity65      } & 20      & 27      & 100.0\% & \eps \\
+\code{nqueens       } & 133     & 189     & 100.0\% & \eps \\
+\code{dderiv        } & 353     & 1402    & 90.42\% & \eps \\
+\code{destruct      } & 238     & 337     & 100.0\% & \eps \\
+\code{grid          } & 237     & 424     & 93.46\% & \eps \\
+\code{fannkuch      } & 236     & 371     & 100.0\% & \eps \\
+\code{mceval        } & 1256    & 13488   & 97.45\% & 24'' \\
+\code{scm2java      } & 1282    & 10005   & 95.79\% & 23'' \\
+\code{matrix        } & 188     & 239     & 97.92\% & \eps \\
+\code{spectralnorm  } & 214     & 239     & 99.34\% & \eps \\
+\code{sieve         } & 94      & 110     & 98.36\% & \eps \\
+\code{mandelbrot    } & 170     & 204     & 99.16\% & \eps \\
+\code{partialsums   } & 190     & 195     & 100.0\% & \eps \\
+se-a-conc
+\code{fib           } & \eps  & 599   & 2914  & 1096 \\
+\code{treenode1     } & \eps  & 44    & 96    & 18   \\
+\code{treeadd       } & \eps  & 502   & 1561  & 511  \\
+\code{treeadd2      } & \eps  & 674   & 2208  & 687  \\
+\code{treeadd3      } & \eps  & 554   & 1801  & 540  \\
+\code{purity46      } & \eps  & 40    & 105   & 35   \\
+\code{purity47      } & \eps  & 40    & 105   & 35   \\
+\code{purity52      } & \eps  & 48    & 125   & 35   \\
+\code{purity53      } & \eps  & 48    & 125   & 35   \\
+\code{purity54      } & \eps  & 44    & 115   & 35   \\
+\code{purity65      } & \eps  & 8     & 8     & 1    \\
+\code{nqueens       } & \eps  & 2253  & 16703 & 4764 \\
+\code{dderiv        } & \eps  & 2432  & 18740 & 6658 \\
+\code{destruct      } & \eps  & 1810  & 16076 & 5468 \\
+\code{grid          } & \eps  & 1511  & 9018  & 2580 \\
+\code{fannkuch      } & \eps  & 8933  & 154119 & 56790\\
+\code{mceval        } & 2''   & 8308  & 149836 & 52915\\
+\code{scm2java      } & \eps  & 258   & 817   & 314  \\
+\code{matrix        } & \eps  & 9122  & 105802 & 37422\\
+\code{spectralnorm  } & \eps  & 9744  & 121929 & 41616\\
+\code{sieve         } & 2''   & 7951  & 565228 & 265692\\
+\code{mandelbrot    } & \eps  & 195   & 831   & 331  \\
+\code{partialsums   } & \eps  & 3065  & 42817 & 24356\\
+se-a-type
+\code{fib           } & \eps  & 17    & 16    & 15   \\
+\code{treenode1     } & \eps  & 19    & 23    & 14   \\
+\code{treeadd       } & \eps  & 56    & 57    & 44   \\
+\code{treeadd2      } & \eps  & 55    & 53    & 46   \\
+\code{treeadd3      } & \eps  & 48    & 45    & 40   \\
+\code{purity46      } & \eps  & 11    & 10    & 7    \\
+\code{purity47      } & \eps  & 11    & 10    & 6    \\
+\code{purity52      } & \eps  & 13    & 12    & 7    \\
+\code{purity53      } & \eps  & 13    & 12    & 7    \\
+\code{purity54      } & \eps  & 12    & 11    & 11   \\
+\code{purity65      } & \eps  & 8     & 7     & 6    \\
+\code{nqueens       } & \eps  & 134   & 334   & 138  \\
+\code{dderiv        } & \eps  & 1238  & 2958  & 2268 \\
+\code{destruct      } & \eps  & 222   & 737   & 252  \\
+\code{grid          } & \eps  & 368   & 476   & 385  \\
+\code{fannkuch      } & \eps  & 205   & 746   & 260  \\
+\code{mceval        } & 13''  & 16675 & 175053 & 164665\\
+\code{scm2java      } & 4''   & 6347  & 70670 & 62246\\
+\code{matrix        } & \eps  & 152   & 533   & 157  \\
+\code{spectralnorm  } & \eps  & 189   & 1047  & 343  \\
+\code{sieve         } & \eps  & 65    & 177   & 59   \\
+\code{mandelbrot    } & \eps  & 135   & 459   & 189  \\
+\code{partialsums   } & \eps  & 135   & 256   & 112  \\
+se-percs
+\code{fib           } & 93.75\% & 37.5\%  & 37.5\%  & 37.5\%  & (37.61\%)\\
+\code{treenode1     } & 60.87\% & 26.09\% & 17.39\% & 17.39\% & (18.75\%)\\
+\code{treeadd       } & 77.19\% & 31.58\% & 31.58\% & 31.58\% & (32.74\%)\\
+\code{treeadd2      } & 86.79\% & 33.96\% & 32.08\% & 32.08\% & (31.11\%)\\
+\code{treeadd3      } & 88.89\% & 31.11\% & 26.67\% & 26.67\% & (29.98\%)\\
+\code{purity46      } & 70.0\%  & 30.0\%  & 30.0\%  & 30.0\%  & (33.33\%)\\
+\code{purity47      } & 60.0\%  & 30.0\%  & 30.0\%  & 30.0\%  & (33.33\%)\\
+\code{purity52      } & 58.33\% & 33.33\% & 25.0\%  & 25.0\%  & (28.0\% )\\
+\code{purity53      } & 58.33\% & 33.33\% & 25.0\%  & 25.0\%  & (28.0\% )\\
+\code{purity54      } & 100.0\% & 36.36\% & 27.27\% & 27.27\% & (30.43\%)\\
+\code{purity65      } & 85.71\% & 28.57\% & 14.29\% & 14.29\% & (12.5\% )\\
+\code{nqueens       } & 41.32\% & 28.44\% & 28.44\% & 28.44\% & (28.52\%)\\
+\code{dderiv        } & 76.67\% & 63.35\% & 63.35\% & 63.35\% & (35.53\%)\\
+\code{destruct      } & 34.19\% & 30.94\% & 30.94\% & 30.94\% & (34.01\%)\\
+\code{grid          } & 80.88\% & 65.55\% & 65.55\% & 63.66\% & (28.61\%)\\
+\code{fannkuch      } & 34.85\% & 32.04\% & 32.04\% & 31.9\%  & (36.85\%)\\
+\code{mceval        } & 94.07\% & 93.49\% & 93.49\% & 93.48\% & (35.32\%)\\
+\code{scm2java      } & 88.08\% & 86.99\% & 86.99\% & 86.99\% & (38.43\%)\\
+\code{matrix        } & 29.46\% & 28.33\% & 28.33\% & 27.77\% & (35.37\%)\\
+\code{spectralnorm  } & 32.76\% & 32.19\% & 32.19\% & 32.19\% & (34.13\%)\\
+\code{sieve         } & 33.33\% & 31.07\% & 31.07\% & 31.07\% & (47.01\%)\\
+\code{mandelbrot    } & 41.18\% & 40.09\% & 40.09\% & 40.09\% & (39.83\%)\\
+\code{partialsums   } & 43.75\% & 43.36\% & 43.36\% & 43.36\% & (56.88\%)\\
+se-obs
+\code{fib           } & 14   & 6    & 6    & 6    & (1096)\\
+\code{treenode1     } & 13   & 6    & 4    & 4    & (18)\\
+\code{treeadd       } & 37   & 16   & 16   & 16   & (511)\\
+\code{treeadd2      } & 43   & 18   & 17   & 17   & (687)\\
+\code{treeadd3      } & 36   & 14   & 12   & 12   & (540)\\
+\code{purity46      } & 7    & 3    & 3    & 3    & (35)\\
+\code{purity47      } & 6    & 3    & 3    & 3    & (35)\\
+\code{purity52      } & 7    & 4    & 3    & 3    & (35)\\
+\code{purity53      } & 7    & 4    & 3    & 3    & (35)\\
+\code{purity54      } & 10   & 4    & 3    & 3    & (35)\\
+\code{purity65      } & 5    & 2    & 1    & 1    & (1)\\
+\code{nqueens       } & 125  & 89   & 89   & 89   & (4764)\\
+\code{dderiv        } & 1154 & 901  & 901  & 901  & (6658)\\
+\code{destruct      } & 214  & 194  & 194  & 194  & (5468)\\
+\code{grid          } & 241  & 190  & 190  & 184  & (2580)\\
+\code{fannkuch      } & 260  & 239  & 239  & 238  & (56790)\\
+\code{mceval        } & 32752 & 32108 & 32108 & 32091 & (52915)\\
+\code{scm2java      } & 15871 & 15455 & 15455 & 15455 & (314)\\
+\code{matrix        } & 151  & 145  & 145  & 142  & (37422)\\
+\code{spectralnorm  } & 343  & 337  & 337  & 337  & (41616)\\
+\code{sieve         } & 59   & 55   & 55   & 55   & (265692)\\
+\code{mandelbrot    } & 189  & 184  & 184  & 184  & (331)\\
+\code{partialsums   } & 112  & 111  & 111  & 111  & (24356)\\
+escape
+\code{fib           } & 1    & 1    (1   ) & 0    (0   ) & \eps \\
+\code{treenode1     } & 2    & 2    (2   ) & 0    (0   ) & \eps \\
+\code{treeadd       } & 3    & 3    (3   ) & 0    (0   ) & \eps \\
+\code{treeadd2      } & 3    & 3    (3   ) & 0    (0   ) & \eps \\
+\code{treeadd3      } & 2    & 2    (2   ) & 0    (0   ) & \eps \\
+\code{purity46      } & 1    & 1    (1   ) & 0    (0   ) & \eps \\
+\code{purity47      } & 1    & 1    (1   ) & 0    (0   ) & \eps \\
+\code{purity52      } & 1    & 1    (1   ) & 0    (0   ) & \eps \\
+\code{purity53      } & 1    & 1    (1   ) & 0    (0   ) & \eps \\
+\code{purity54      } & 1    & 1    (1   ) & 0    (0   ) & \eps \\
+\code{purity65      } & 1    & 1    (1   ) & 0    (0   ) & \eps \\
+\code{nqueens       } & 6    & 6    (6   ) & 0    (0   ) & \eps \\
+\code{dderiv        } & 20   & 14   (10  ) & 6    (6   ) & \eps \\
+\code{destruct      } & 11   & 11   (11  ) & 0    (0   ) & \eps \\
+\code{grid          } & 5    & 5    (5   ) & 0    (0   ) & \eps \\
+\code{fannkuch      } & 16   & 16   (16  ) & 8    (8   ) & \eps \\
+\code{mceval        } & 87   & 85   (72  ) & 2    (2   ) & \eps \\
+\code{scm2java      } & 64   & 61   (23  ) & 8    (5   ) & \eps \\
+\code{matrix        } & 11   & 10   (10  ) & 0    (0   ) & \eps \\
+\code{spectralnorm  } & 12   & 12   (12  ) & 0    (0   ) & \eps \\
+\code{sieve         } & 5    & 5    (5   ) & 0    (0   ) & \eps \\
+\code{mandelbrot    } & 6    & 6    (6   ) & 0    (0   ) & \eps \\
+\code{partialsums   } & 2    & 2    (2   ) & 0    (0   ) & \eps \\
+type-fresh
+\code{fib           } & 74 & \eps  & 74 & \eps \\
+\code{treenode1     } & 230 & \eps  & 255 & \eps \\
+\code{treeadd       } & 972 & \eps  & 972 & \eps \\
+\code{treeadd2      } & 945 & \eps  & 945 & \eps \\
+\code{treeadd3      } & 1031 & \eps  & 1223 & \eps \\
+\code{purity46      } & 58 & \eps  & 58 & \eps \\
+\code{purity47      } & 58 & \eps  & 58 & \eps \\
+\code{purity52      } & 87 & \eps  & 87 & \eps \\
+\code{purity53      } & 87 & \eps  & 87 & \eps \\
+\code{purity54      } & 107 & \eps  & 107 & \eps \\
+\code{purity65      } & 74 & \eps  & 74 & \eps \\
+\code{nqueens       } & 3102 & \eps  & 3102 & \eps \\
+\code{dderiv        } & 21808 & \eps  & 21808 & \eps \\
+\code{destruct      } & 10416 & \eps  & 10416 & \eps \\
+\code{grid          } & 9150 & \eps  & 9150 & \eps \\
+\code{fannkuch      } & 13626 & \eps  & 13626 & \eps \\
+\code{mceval        } & 197371 & 3''   & 197371 & 3''  \\
+\code{scm2java      } & 294688 & 4''   & 294688 & 4''  \\
+\code{matrix        } & 8948 & \eps  & 8948 & \eps \\
+\code{spectralnorm  } & 11511 & \eps  & 11511 & \eps \\
+\code{sieve         } & 2009 & \eps  & 2009 & \eps \\
+\code{mandelbrot    } & 7834 & \eps  & 7834 & \eps \\
+\code{partialsums   } & 9190 & \eps  & 9190 & \eps \\
+conc-type-esc-fresh
+\code{fib           } & 41.04\% & 44.31\%\\
+\code{treenode1     } & 49.94\% & 62.35\%\\
+\code{treeadd       } & 30.67\% & 44.34\%\\
+\code{treeadd2      } & 43.42\% & 44.96\%\\
+\code{treeadd3      } & 54.14\% & 67.87\%\\
+\code{purity46      } & 48.1\%  & 56.31\%\\
+\code{purity47      } & 41.0\%  & 49.15\%\\
+\code{purity52      } & 47.18\% & 54.72\%\\
+\code{purity53      } & 47.18\% & 54.72\%\\
+\code{purity54      } & 55.57\% & 55.15\%\\
+\code{purity65      } & 54.78\% & 56.92\%\\
+\code{nqueens       } & 30.85\% & 34.74\%\\
+\code{dderiv        } & 15.36\% & 22.14\%\\
+\code{destruct      } & 17.08\% & 22.19\%\\
+\code{grid          } & 34.63\% & 37.8\% \\
+\code{fannkuch      } & 8.81\%  & 17.87\%\\
+\code{mceval        } & 3.08\%  & 4.06\% \\
+\code{scm2java      } & 15.83\% & 10.18\%\\
+\code{matrix        } & 17.4\%  & 28.33\%\\
+\code{spectralnorm  } & 36.76\% & 35.62\%\\
+\code{sieve         } & 17.29\% & 32.07\%\\
+\code{mandelbrot    } & 32.54\% & 43.13\%\\
+\code{partialsums   } & 69.38\% & 58.45\%\\
+purity
+\code{fib           } & 0    & 0    & 0    & 0    & 0    & 0   \\
+\code{treenode1     } & 1    & 1    & 0    & 0    & 0    & 0   \\
+\code{treeadd       } & 1    & 1    & 0    & 0    & 0    & 0   \\
+\code{treeadd2      } & 1    & 1    & 0    & 0    & 0    & 0   \\
+\code{treeadd3      } & 1    & 1    & 0    & 0    & 0    & 0   \\
+\code{purity46      } & 1    & 1    & 0    & 0    & 0    & 0   \\
+\code{purity47      } & 1    & 1    & 0    & 0    & 0    & 0   \\
+\code{purity52      } & 0    & 0    & 0    & 0    & 0    & 0   \\
+\code{purity53      } & 0    & 0    & 0    & 0    & 0    & 0   \\
+\code{purity54      } & 0    & 0    & 0    & 0    & 0    & 0   \\
+\code{purity65      } & 0    & 0    & 0    & 0    & 0    & 0   \\
+\code{nqueens       } & 0    & 0    & 0    & 0    & 0    & 0   \\
+\code{dderiv        } & 7    & 7    & 7    & 7    & 1    & 1   \\
+\code{destruct      } & 8    & 8    & 8    & 8    & 4    & 4   \\
+\code{grid          } & 4    & 4    & 3    & 3    & 1    & 1   \\
+\code{fannkuch      } & 10   & 10   & 10   & 10   & 10   & 10  \\
+\code{mceval        } & 62   & 62   & 62   & 62   & 7    & 7   \\
+\code{scm2java      } & 5    & 5    & 5    & 5    & 0    & 0   \\
+\code{matrix        } & 7    & 7    & 7    & 7    & 3    & 3   \\
+\code{spectralnorm  } & 9    & 9    & 9    & 9    & 9    & 9   \\
+\code{sieve         } & 2    & 2    & 2    & 2    & 2    & 2   \\
+\code{mandelbrot    } & 2    & 2    & 2    & 2    & 2    & 2   \\
+\code{partialsums   } & 1    & 1    & 1    & 1    & 1    & 1   \\
+conc-a-type-msfa-purity-class
+\code{fib           } & 1    & 1    & 0    & 0    & 1    & 0    & 0   \\
+\code{treenode1     } & 2    & 2    & 0    & 0    & 2    & 0    & 0   \\
+\code{treeadd       } & 3    & 3    & 0    & 0    & 3    & 0    & 0   \\
+\code{treeadd2      } & 3    & 3    & 0    & 0    & 2    & 0    & 1   \\
+\code{treeadd3      } & 2    & 2    & 0    & 0    & 2    & 0    & 0   \\
+\code{purity46      } & 1    & 1    & 0    & 0    & 1    & 0    & 0   \\
+\code{purity47      } & 1    & 1    & 0    & 0    & 1    & 0    & 0   \\
+\code{purity52      } & 1    & 1    & 0    & 0    & 1    & 0    & 0   \\
+\code{purity53      } & 1    & 1    & 0    & 0    & 1    & 0    & 0   \\
+\code{purity54      } & 1    & 1    & 0    & 0    & 1    & 0    & 0   \\
+\code{purity65      } & 1    & 1    & 0    & 0    & 1    & 0    & 0   \\
+\code{nqueens       } & 6    & 6    & 0    & 0    & 6    & 0    & 0   \\
+\code{dderiv        } & 10   & 9    & 0    & 1    & 3    & 6    & 1   \\
+\code{destruct      } & 11   & 3    & 1    & 7    & 3    & 1    & 7   \\
+\code{grid          } & 5    & 2    & 1    & 2    & 2    & 1    & 2   \\
+\code{fannkuch      } & 16   & 5    & 2    & 9    & 5    & 2    & 9   \\
+\code{mceval        } & 72   & 60   & 2    & 10   & 10   & 49   & 13  \\
+\code{scm2java      } & 23   & 21   & 0    & 2    & 18   & 0    & 5   \\
+\code{matrix        } & 10   & 4    & 0    & 6    & 3    & 1    & 6   \\
+\code{spectralnorm  } & 12   & 3    & 0    & 9    & 3    & 0    & 9   \\
+\code{sieve         } & 5    & 1    & 0    & 4    & 1    & 0    & 4   \\
+\code{mandelbrot    } & 6    & 4    & 0    & 2    & 4    & 0    & 2   \\
+\code{partialsums   } & 2    & 1    & 0    & 1    & 1    & 0    & 1   \\
+type-a-type-msfa-purity-class
+\code{fib           } & 1    & 1    & 0    & 0    & 1    & 0    & 0   \\
+\code{treenode1     } & 2    & 0    & 0    & 2    & 2    & 0    & 0   \\
+\code{treeadd       } & 3    & 2    & 0    & 1    & 3    & 0    & 0   \\
+\code{treeadd2      } & 3    & 1    & 0    & 2    & 2    & 0    & 1   \\
+\code{treeadd3      } & 2    & 0    & 0    & 2    & 2    & 0    & 0   \\
+\code{purity46      } & 1    & 0    & 0    & 1    & 1    & 0    & 0   \\
+\code{purity47      } & 1    & 0    & 0    & 1    & 1    & 0    & 0   \\
+\code{purity52      } & 1    & 0    & 0    & 1    & 1    & 0    & 0   \\
+\code{purity53      } & 1    & 0    & 0    & 1    & 1    & 0    & 0   \\
+\code{purity54      } & 1    & 0    & 0    & 1    & 1    & 0    & 0   \\
+\code{purity65      } & 1    & 0    & 0    & 1    & 1    & 0    & 0   \\
+\code{nqueens       } & 6    & 6    & 0    & 0    & 6    & 0    & 0   \\
+\code{dderiv        } & 10   & 3    & 6    & 1    & 3    & 6    & 1   \\
+\code{destruct      } & 11   & 3    & 1    & 7    & 3    & 1    & 7   \\
+\code{grid          } & 5    & 1    & 1    & 3    & 2    & 1    & 2   \\
+\code{fannkuch      } & 16   & 5    & 2    & 9    & 5    & 2    & 9   \\
+\code{mceval        } & 72   & 10   & 49   & 13   & 10   & 49   & 13  \\
+\code{scm2java      } & 23   & 18   & 0    & 5    & 18   & 0    & 5   \\
+\code{matrix        } & 10   & 2    & 0    & 8    & 3    & 1    & 6   \\
+\code{spectralnorm  } & 12   & 3    & 0    & 9    & 3    & 0    & 9   \\
+\code{sieve         } & 5    & 1    & 0    & 4    & 1    & 0    & 4   \\
+\code{mandelbrot    } & 6    & 4    & 0    & 2    & 4    & 0    & 2   \\
+\code{partialsums   } & 2    & 1    & 0    & 1    & 1    & 0    & 1   \\
+timing
+\code{fib           } & \eps  & \eps  & \eps  & \eps \\
+\code{treenode1     } & \eps  & \eps  & \eps  & \eps \\
+\code{treeadd       } & \eps  & \eps  & \eps  & \eps \\
+\code{treeadd2      } & \eps  & \eps  & \eps  & \eps \\
+\code{treeadd3      } & \eps  & \eps  & \eps  & \eps \\
+\code{purity46      } & \eps  & \eps  & \eps  & \eps \\
+\code{purity47      } & \eps  & \eps  & \eps  & \eps \\
+\code{purity52      } & \eps  & \eps  & \eps  & \eps \\
+\code{purity53      } & \eps  & \eps  & \eps  & \eps \\
+\code{purity54      } & \eps  & \eps  & \eps  & \eps \\
+\code{purity65      } & \eps  & \eps  & \eps  & \eps \\
+\code{nqueens       } & \eps  & \eps  & \eps  & \eps \\
+\code{dderiv        } & 1''   & 1''   & 2''   & 2''  \\
+\code{destruct      } & \eps  & \eps  & \eps  & \eps \\
+\code{grid          } & \eps  & \eps  & \eps  & \eps \\
+\code{fannkuch      } & \eps  & \eps  & \eps  & \eps \\
+\code{mceval        } & 160'' & 154'' & 157'' & 163''\\
+\code{scm2java      } & 93''  & 91''  & 94''  & 97'' \\
+\code{matrix        } & \eps  & \eps  & \eps  & \eps \\
+\code{spectralnorm  } & \eps  & \eps  & \eps  & \eps \\
+\code{sieve         } & \eps  & \eps  & \eps  & \eps \\
+\code{mandelbrot    } & \eps  & \eps  & \eps  & \eps \\
+\code{partialsums   } & \eps  & \eps  & \eps  & \eps \\
+
+
+==== more coverage for scm2java
+benchmarks
+\code{fib           } & 42     & 1   & 0   & 0   & 0   & 0   & 0   & 0  \\
+\code{treenode1     } & 58     & 2   & 2   & 1   & 1   & 0   & 0   & 0  \\
+\code{treeadd       } & 131    & 3   & 2   & 2   & 0   & 0   & 0   & 0  \\
+\code{treeadd2      } & 138    & 3   & 2   & 2   & 1   & 1   & 0   & 0  \\
+\code{treeadd3      } & 119    & 2   & 2   & 1   & 1   & 1   & 0   & 0  \\
+\code{purity46      } & 29     & 1   & 1   & 0   & 0   & 0   & 0   & 0  \\
+\code{purity47      } & 32     & 1   & 1   & 0   & 0   & 0   & 0   & 0  \\
+\code{purity52      } & 37     & 1   & 0   & 1   & 1   & 0   & 0   & 0  \\
+\code{purity53      } & 37     & 1   & 0   & 1   & 1   & 0   & 0   & 0  \\
+\code{purity54      } & 37     & 1   & 0   & 1   & 1   & 0   & 0   & 0  \\
+\code{purity65      } & 29     & 1   & 0   & 1   & 1   & 0   & 0   & 0  \\
+\code{nqueens       } & 247    & 6   & 0   & 4   & 0   & 0   & 0   & 0  \\
+\code{dderiv        } & 616    & 20  & 1   & 29  & 0   & 2   & 0   & 0  \\
+\code{destruct      } & 420    & 11  & 0   & 3   & 4   & 3   & 0   & 0  \\
+\code{grid          } & 382    & 5   & 3   & 3   & 0   & 0   & 1   & 2  \\
+\code{fannkuch      } & 500    & 16  & 10  & 0   & 0   & 0   & 2   & 7  \\
+\code{mceval        } & 1687   & 87  & 0   & 28  & 3   & 1   & 0   & 0  \\
+\code{scm2java      } & 1972   & 64  & 6   & 66  & 0   & 0   & 0   & 0  \\
+\code{matrix        } & 385    & 11  & 3   & 3   & 0   & 0   & 4   & 4  \\
+\code{spectralnorm  } & 453    & 12  & 2   & 0   & 0   & 0   & 3   & 4  \\
+\code{sieve         } & 183    & 5   & 2   & 0   & 0   & 0   & 1   & 2  \\
+\code{mandelbrot    } & 359    & 6   & 6   & 0   & 0   & 0   & 0   & 0  \\
+\code{partialsums   } & 367    & 2   & 14  & 0   & 0   & 0   & 0   & 0  \\
+flow-conc
+\code{fib           } & 735     & 734     & 100.0\% & \eps \\
+\code{treenode1     } & 68      & 67      & 100.0\% & \eps \\
+\code{treeadd       } & 696     & 695     & 100.0\% & \eps \\
+\code{treeadd2      } & 1028    & 1027    & 100.0\% & \eps \\
+\code{treeadd3      } & 847     & 846     & 100.0\% & \eps \\
+\code{purity46      } & 53      & 52      & 100.0\% & \eps \\
+\code{purity47      } & 53      & 52      & 100.0\% & \eps \\
+\code{purity52      } & 65      & 64      & 100.0\% & \eps \\
+\code{purity53      } & 65      & 64      & 100.0\% & \eps \\
+\code{purity54      } & 77      & 76      & 100.0\% & \eps \\
+\code{purity65      } & 20      & 19      & 100.0\% & \eps \\
+\code{nqueens       } & 2704    & 2703    & 100.0\% & \eps \\
+\code{dderiv        } & 2871    & 2870    & 63.15\% & \eps \\
+\code{destruct      } & 2292    & 2291    & 95.95\% & \eps \\
+\code{grid          } & 2019    & 2018    & 89.53\% & \eps \\
+\code{fannkuch      } & 8990    & 8989    & 99.8\%  & \eps \\
+\code{mceval        } & 9223    & 9222    & 83.17\% & \eps \\
+\code{scm2java      } & 10610   & 10609   & 91.43\% & \eps \\
+\code{matrix        } & 9401    & 9400    & 97.92\% & \eps \\
+\code{spectralnorm  } & 10443   & 10442   & 98.45\% & \eps \\
+\code{sieve         } & 9060    & 9059    & 96.17\% & \eps \\
+\code{mandelbrot    } & 229     & 228     & 93.87\% & \eps \\
+\code{partialsums   } & 3841    & 3840    & 99.73\% & \eps \\
+flow-type
+\code{fib           } & 20      & 30      & 100.0\% & \eps \\
+\code{treenode1     } & 28      & 33      & 100.0\% & \eps \\
+\code{treeadd       } & 69      & 99      & 100.0\% & \eps \\
+\code{treeadd2      } & 80      & 112     & 100.0\% & \eps \\
+\code{treeadd3      } & 68      & 102     & 100.0\% & \eps \\
+\code{purity46      } & 16      & 18      & 100.0\% & \eps \\
+\code{purity47      } & 16      & 18      & 100.0\% & \eps \\
+\code{purity52      } & 19      & 21      & 100.0\% & \eps \\
+\code{purity53      } & 19      & 21      & 100.0\% & \eps \\
+\code{purity54      } & 23      & 30      & 100.0\% & \eps \\
+\code{purity65      } & 20      & 27      & 100.0\% & \eps \\
+\code{nqueens       } & 133     & 189     & 100.0\% & \eps \\
+\code{dderiv        } & 353     & 1402    & 90.42\% & \eps \\
+\code{destruct      } & 238     & 337     & 100.0\% & \eps \\
+\code{grid          } & 237     & 424     & 93.46\% & \eps \\
+\code{fannkuch      } & 236     & 371     & 100.0\% & \eps \\
+\code{mceval        } & 1256    & 13488   & 97.45\% & 24'' \\
+\code{scm2java      } & 1384    & 13981   & 95.79\% & 30'' \\
+\code{matrix        } & 188     & 239     & 97.92\% & \eps \\
+\code{spectralnorm  } & 214     & 239     & 99.34\% & \eps \\
+\code{sieve         } & 94      & 110     & 98.36\% & \eps \\
+\code{mandelbrot    } & 170     & 204     & 99.16\% & \eps \\
+\code{partialsums   } & 190     & 195     & 100.0\% & \eps \\
+se-a-conc
+\code{fib           } & \eps  & 599   & 2914  & 1096 \\
+\code{treenode1     } & \eps  & 44    & 96    & 18   \\
+\code{treeadd       } & \eps  & 502   & 1561  & 511  \\
+\code{treeadd2      } & \eps  & 674   & 2208  & 687  \\
+\code{treeadd3      } & \eps  & 554   & 1801  & 540  \\
+\code{purity46      } & \eps  & 40    & 105   & 35   \\
+\code{purity47      } & \eps  & 40    & 105   & 35   \\
+\code{purity52      } & \eps  & 48    & 125   & 35   \\
+\code{purity53      } & \eps  & 48    & 125   & 35   \\
+\code{purity54      } & \eps  & 44    & 115   & 35   \\
+\code{purity65      } & \eps  & 8     & 8     & 1    \\
+\code{nqueens       } & \eps  & 2253  & 16703 & 4764 \\
+\code{dderiv        } & \eps  & 2432  & 18740 & 6658 \\
+\code{destruct      } & \eps  & 1810  & 16076 & 5468 \\
+\code{grid          } & \eps  & 1511  & 9018  & 2580 \\
+\code{fannkuch      } & \eps  & 8933  & 154119 & 56790\\
+\code{mceval        } & 2''   & 8308  & 149836 & 52915\\
+\code{scm2java      } & 2''   & 9036  & 185528 & 66210\\
+\code{matrix        } & \eps  & 9122  & 105802 & 37422\\
+\code{spectralnorm  } & \eps  & 9744  & 121929 & 41616\\
+\code{sieve         } & 2''   & 7951  & 565228 & 265692\\
+\code{mandelbrot    } & \eps  & 195   & 831   & 331  \\
+\code{partialsums   } & \eps  & 3065  & 42817 & 24356\\
+se-a-type
+\code{fib           } & \eps  & 17    & 16    & 15   \\
+\code{treenode1     } & \eps  & 19    & 23    & 14   \\
+\code{treeadd       } & \eps  & 56    & 57    & 44   \\
+\code{treeadd2      } & \eps  & 55    & 53    & 46   \\
+\code{treeadd3      } & \eps  & 48    & 45    & 40   \\
+\code{purity46      } & \eps  & 11    & 10    & 7    \\
+\code{purity47      } & \eps  & 11    & 10    & 6    \\
+\code{purity52      } & \eps  & 13    & 12    & 7    \\
+\code{purity53      } & \eps  & 13    & 12    & 7    \\
+\code{purity54      } & \eps  & 12    & 11    & 11   \\
+\code{purity65      } & \eps  & 8     & 7     & 6    \\
+\code{nqueens       } & \eps  & 134   & 334   & 138  \\
+\code{dderiv        } & \eps  & 1240  & 2960  & 2270 \\
+\code{destruct      } & \eps  & 222   & 737   & 252  \\
+\code{grid          } & \eps  & 368   & 476   & 385  \\
+\code{fannkuch      } & \eps  & 205   & 746   & 260  \\
+\code{mceval        } & 14''  & 16675 & 175053 & 164665\\
+\code{scm2java      } & 9''   & 13431 & 148710 & 139036\\
+\code{matrix        } & \eps  & 152   & 533   & 157  \\
+\code{spectralnorm  } & \eps  & 189   & 1047  & 343  \\
+\code{sieve         } & \eps  & 65    & 177   & 59   \\
+\code{mandelbrot    } & \eps  & 135   & 459   & 189  \\
+\code{partialsums   } & \eps  & 135   & 256   & 112  \\
+se-percs
+\code{fib           } & 93.75\% & 37.5\%  & 37.5\%  & 37.5\%  & (37.61\%)\\
+\code{treenode1     } & 60.87\% & 26.09\% & 17.39\% & 17.39\% & (18.75\%)\\
+\code{treeadd       } & 77.19\% & 31.58\% & 31.58\% & 31.58\% & (32.74\%)\\
+\code{treeadd2      } & 86.79\% & 33.96\% & 32.08\% & 32.08\% & (31.11\%)\\
+\code{treeadd3      } & 88.89\% & 31.11\% & 26.67\% & 26.67\% & (29.98\%)\\
+\code{purity46      } & 70.0\%  & 30.0\%  & 30.0\%  & 30.0\%  & (33.33\%)\\
+\code{purity47      } & 60.0\%  & 30.0\%  & 30.0\%  & 30.0\%  & (33.33\%)\\
+\code{purity52      } & 58.33\% & 33.33\% & 25.0\%  & 25.0\%  & (28.0\% )\\
+\code{purity53      } & 58.33\% & 33.33\% & 25.0\%  & 25.0\%  & (28.0\% )\\
+\code{purity54      } & 100.0\% & 36.36\% & 27.27\% & 27.27\% & (30.43\%)\\
+\code{purity65      } & 85.71\% & 28.57\% & 14.29\% & 14.29\% & (12.5\% )\\
+\code{nqueens       } & 41.32\% & 28.44\% & 28.44\% & 28.44\% & (28.52\%)\\
+\code{dderiv        } & 76.69\% & 63.38\% & 63.38\% & 63.38\% & (35.53\%)\\
+\code{destruct      } & 34.19\% & 30.94\% & 30.94\% & 30.94\% & (34.01\%)\\
+\code{grid          } & 80.88\% & 65.55\% & 65.55\% & 63.66\% & (28.61\%)\\
+\code{fannkuch      } & 34.85\% & 32.04\% & 32.04\% & 31.9\%  & (36.85\%)\\
+\code{mceval        } & 94.07\% & 93.49\% & 93.49\% & 93.48\% & (35.32\%)\\
+\code{scm2java      } & 93.49\% & 92.92\% & 92.92\% & 92.92\% & (35.69\%)\\
+\code{matrix        } & 29.46\% & 28.33\% & 28.33\% & 27.77\% & (35.37\%)\\
+\code{spectralnorm  } & 32.76\% & 32.19\% & 32.19\% & 32.19\% & (34.13\%)\\
+\code{sieve         } & 33.33\% & 31.07\% & 31.07\% & 31.07\% & (47.01\%)\\
+\code{mandelbrot    } & 41.18\% & 40.09\% & 40.09\% & 40.09\% & (39.83\%)\\
+\code{partialsums   } & 43.75\% & 43.36\% & 43.36\% & 43.36\% & (56.88\%)\\
+se-obs
+\code{fib           } & 14   & 6    & 6    & 6    & (1096)\\
+\code{treenode1     } & 13   & 6    & 4    & 4    & (18)\\
+\code{treeadd       } & 37   & 16   & 16   & 16   & (511)\\
+\code{treeadd2      } & 43   & 18   & 17   & 17   & (687)\\
+\code{treeadd3      } & 36   & 14   & 12   & 12   & (540)\\
+\code{purity46      } & 7    & 3    & 3    & 3    & (35)\\
+\code{purity47      } & 6    & 3    & 3    & 3    & (35)\\
+\code{purity52      } & 7    & 4    & 3    & 3    & (35)\\
+\code{purity53      } & 7    & 4    & 3    & 3    & (35)\\
+\code{purity54      } & 10   & 4    & 3    & 3    & (35)\\
+\code{purity65      } & 5    & 2    & 1    & 1    & (1)\\
+\code{nqueens       } & 125  & 89   & 89   & 89   & (4764)\\
+\code{dderiv        } & 1154 & 901  & 901  & 901  & (6658)\\
+\code{destruct      } & 214  & 194  & 194  & 194  & (5468)\\
+\code{grid          } & 241  & 190  & 190  & 184  & (2580)\\
+\code{fannkuch      } & 260  & 239  & 239  & 238  & (56790)\\
+\code{mceval        } & 32752 & 32108 & 32108 & 32091 & (52915)\\
+\code{scm2java      } & 21129 & 20713 & 20713 & 20713 & (66210)\\
+\code{matrix        } & 151  & 145  & 145  & 142  & (37422)\\
+\code{spectralnorm  } & 343  & 337  & 337  & 337  & (41616)\\
+\code{sieve         } & 59   & 55   & 55   & 55   & (265692)\\
+\code{mandelbrot    } & 189  & 184  & 184  & 184  & (331)\\
+\code{partialsums   } & 112  & 111  & 111  & 111  & (24356)\\
+escape
+\code{fib           } & 1    & 1    (1   ) & 0    (0   ) & \eps \\
+\code{treenode1     } & 2    & 2    (2   ) & 0    (0   ) & \eps \\
+\code{treeadd       } & 3    & 3    (3   ) & 0    (0   ) & \eps \\
+\code{treeadd2      } & 3    & 3    (3   ) & 0    (0   ) & \eps \\
+\code{treeadd3      } & 2    & 2    (2   ) & 0    (0   ) & \eps \\
+\code{purity46      } & 1    & 1    (1   ) & 0    (0   ) & \eps \\
+\code{purity47      } & 1    & 1    (1   ) & 0    (0   ) & \eps \\
+\code{purity52      } & 1    & 1    (1   ) & 0    (0   ) & \eps \\
+\code{purity53      } & 1    & 1    (1   ) & 0    (0   ) & \eps \\
+\code{purity54      } & 1    & 1    (1   ) & 0    (0   ) & \eps \\
+\code{purity65      } & 1    & 1    (1   ) & 0    (0   ) & \eps \\
+\code{nqueens       } & 6    & 6    (6   ) & 0    (0   ) & \eps \\
+\code{dderiv        } & 20   & 14   (10  ) & 6    (6   ) & \eps \\
+\code{destruct      } & 11   & 11   (11  ) & 0    (0   ) & \eps \\
+\code{grid          } & 5    & 5    (5   ) & 0    (0   ) & \eps \\
+\code{fannkuch      } & 16   & 16   (16  ) & 8    (8   ) & \eps \\
+\code{mceval        } & 87   & 85   (72  ) & 2    (2   ) & \eps \\
+\code{scm2java      } & 64   & 61   (60  ) & 8    (8   ) & \eps \\
+\code{matrix        } & 11   & 10   (10  ) & 0    (0   ) & \eps \\
+\code{spectralnorm  } & 12   & 12   (12  ) & 0    (0   ) & \eps \\
+\code{sieve         } & 5    & 5    (5   ) & 0    (0   ) & \eps \\
+\code{mandelbrot    } & 6    & 6    (6   ) & 0    (0   ) & \eps \\
+\code{partialsums   } & 2    & 2    (2   ) & 0    (0   ) & \eps \\
+type-fresh
+\code{fib           } & 74 & \eps  & 74 & \eps \\
+\code{treenode1     } & 230 & \eps  & 255 & \eps \\
+\code{treeadd       } & 972 & \eps  & 972 & \eps \\
+\code{treeadd2      } & 945 & \eps  & 945 & \eps \\
+\code{treeadd3      } & 1031 & \eps  & 1223 & \eps \\
+\code{purity46      } & 58 & \eps  & 58 & \eps \\
+\code{purity47      } & 58 & \eps  & 58 & \eps \\
+\code{purity52      } & 87 & \eps  & 87 & \eps \\
+\code{purity53      } & 87 & \eps  & 87 & \eps \\
+\code{purity54      } & 107 & \eps  & 107 & \eps \\
+\code{purity65      } & 74 & \eps  & 74 & \eps \\
+\code{nqueens       } & 3102 & \eps  & 3102 & \eps \\
+\code{dderiv        } & 21808 & \eps  & 21808 & \eps \\
+\code{destruct      } & 10416 & \eps  & 10416 & \eps \\
+\code{grid          } & 9150 & \eps  & 9150 & \eps \\
+\code{fannkuch      } & 13626 & \eps  & 13626 & \eps \\
+\code{mceval        } & 197371 & 3''   & 197371 & 3''  \\
+\code{scm2java      } & 319474 & 4''   & 319474 & 4''  \\
+\code{matrix        } & 8948 & \eps  & 8948 & \eps \\
+\code{spectralnorm  } & 11511 & \eps  & 11511 & \eps \\
+\code{sieve         } & 2009 & \eps  & 2009 & \eps \\
+\code{mandelbrot    } & 7834 & \eps  & 7834 & \eps \\
+\code{partialsums   } & 9190 & \eps  & 9190 & \eps \\
+conc-type-esc-fresh
+\code{fib           } & 41.04\% & 44.31\%\\
+\code{treenode1     } & 49.94\% & 62.35\%\\
+\code{treeadd       } & 30.67\% & 44.34\%\\
+\code{treeadd2      } & 43.42\% & 44.96\%\\
+\code{treeadd3      } & 54.14\% & 67.87\%\\
+\code{purity46      } & 48.1\%  & 56.31\%\\
+\code{purity47      } & 41.0\%  & 49.15\%\\
+\code{purity52      } & 47.18\% & 54.72\%\\
+\code{purity53      } & 47.18\% & 54.72\%\\
+\code{purity54      } & 55.57\% & 55.15\%\\
+\code{purity65      } & 54.78\% & 56.92\%\\
+\code{nqueens       } & 30.85\% & 34.74\%\\
+\code{dderiv        } & 15.36\% & 22.14\%\\
+\code{destruct      } & 17.08\% & 22.19\%\\
+\code{grid          } & 34.63\% & 37.8\% \\
+\code{fannkuch      } & 8.81\%  & 17.87\%\\
+\code{mceval        } & 3.08\%  & 4.06\% \\
+\code{scm2java      } & 5.9\%   & 10.17\%\\
+\code{matrix        } & 17.4\%  & 28.33\%\\
+\code{spectralnorm  } & 36.76\% & 35.62\%\\
+\code{sieve         } & 17.29\% & 32.07\%\\
+\code{mandelbrot    } & 32.54\% & 43.13\%\\
+\code{partialsums   } & 69.38\% & 58.45\%\\
+purity
+\code{fib           } & 0    & 0    & 0    & 0    & 0    & 0   \\
+\code{treenode1     } & 1    & 1    & 0    & 0    & 0    & 0   \\
+\code{treeadd       } & 1    & 1    & 0    & 0    & 0    & 0   \\
+\code{treeadd2      } & 1    & 1    & 0    & 0    & 0    & 0   \\
+\code{treeadd3      } & 1    & 1    & 0    & 0    & 0    & 0   \\
+\code{purity46      } & 1    & 1    & 0    & 0    & 0    & 0   \\
+\code{purity47      } & 1    & 1    & 0    & 0    & 0    & 0   \\
+\code{purity52      } & 0    & 0    & 0    & 0    & 0    & 0   \\
+\code{purity53      } & 0    & 0    & 0    & 0    & 0    & 0   \\
+\code{purity54      } & 0    & 0    & 0    & 0    & 0    & 0   \\
+\code{purity65      } & 0    & 0    & 0    & 0    & 0    & 0   \\
+\code{nqueens       } & 0    & 0    & 0    & 0    & 0    & 0   \\
+\code{dderiv        } & 7    & 7    & 7    & 7    & 1    & 1   \\
+\code{destruct      } & 8    & 8    & 8    & 8    & 4    & 4   \\
+\code{grid          } & 4    & 4    & 3    & 3    & 1    & 1   \\
+\code{fannkuch      } & 10   & 10   & 10   & 10   & 10   & 10  \\
+\code{mceval        } & 62   & 62   & 62   & 62   & 7    & 7   \\
+\code{scm2java      } & 14   & 14   & 14   & 14   & 0    & 0   \\
+\code{matrix        } & 7    & 7    & 7    & 7    & 3    & 3   \\
+\code{spectralnorm  } & 9    & 9    & 9    & 9    & 9    & 9   \\
+\code{sieve         } & 2    & 2    & 2    & 2    & 2    & 2   \\
+\code{mandelbrot    } & 2    & 2    & 2    & 2    & 2    & 2   \\
+\code{partialsums   } & 1    & 1    & 1    & 1    & 1    & 1   \\
+conc-a-type-msfa-purity-class
+\code{fib           } & 1    & 1    & 0    & 0    & 1    & 0    & 0   \\
+\code{treenode1     } & 2    & 2    & 0    & 0    & 2    & 0    & 0   \\
+\code{treeadd       } & 3    & 3    & 0    & 0    & 3    & 0    & 0   \\
+\code{treeadd2      } & 3    & 3    & 0    & 0    & 2    & 0    & 1   \\
+\code{treeadd3      } & 2    & 2    & 0    & 0    & 2    & 0    & 0   \\
+\code{purity46      } & 1    & 1    & 0    & 0    & 1    & 0    & 0   \\
+\code{purity47      } & 1    & 1    & 0    & 0    & 1    & 0    & 0   \\
+\code{purity52      } & 1    & 1    & 0    & 0    & 1    & 0    & 0   \\
+\code{purity53      } & 1    & 1    & 0    & 0    & 1    & 0    & 0   \\
+\code{purity54      } & 1    & 1    & 0    & 0    & 1    & 0    & 0   \\
+\code{purity65      } & 1    & 1    & 0    & 0    & 1    & 0    & 0   \\
+\code{nqueens       } & 6    & 6    & 0    & 0    & 6    & 0    & 0   \\
+\code{dderiv        } & 10   & 9    & 0    & 1    & 3    & 6    & 1   \\
+\code{destruct      } & 11   & 3    & 1    & 7    & 3    & 1    & 7   \\
+\code{grid          } & 5    & 2    & 1    & 2    & 2    & 1    & 2   \\
+\code{fannkuch      } & 16   & 5    & 2    & 9    & 5    & 2    & 9   \\
+\code{mceval        } & 72   & 60   & 2    & 10   & 10   & 49   & 13  \\
+\code{scm2java      } & 60   & 58   & 0    & 2    & 46   & 3    & 11  \\
+\code{matrix        } & 10   & 4    & 0    & 6    & 3    & 1    & 6   \\
+\code{spectralnorm  } & 12   & 3    & 0    & 9    & 3    & 0    & 9   \\
+\code{sieve         } & 5    & 1    & 0    & 4    & 1    & 0    & 4   \\
+\code{mandelbrot    } & 6    & 4    & 0    & 2    & 4    & 0    & 2   \\
+\code{partialsums   } & 2    & 1    & 0    & 1    & 1    & 0    & 1   \\
+type-a-type-msfa-purity-class
+\code{fib           } & 1    & 1    & 0    & 0    & 1    & 0    & 0   \\
+\code{treenode1     } & 2    & 0    & 0    & 2    & 2    & 0    & 0   \\
+\code{treeadd       } & 3    & 2    & 0    & 1    & 3    & 0    & 0   \\
+\code{treeadd2      } & 3    & 1    & 0    & 2    & 2    & 0    & 1   \\
+\code{treeadd3      } & 2    & 0    & 0    & 2    & 2    & 0    & 0   \\
+\code{purity46      } & 1    & 0    & 0    & 1    & 1    & 0    & 0   \\
+\code{purity47      } & 1    & 0    & 0    & 1    & 1    & 0    & 0   \\
+\code{purity52      } & 1    & 0    & 0    & 1    & 1    & 0    & 0   \\
+\code{purity53      } & 1    & 0    & 0    & 1    & 1    & 0    & 0   \\
+\code{purity54      } & 1    & 0    & 0    & 1    & 1    & 0    & 0   \\
+\code{purity65      } & 1    & 0    & 0    & 1    & 1    & 0    & 0   \\
+\code{nqueens       } & 6    & 6    & 0    & 0    & 6    & 0    & 0   \\
+\code{dderiv        } & 10   & 3    & 6    & 1    & 3    & 6    & 1   \\
+\code{destruct      } & 11   & 3    & 1    & 7    & 3    & 1    & 7   \\
+\code{grid          } & 5    & 1    & 1    & 3    & 2    & 1    & 2   \\
+\code{fannkuch      } & 16   & 5    & 2    & 9    & 5    & 2    & 9   \\
+\code{mceval        } & 72   & 10   & 49   & 13   & 10   & 49   & 13  \\
+\code{scm2java      } & 60   & 46   & 3    & 11   & 46   & 3    & 11  \\
+\code{matrix        } & 10   & 2    & 0    & 8    & 3    & 1    & 6   \\
+\code{spectralnorm  } & 12   & 3    & 0    & 9    & 3    & 0    & 9   \\
+\code{sieve         } & 5    & 1    & 0    & 4    & 1    & 0    & 4   \\
+\code{mandelbrot    } & 6    & 4    & 0    & 2    & 4    & 0    & 2   \\
+\code{partialsums   } & 2    & 1    & 0    & 1    & 1    & 0    & 1   \\
+timing
+\code{fib           } & \eps  & \eps  & \eps  & \eps \\
+\code{treenode1     } & \eps  & \eps  & \eps  & \eps \\
+\code{treeadd       } & \eps  & \eps  & \eps  & \eps \\
+\code{treeadd2      } & \eps  & \eps  & \eps  & \eps \\
+\code{treeadd3      } & \eps  & \eps  & \eps  & \eps \\
+\code{purity46      } & \eps  & \eps  & \eps  & \eps \\
+\code{purity47      } & \eps  & \eps  & \eps  & \eps \\
+\code{purity52      } & \eps  & \eps  & \eps  & \eps \\
+\code{purity53      } & \eps  & \eps  & \eps  & \eps \\
+\code{purity54      } & \eps  & \eps  & \eps  & \eps \\
+\code{purity65      } & \eps  & \eps  & \eps  & \eps \\
+\code{nqueens       } & \eps  & \eps  & \eps  & \eps \\
+\code{dderiv        } & 1''   & 1''   & 2''   & 1''  \\
+\code{destruct      } & \eps  & \eps  & \eps  & \eps \\
+\code{grid          } & \eps  & \eps  & \eps  & \eps \\
+\code{fannkuch      } & \eps  & \eps  & \eps  & \eps \\
+\code{mceval        } & 160'' & 154'' & 158'' & 163''\\
+\code{scm2java      } & 159'' & 153'' & 158'' & 163''\\
+\code{matrix        } & \eps  & \eps  & \eps  & \eps \\
+\code{spectralnorm  } & \eps  & \eps  & \eps  & \eps \\
+\code{sieve         } & \eps  & \eps  & \eps  & \eps \\
+\code{mandelbrot    } & \eps  & \eps  & \eps  & \eps \\
+\code{partialsums   } & \eps  & \eps  & \eps  & \eps \\
+
+=====
+removed some of the newer benchmarks, removed conc column in se-obs, fannkuch cleanup (let 'undefined set!)
+
+benchmarks
+\code{fib           } & 42     & 1   & 0   & 0   & 0   & 0   & 0   & 0  \\
+\code{treenode1     } & 58     & 2   & 2   & 1   & 1   & 0   & 0   & 0  \\
+\code{treeadd       } & 131    & 3   & 2   & 2   & 0   & 0   & 0   & 0  \\
+\code{treeadd2      } & 138    & 3   & 2   & 2   & 1   & 1   & 0   & 0  \\
+\code{treeadd3      } & 119    & 2   & 2   & 1   & 1   & 1   & 0   & 0  \\
+\code{purity46      } & 29     & 1   & 1   & 0   & 0   & 0   & 0   & 0  \\
+\code{purity47      } & 32     & 1   & 1   & 0   & 0   & 0   & 0   & 0  \\
+\code{purity52      } & 37     & 1   & 0   & 1   & 1   & 0   & 0   & 0  \\
+\code{purity53      } & 37     & 1   & 0   & 1   & 1   & 0   & 0   & 0  \\
+\code{purity54      } & 37     & 1   & 0   & 1   & 1   & 0   & 0   & 0  \\
+\code{purity65      } & 29     & 1   & 0   & 1   & 1   & 0   & 0   & 0  \\
+\code{nqueens       } & 247    & 6   & 0   & 4   & 0   & 0   & 0   & 0  \\
+\code{dderiv        } & 616    & 20  & 1   & 29  & 0   & 2   & 0   & 0  \\
+\code{destruct      } & 420    & 11  & 0   & 3   & 4   & 3   & 0   & 0  \\
+\code{grid          } & 382    & 5   & 3   & 3   & 0   & 0   & 1   & 2  \\
+\code{fannkuch      } & 465    & 16  & 3   & 0   & 0   & 0   & 2   & 7  \\
+\code{mceval        } & 1687   & 87  & 0   & 28  & 3   & 1   & 0   & 0  \\
+\code{scm2java      } & 1972   & 64  & 6   & 66  & 0   & 0   & 0   & 0  \\
+\code{matrix        } & 385    & 11  & 3   & 3   & 0   & 0   & 4   & 4  \\
+flow-conc
+\code{fib           } & 735     & 734     & 100.0\% & \eps \\
+\code{treenode1     } & 68      & 67      & 100.0\% & \eps \\
+\code{treeadd       } & 696     & 695     & 100.0\% & \eps \\
+\code{treeadd2      } & 1028    & 1027    & 100.0\% & \eps \\
+\code{treeadd3      } & 847     & 846     & 100.0\% & \eps \\
+\code{purity46      } & 53      & 52      & 100.0\% & \eps \\
+\code{purity47      } & 53      & 52      & 100.0\% & \eps \\
+\code{purity52      } & 65      & 64      & 100.0\% & \eps \\
+\code{purity53      } & 65      & 64      & 100.0\% & \eps \\
+\code{purity54      } & 77      & 76      & 100.0\% & \eps \\
+\code{purity65      } & 20      & 19      & 100.0\% & \eps \\
+\code{nqueens       } & 2704    & 2703    & 100.0\% & \eps \\
+\code{dderiv        } & 2871    & 2870    & 63.15\% & \eps \\
+\code{destruct      } & 2292    & 2291    & 95.95\% & \eps \\
+\code{grid          } & 2019    & 2018    & 89.53\% & \eps \\
+\code{fannkuch      } & 8969    & 8968    & 99.78\% & \eps \\
+\code{mceval        } & 9223    & 9222    & 83.17\% & \eps \\
+\code{scm2java      } & 10610   & 10609   & 91.43\% & \eps \\
+\code{matrix        } & 9401    & 9400    & 97.92\% & \eps \\
+flow-type
+\code{fib           } & 20      & 30      & 100.0\% & \eps \\
+\code{treenode1     } & 28      & 33      & 100.0\% & \eps \\
+\code{treeadd       } & 69      & 99      & 100.0\% & \eps \\
+\code{treeadd2      } & 80      & 112     & 100.0\% & \eps \\
+\code{treeadd3      } & 68      & 102     & 100.0\% & \eps \\
+\code{purity46      } & 16      & 18      & 100.0\% & \eps \\
+\code{purity47      } & 16      & 18      & 100.0\% & \eps \\
+\code{purity52      } & 19      & 21      & 100.0\% & \eps \\
+\code{purity53      } & 19      & 21      & 100.0\% & \eps \\
+\code{purity54      } & 23      & 30      & 100.0\% & \eps \\
+\code{purity65      } & 20      & 27      & 100.0\% & \eps \\
+\code{nqueens       } & 133     & 189     & 100.0\% & \eps \\
+\code{dderiv        } & 354     & 1405    & 90.42\% & \eps \\
+\code{destruct      } & 238     & 337     & 100.0\% & \eps \\
+\code{grid          } & 237     & 424     & 93.46\% & \eps \\
+\code{fannkuch      } & 215     & 350     & 100.0\% & \eps \\
+\code{mceval        } & 1256    & 13488   & 97.45\% & 25'' \\
+\code{scm2java      } & 1384    & 13981   & 95.79\% & 31'' \\
+\code{matrix        } & 188     & 239     & 97.92\% & \eps \\
+se-percs
+\code{fib           } & 93.75\% & 37.5\%  & 37.5\%  & 37.5\%  & (37.61\%)\\
+\code{treenode1     } & 60.87\% & 26.09\% & 17.39\% & 17.39\% & (18.75\%)\\
+\code{treeadd       } & 77.19\% & 31.58\% & 31.58\% & 31.58\% & (32.74\%)\\
+\code{treeadd2      } & 86.79\% & 33.96\% & 32.08\% & 32.08\% & (31.11\%)\\
+\code{treeadd3      } & 88.89\% & 31.11\% & 26.67\% & 26.67\% & (29.98\%)\\
+\code{purity46      } & 70.0\%  & 30.0\%  & 30.0\%  & 30.0\%  & (33.33\%)\\
+\code{purity47      } & 60.0\%  & 30.0\%  & 30.0\%  & 30.0\%  & (33.33\%)\\
+\code{purity52      } & 58.33\% & 33.33\% & 25.0\%  & 25.0\%  & (28.0\% )\\
+\code{purity53      } & 58.33\% & 33.33\% & 25.0\%  & 25.0\%  & (28.0\% )\\
+\code{purity54      } & 100.0\% & 36.36\% & 27.27\% & 27.27\% & (30.43\%)\\
+\code{purity65      } & 85.71\% & 28.57\% & 14.29\% & 14.29\% & (12.5\% )\\
+\code{nqueens       } & 41.32\% & 28.44\% & 28.44\% & 28.44\% & (28.52\%)\\
+\code{dderiv        } & 76.22\% & 62.79\% & 62.79\% & 62.79\% & (35.53\%)\\
+\code{destruct      } & 34.19\% & 30.94\% & 30.94\% & 30.94\% & (34.01\%)\\
+\code{grid          } & 80.88\% & 65.55\% & 65.55\% & 63.66\% & (28.61\%)\\
+\code{fannkuch      } & 34.85\% & 32.04\% & 32.04\% & 31.9\%  & (36.85\%)\\
+\code{mceval        } & 94.07\% & 93.49\% & 93.49\% & 93.48\% & (35.32\%)\\
+\code{scm2java      } & 93.49\% & 92.92\% & 92.92\% & 92.92\% & (35.69\%)\\
+\code{matrix        } & 29.46\% & 28.33\% & 28.33\% & 27.77\% & (35.37\%)\\
+se-obs
+\code{fib           } & 14   & 6    & 6    & 6    \\
+\code{treenode1     } & 13   & 6    & 4    & 4    \\
+\code{treeadd       } & 37   & 16   & 16   & 16   \\
+\code{treeadd2      } & 43   & 18   & 17   & 17   \\
+\code{treeadd3      } & 36   & 14   & 12   & 12   \\
+\code{purity46      } & 7    & 3    & 3    & 3    \\
+\code{purity47      } & 6    & 3    & 3    & 3    \\
+\code{purity52      } & 7    & 4    & 3    & 3    \\
+\code{purity53      } & 7    & 4    & 3    & 3    \\
+\code{purity54      } & 10   & 4    & 3    & 3    \\
+\code{purity65      } & 5    & 2    & 1    & 1    \\
+\code{nqueens       } & 125  & 89   & 89   & 89   \\
+\code{dderiv        } & 1154 & 901  & 901  & 901  \\
+\code{destruct      } & 214  & 194  & 194  & 194  \\
+\code{grid          } & 241  & 190  & 190  & 184  \\
+\code{fannkuch      } & 260  & 239  & 239  & 238  \\
+\code{mceval        } & 32752 & 32108 & 32108 & 32091 \\
+\code{scm2java      } & 21129 & 20713 & 20713 & 20713 \\
+\code{matrix        } & 151  & 145  & 145  & 142  \\
+escape
+\code{fib           } & 1    & 1    (1   ) & 0    (0   ) & \eps \\
+\code{treenode1     } & 2    & 2    (2   ) & 0    (0   ) & \eps \\
+\code{treeadd       } & 3    & 3    (3   ) & 0    (0   ) & \eps \\
+\code{treeadd2      } & 3    & 3    (3   ) & 0    (0   ) & \eps \\
+\code{treeadd3      } & 2    & 2    (2   ) & 0    (0   ) & \eps \\
+\code{purity46      } & 1    & 1    (1   ) & 0    (0   ) & \eps \\
+\code{purity47      } & 1    & 1    (1   ) & 0    (0   ) & \eps \\
+\code{purity52      } & 1    & 1    (1   ) & 0    (0   ) & \eps \\
+\code{purity53      } & 1    & 1    (1   ) & 0    (0   ) & \eps \\
+\code{purity54      } & 1    & 1    (1   ) & 0    (0   ) & \eps \\
+\code{purity65      } & 1    & 1    (1   ) & 0    (0   ) & \eps \\
+\code{nqueens       } & 6    & 6    (6   ) & 0    (0   ) & \eps \\
+\code{dderiv        } & 20   & 14   (10  ) & 6    (6   ) & \eps \\
+\code{destruct      } & 11   & 11   (11  ) & 0    (0   ) & \eps \\
+\code{grid          } & 5    & 5    (5   ) & 0    (0   ) & \eps \\
+\code{fannkuch      } & 16   & 16   (16  ) & 1    (1   ) & \eps \\
+\code{mceval        } & 87   & 85   (72  ) & 2    (2   ) & \eps \\
+\code{scm2java      } & 64   & 61   (60  ) & 8    (8   ) & \eps \\
+\code{matrix        } & 11   & 10   (10  ) & 0    (0   ) & \eps \\
+type-fresh
+\code{fib           } & 74 & \eps  & 74 & \eps \\
+\code{treenode1     } & 230 & \eps  & 255 & \eps \\
+\code{treeadd       } & 972 & \eps  & 972 & \eps \\
+\code{treeadd2      } & 945 & \eps  & 945 & \eps \\
+\code{treeadd3      } & 1031 & \eps  & 1223 & \eps \\
+\code{purity46      } & 58 & \eps  & 58 & \eps \\
+\code{purity47      } & 58 & \eps  & 58 & \eps \\
+\code{purity52      } & 87 & \eps  & 87 & \eps \\
+\code{purity53      } & 87 & \eps  & 87 & \eps \\
+\code{purity54      } & 107 & \eps  & 107 & \eps \\
+\code{purity65      } & 74 & \eps  & 74 & \eps \\
+\code{nqueens       } & 3102 & \eps  & 3102 & \eps \\
+\code{dderiv        } & 21873 & \eps  & 21873 & \eps \\
+\code{destruct      } & 10416 & \eps  & 10416 & \eps \\
+\code{grid          } & 9150 & \eps  & 9150 & \eps \\
+\code{fannkuch      } & 11946 & \eps  & 11946 & \eps \\
+\code{mceval        } & 197371 & 4''   & 197371 & 3''  \\
+\code{scm2java      } & 319474 & 4''   & 319474 & 4''  \\
+\code{matrix        } & 8948 & \eps  & 8948 & \eps \\
+conc-type-esc-fresh
+\code{fib           } & 41.04\% & 44.31\%\\
+\code{treenode1     } & 49.94\% & 62.35\%\\
+\code{treeadd       } & 30.67\% & 44.34\%\\
+\code{treeadd2      } & 43.42\% & 44.96\%\\
+\code{treeadd3      } & 54.14\% & 67.87\%\\
+\code{purity46      } & 48.1\%  & 56.31\%\\
+\code{purity47      } & 41.0\%  & 49.15\%\\
+\code{purity52      } & 47.18\% & 54.72\%\\
+\code{purity53      } & 47.18\% & 54.72\%\\
+\code{purity54      } & 55.57\% & 55.15\%\\
+\code{purity65      } & 54.78\% & 56.92\%\\
+\code{nqueens       } & 30.85\% & 34.74\%\\
+\code{dderiv        } & 15.36\% & 22.14\%\\
+\code{destruct      } & 17.08\% & 22.19\%\\
+\code{grid          } & 34.63\% & 37.8\% \\
+\code{fannkuch      } & 14.41\% & 22.88\%\\
+\code{mceval        } & 3.08\%  & 4.06\% \\
+\code{scm2java      } & 5.9\%   & 10.17\%\\
+\code{matrix        } & 17.4\%  & 28.33\%\\
+purity
+\code{fib           } & 0    & 0    & 0    & 0    & 0    & 0   \\
+\code{treenode1     } & 1    & 1    & 0    & 0    & 0    & 0   \\
+\code{treeadd       } & 1    & 1    & 0    & 0    & 0    & 0   \\
+\code{treeadd2      } & 1    & 1    & 0    & 0    & 0    & 0   \\
+\code{treeadd3      } & 1    & 1    & 0    & 0    & 0    & 0   \\
+\code{purity46      } & 1    & 1    & 0    & 0    & 0    & 0   \\
+\code{purity47      } & 1    & 1    & 0    & 0    & 0    & 0   \\
+\code{purity52      } & 0    & 0    & 0    & 0    & 0    & 0   \\
+\code{purity53      } & 0    & 0    & 0    & 0    & 0    & 0   \\
+\code{purity54      } & 0    & 0    & 0    & 0    & 0    & 0   \\
+\code{purity65      } & 0    & 0    & 0    & 0    & 0    & 0   \\
+\code{nqueens       } & 0    & 0    & 0    & 0    & 0    & 0   \\
+\code{dderiv        } & 7    & 7    & 7    & 7    & 1    & 1   \\
+\code{destruct      } & 8    & 8    & 8    & 8    & 4    & 4   \\
+\code{grid          } & 4    & 4    & 3    & 3    & 1    & 1   \\
+\code{fannkuch      } & 10   & 10   & 10   & 10   & 10   & 10  \\
+\code{mceval        } & 62   & 62   & 62   & 62   & 7    & 7   \\
+\code{scm2java      } & 14   & 14   & 14   & 14   & 0    & 0   \\
+\code{matrix        } & 7    & 7    & 7    & 7    & 3    & 3   \\
+conc-a-type-msfa-purity-class
+\code{fib           } & 1    & 1    & 0    & 0    & 1    & 0    & 0   \\
+\code{treenode1     } & 2    & 2    & 0    & 0    & 2    & 0    & 0   \\
+\code{treeadd       } & 3    & 3    & 0    & 0    & 3    & 0    & 0   \\
+\code{treeadd2      } & 3    & 3    & 0    & 0    & 2    & 0    & 1   \\
+\code{treeadd3      } & 2    & 2    & 0    & 0    & 2    & 0    & 0   \\
+\code{purity46      } & 1    & 1    & 0    & 0    & 1    & 0    & 0   \\
+\code{purity47      } & 1    & 1    & 0    & 0    & 1    & 0    & 0   \\
+\code{purity52      } & 1    & 1    & 0    & 0    & 1    & 0    & 0   \\
+\code{purity53      } & 1    & 1    & 0    & 0    & 1    & 0    & 0   \\
+\code{purity54      } & 1    & 1    & 0    & 0    & 1    & 0    & 0   \\
+\code{purity65      } & 1    & 1    & 0    & 0    & 1    & 0    & 0   \\
+\code{nqueens       } & 6    & 6    & 0    & 0    & 6    & 0    & 0   \\
+\code{dderiv        } & 10   & 9    & 0    & 1    & 3    & 6    & 1   \\
+\code{destruct      } & 11   & 3    & 1    & 7    & 3    & 1    & 7   \\
+\code{grid          } & 5    & 2    & 1    & 2    & 2    & 1    & 2   \\
+\code{fannkuch      } & 16   & 5    & 2    & 9    & 5    & 2    & 9   \\
+\code{mceval        } & 72   & 60   & 2    & 10   & 10   & 49   & 13  \\
+\code{scm2java      } & 60   & 58   & 0    & 2    & 46   & 3    & 11  \\
+\code{matrix        } & 10   & 4    & 0    & 6    & 3    & 1    & 6   \\
+type-a-type-msfa-purity-class
+\code{fib           } & 1    & 1    & 0    & 0    & 1    & 0    & 0   \\
+\code{treenode1     } & 2    & 0    & 0    & 2    & 2    & 0    & 0   \\
+\code{treeadd       } & 3    & 2    & 0    & 1    & 3    & 0    & 0   \\
+\code{treeadd2      } & 3    & 1    & 0    & 2    & 2    & 0    & 1   \\
+\code{treeadd3      } & 2    & 0    & 0    & 2    & 2    & 0    & 0   \\
+\code{purity46      } & 1    & 0    & 0    & 1    & 1    & 0    & 0   \\
+\code{purity47      } & 1    & 0    & 0    & 1    & 1    & 0    & 0   \\
+\code{purity52      } & 1    & 0    & 0    & 1    & 1    & 0    & 0   \\
+\code{purity53      } & 1    & 0    & 0    & 1    & 1    & 0    & 0   \\
+\code{purity54      } & 1    & 0    & 0    & 1    & 1    & 0    & 0   \\
+\code{purity65      } & 1    & 0    & 0    & 1    & 1    & 0    & 0   \\
+\code{nqueens       } & 6    & 6    & 0    & 0    & 6    & 0    & 0   \\
+\code{dderiv        } & 10   & 3    & 6    & 1    & 3    & 6    & 1   \\
+\code{destruct      } & 11   & 3    & 1    & 7    & 3    & 1    & 7   \\
+\code{grid          } & 5    & 1    & 1    & 3    & 2    & 1    & 2   \\
+\code{fannkuch      } & 16   & 5    & 2    & 9    & 5    & 2    & 9   \\
+\code{mceval        } & 72   & 10   & 49   & 13   & 10   & 49   & 13  \\
+\code{scm2java      } & 60   & 46   & 3    & 11   & 46   & 3    & 11  \\
+\code{matrix        } & 10   & 2    & 0    & 8    & 3    & 1    & 6   \\
+timing
+\code{fib           } & \eps  & \eps  & \eps  & \eps \\
+\code{treenode1     } & \eps  & \eps  & \eps  & \eps \\
+\code{treeadd       } & \eps  & \eps  & \eps  & \eps \\
+\code{treeadd2      } & \eps  & \eps  & \eps  & \eps \\
+\code{treeadd3      } & \eps  & \eps  & \eps  & \eps \\
+\code{purity46      } & \eps  & \eps  & \eps  & \eps \\
+\code{purity47      } & \eps  & \eps  & \eps  & \eps \\
+\code{purity52      } & \eps  & \eps  & \eps  & \eps \\
+\code{purity53      } & \eps  & \eps  & \eps  & \eps \\
+\code{purity54      } & \eps  & \eps  & \eps  & \eps \\
+\code{purity65      } & \eps  & \eps  & \eps  & \eps \\
+\code{nqueens       } & \eps  & \eps  & \eps  & \eps \\
+\code{dderiv        } & 1''   & 1''   & 1''   & 1''  \\
+\code{destruct      } & \eps  & \eps  & \eps  & \eps \\
+\code{grid          } & \eps  & \eps  & \eps  & \eps \\
+\code{fannkuch      } & \eps  & \eps  & \eps  & \eps \\
+\code{mceval        } & 163'' & 155'' & 158'' & 166''\\
+\code{scm2java      } & 161'' & 157'' & 162'' & 166''\\
+\code{matrix        } & \eps  & \eps  & \eps  & \eps \\
