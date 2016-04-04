@@ -135,6 +135,75 @@
 (define test-purity67 (list purity67 (set) (set GENERATES)))
 
 
+(define purity70 '(let ((g #f))
+  (letrec ((f (lambda (n)
+                (let ((c (zero? n))) (if c 'donef (let ((m (- n 1))) (let ((u (set! n m))) (g n n))))))))
+    (let ((u (set! g (lambda (m n)
+              (let ((c (zero? n))) (if c 'doneg (let ((u (set! m 333))) (let ((nn (- n 1))) (f nn)))))))))
+      (f 4)))))
+(define test-purity70 (list purity70 (set) (set)))
+(define purity71 '(letrec ((f (lambda (n)
+              (let ((c (zero? n))) (if c 'done (let ((m (- n 1))) (let ((u (set! n m))) (f n))))))))
+  (letrec ((g (lambda (m n)
+                (let ((c (zero? n))) (if c 'done (let ((u (set! m 333))) (let ((nn (- n 1))) (g m nn))))))))
+   (let ((u (f 4)))
+     (g 123 4)))))
+(define test-purity71 (list purity71 (set) (set)))
+(define purity72 '(letrec ((f (lambda (n)
+              (let ((c (zero? n))) (if c 'done (let ((m (- n 1))) (let ((u (set! n m))) (f n))))))))
+  (letrec ((g (lambda (m n)
+                (let ((c (zero? n))) (if c (f 4) (let ((u (set! m 333))) (let ((nn (- n 1))) (g m nn))))))))
+   (g 123 4))))
+(define test-purity72 (list purity72 (set) (set)))
+(define purity73 '(letrec ((f (lambda (n)
+              (let ((c (zero? n)))
+                (if c
+                    'done
+                    (letrec ((g (lambda (m p)
+                                  (let ((c (zero? p)))
+                                    (if c
+                                        (let ((m (- n 1)))
+                                          (let ((u (set! n m)))
+                                            (f n)))
+                                        (let ((u (set! m 333)))
+                                          (let ((nn (- p 1)))
+                                            (g m nn))))))))
+                      (g 123 4)))))))
+  (f 4)))
+(define test-purity73 (list purity73 (set) (set OBSERVES GENERATES))) ; 46 + 47
+(define purity74 '(letrec ((f (lambda (n p g)
+              (let ((c (zero? n)))
+                (if c
+                    (g 2)
+                    (let ((o (cons 1 p))) (let ((u (set-car! o 3))) (let ((nn (- n 1))) (f nn o g)))))))))
+  (letrec ((g (lambda (m)
+              (let ((c (zero? m)))
+                (if c
+                 'done
+                 (let ((o (cons 1 2)))
+                   (let ((u (set-cdr! o 3))) (let ((nn (- m 1))) (let ((v (g nn))) o)))))))))
+    (f 4 2 g))))
+(define test-purity74 (list purity74 (set) (set))) ; 53 + 54
+(define purity75 '(letrec ((f (lambda (n p g)
+              (let ((c (zero? n)))
+                (if c
+                    (g 2)
+                    (let ((o (cons 1 p))) (let ((u (set-car! o 3))) (let ((nn (- n 1))) (f nn o g)))))))))
+  (letrec ((g (lambda (m)
+              (let ((c (zero? m)))
+                (if c
+                 'done
+                 (let ((o (cons m m)))
+                   (let ((mm (- m 1)))
+                     (let ((u (set-cdr! o mm)))
+                       (let ((mmm (cdr o)))
+                         (let ((v (g mmm)))
+                           o))))))))))
+    (f 4 2 g))))
+(define test-purity75 (list purity75 (set) (set)))
+  
+
+
 (define test-fac (list fac (set)))
 (define test-fib (list fib (set)))
 (define test-fib-mut (list fib-mut (set) (set GENERATES OBSERVES)))
@@ -153,16 +222,17 @@
 (define test-factor (list factor (set) (set) (set) (set) (set) (set) (set)))
 (define test-nqueens (list nqueens (set) (set) (set) (set) (set) (set)))
 (define test-dderiv (list dderiv (set) #f #f #f #f #f #f #f #f (set) (set) (set) (set) (set GENERATES OBSERVES) (set) (set)  #f (set) (set) #f))
-(define test-destruct (list destruct (set OBSERVES) (set GENERATES) (set GENERATES) (set) (set) (set OBSERVES GENERATES) (set OBSERVES GENERATES) (set) (set OBSERVES GENERATES) (set GENERATES) (set GENERATES)))
+(define test-destruc (list destruc (set OBSERVES) (set GENERATES) (set GENERATES) (set) (set) (set OBSERVES GENERATES) (set OBSERVES GENERATES) (set) (set OBSERVES GENERATES) (set GENERATES) (set GENERATES)))
 (define test-grid (list grid (set) (set) (set GENERATES) (set OBSERVES) (set GENERATES))) ; second-to-last had "OBS"
 (define test-mceval (list mceval (set) (set) #f (set) #f #f (set) (set) (set) (set) (set) (set) (set) (set) #f (set) (set) (set) (set) (set) #f (set) (set) (set) (set) (set) (set) (set)
                           (set) #f (set) (set) (set) (set) (set) #f #f (set) (set) (set) (set) (set) (set) (set) #f #f #f #f #f #f (set) #f (set) (set) (set) (set) (set) (set) (set) (set)
                           (set "OBS") (set "OBS") (set "OBS" "GEN") (set) (set) (set) (set) (set "GEN") (set "GEN") (set "GEN") (set "OBS" "GEN") (set "OBS" "GEN")
                           (set) (set) (set) (set) (set) (set) (set) (set) (set "OBS" "GEN") (set "OBS" "GEN") (set) (set) (set "GEN") (set "GEN") (set)))
 (define test-treenode1 (list treenode1 (set) (set)))
-(define test-treeadd (list treeadd (set) (set) (set)))
+(define test-treeadd1 (list treeadd1 (set) (set) (set)))
 (define test-treeadd2 (list treeadd2 (set) (set) (set)))
 (define test-treeadd3 (list treeadd3 (set) (set)))
+(define test-treeadd (list treeadd (set) (set) (set) (set) (set) (set) (set) (set)))
 (define test-account (list account (set) (set GENERATES OBSERVES) (set GENERATES OBSERVES) (set)))
 (define test-fannkuch (list fannkuch (set) (set) (set OBSERVES) (set OBSERVES) (set OBSERVES GENERATES) (set OBSERVES GENERATES) (set OBSERVES GENERATES) (set) (set GENERATES OBSERVES) (set) (set GENERATES) (set OBSERVES GENERATES) (set) (set OBSERVES GENERATES) (set OBSERVES GENERATES) (set OBSERVES GENERATES)))
 (define test-scm2java (list scm2java (set) (set) (set) (set) (set) (set) (set) #f (set) (set) (set) #f #f (set) (set) (set) (set) (set) (set) (set) (set) (set) (set) (set) (set) (set) (set) (set) (set) (set) (set) (set) (set) (set) (set) (set) (set) (set)  (set) (set) (set) (set) (set) (set) (set) (set) (set GENERATES) (set) (set) (set GENERATES) (set) (set) (set) #f (set) (set) (set) (set) (set) (set) (set) (set) (set) (set)))
@@ -178,11 +248,11 @@
                            test-sat test-collatz test-rsa test-primtest test-factor test-treenode1 test-grid
                            test-treeadd test-treeadd2 test-treeadd3))) ;treeadd treeadd2 treeadd3 purity19 )))
   (perform-purity-test (map (lambda (name) (cons name (eval name))) names)))
-j
+
 (define (server-purity-test . names)
   (when (null? names)
-    (set! names '(test-fib test-treenode1 test-treeadd test-treeadd2 test-treeadd3 test-purity46 test-purity47 test-purity52 test-purity53 test-purity54 test-purity65
-                           test-nqueens test-dderiv test-destruct test-grid test-matrix test-fannkuch test-mceval test-scm2java)))
+    (set! names '(test-fib test-purity65 test-purity73 test-purity75
+                           test-treeadd test-nqueens test-dderiv test-destruc test-grid test-matrix test-fannkuch test-mceval test-scm2java)))
   (parameterize ((CESK-TIMELIMIT 60) (THROW #f))
     (let ((results (apply purity-test names))) 
       (printf "Done.\n")
@@ -191,9 +261,9 @@ j
 (define (full-purity-test)
   (purity-test 'test-fib 'test-fib-mut 'test-blur 'test-eta 'test-mj09 'test-gcipd 'test-kcfa2 'test-kcfa3 'test-rotate 'test-loop2
                'test-sat 'test-collatz 'test-rsa 'test-primtest 'test-factor 'test-treenode1 'test-grid
-               'test-treeadd 'test-treeadd2 'test-treeadd3
-               'test-account 'test-fannkuch
-               'test-nqueens 'test-dderiv 'test-destruct
+               'test-treeadd1 'test-treeadd2 'test-treeadd3 'test-treeadd
+               'test-account 'test-fannkuch 'test-matrix
+               'test-nqueens 'test-dderiv 'test-destruc
                'test-purity1 'test-purity2 'test-purity3 'test-purity4 'test-purity5 'test-purity6 'test-purity7 'test-purity8 'test-purity9 'test-purity10
                'test-purity11              'test-purity13 'test-purity14 'test-purity15 'test-purity16 'test-purity17 'test-purity18 'test-purity19 'test-purity20
                'test-purity21 'test-purity22 'test-purity23 'test-purity24 'test-purity25 'test-purity26 'test-purity27 'test-purity28 'test-purity29 'test-purity30
@@ -213,6 +283,67 @@ j
   (check '(let ((f (lambda () (let ((g (lambda () 123))) g)))) 456) (set))
   (check '(let ((f (lambda () (let ((g (lambda () 123))) g)))) (f)) (set 5))
   )
+
+(define (fresh-profile sys fr)
+  (define graph (system-graph sys))
+  (define initial (system-initial sys))
+  (define parent (make-parent (ev-e initial)))
+  (define (handle e ref->freshness Fκ)
+    (if («id»? e)
+        (handle-ref e ref->freshness Fκ)
+        ref->freshness))
+  (define (handle-ref x ref->freshness Fκ)
+    (let ((decl (get-declaration x x parent))
+          (key  (string-append (~a x) (~a («id»-l x)))))
+      (hash-set ref->freshness key (type-⊔ (hash-ref ref->freshness key type-⊥) (hash-ref Fκ decl type-⊥)))))
+  (define ref->freshness
+    (for/fold ((ref->freshness (hash))) (((s ts) graph))
+      (define κ (state-κ s))
+      (define Fκ (hash-ref (hash-ref (freshness-result-state->Fs fr) s) κ))
+      (match s
+        ((ev (? ae? ae) _ _ _ κ)
+         (handle ae ref->freshness Fκ))
+        ((ev («set!» _ x ae) ρ _ ι κ)
+         (handle-ref x ref->freshness Fκ))
+        ((ev («cons» _ e1 e2) _ _ ι κ)
+         (handle e1 (handle e2 ref->freshness Fκ) Fκ))
+        ((ev («make-vector» _ _ ae) _ _ ι κ)
+         (handle ae ref->freshness Fκ))
+        ((ev («car» _ x) _ _ ι κ)
+         (handle-ref x ref->freshness Fκ))
+        ((ev («cdr» _ x) _ _ ι κ)
+         (handle-ref x ref->freshness Fκ))
+        ((ev («vector-ref» _ x1 x2) _ _ ι κ)
+         (handle x1 (handle x2 ref->freshness Fκ) Fκ))
+        ((ev («set-car!» _ e1 e2) _ _ ι κ)
+         (handle e1 (handle e2 ref->freshness Fκ) Fκ))
+        ((ev («set-cdr!» _ e1 e2) _ _ ι κ)
+         (handle e1 (handle e2 ref->freshness Fκ) Fκ))
+        ((ev («vector-set!» _ e1 e2 e3) _ _ ι κ)
+         (handle e1 (handle e2 (handle e3 ref->freshness Fκ) Fκ) Fκ))
+        ((ev («let» _ x e0 e1) _ _ ι κ) ; only on ae, and only for this impl (because of ae fastpath in CESK)
+         (handle e0 (handle e1 ref->freshness Fκ) Fκ))
+        ((ev («letrec» _ x e0 e1) _ _ ι κ) ; only on ae, and only for this impl (because of ae fastpath in CESK)
+         (handle e0 (handle e1 ref->freshness Fκ) Fκ))
+        ((ev («app» _ e es) _ _ ι κ)
+         (for/fold ((ref->freshness (handle e ref->freshness Fκ))) ((e es))
+           (handle e ref->freshness Fκ)))
+        ((ev («if» _ e0 e1 e2) _ _ _ _)
+         (handle e0 (handle e1 (handle e2 ref->freshness Fκ) Fκ) Fκ))
+        (_ ref->freshness)
+        )))
+  ref->freshness)
+
+(define (fresh-test)
+  (define (conc-test es expected)
+    (define e (eval es))
+    (define sys (conc-mach purity10))
+    (define fr (freshness-analysis sys (lambda _ #t)))
+    (define actual (fresh-profile sys fr))
+    (unless (equal? actual expected)
+      (error es)))
+  (conc-test 'purity10 (hash "o9" (set) "f12" (set))))
+  
 
   
 #|

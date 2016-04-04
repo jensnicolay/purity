@@ -482,7 +482,7 @@
   (print-conc-type-esc-fresh)
 
   ; Purity
-  (print-purity)
+  ;(print-purity)
 
   (print-conc-a-type-msfa-purity-class)
   (print-type-a-type-msfa-purity-class)
