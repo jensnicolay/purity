@@ -374,14 +374,19 @@
          (print-purity-class-row benchmark-name conc-results type-a-result type-msfa-result))))
   
 ;;;;;;;;;;;;;;;;;
-(define (print-purity-timing-row name result1 result2)
+(define (print-purity-timing-row name result1 result2 result3 result4)
   (let* ((purity-time1 (hash-ref result1 'purity-time))
-         (purity-time2 (hash-ref result2 'purity-time)))
+         (purity-time2 (hash-ref result2 'purity-time))
+         (purity-time3 (hash-ref result3 'purity-time))
+         (purity-time4 (hash-ref result4 'purity-time))
+         )
          
-    (printf "\\code{~a} & ~a & ~a\\\\\n"
+    (printf "\\code{~a} & ~a & ~a & ~a & ~a\\\\\n"
             (~a name #:min-width 14)
             (~time purity-time1)
             (~time purity-time2)
+            (~time purity-time3)
+            (~time purity-time4)
             )))
       
 (define (print-purity-timing)
@@ -390,19 +395,26 @@
        (let* ((benchmark-name (car r))
               (type-results (caddr r))
               (type-a-result (hash-ref type-results 'a))
+              (type-sa-result (hash-ref type-results 'sa))
+              (type-sfa-result (hash-ref type-results 'sfa))
               (type-msfa-result (hash-ref type-results 'msfa))
               )
-         (print-purity-timing-row benchmark-name type-a-result type-msfa-result))))
+         (print-purity-timing-row benchmark-name type-a-result type-sa-result type-sfa-result type-msfa-result))))
 
 ;;;;;;;;;;;;;;;;;
-(define (print-se-timing-row name result1 result2)
+(define (print-se-timing-row name result1 result2 result3 result4)
   (let* ((se-time1 (hash-ref result1 'side-effect-time))
-         (se-time2 (hash-ref result2 'side-effect-time)))
+         (se-time2 (hash-ref result2 'side-effect-time))
+         (se-time3 (hash-ref result3 'side-effect-time))
+         (se-time4 (hash-ref result4 'side-effect-time))
+         )
          
-    (printf "\\code{~a} & ~a & ~a\\\\\n"
+    (printf "\\code{~a} & ~a & ~a & ~a & ~a\\\\\n"
             (~a name #:min-width 14)
             (~time se-time1)
             (~time se-time2)
+            (~time se-time3)
+            (~time se-time4)
             )))
       
 (define (print-se-timing)
@@ -411,9 +423,11 @@
        (let* ((benchmark-name (car r))
               (type-results (caddr r))
               (type-a-result (hash-ref type-results 'a))
+              (type-sa-result (hash-ref type-results 'sa))
+              (type-sfa-result (hash-ref type-results 'sfa))
               (type-msfa-result (hash-ref type-results 'msfa))
               )
-         (print-se-timing-row benchmark-name type-a-result type-msfa-result))))
+         (print-se-timing-row benchmark-name type-a-result type-sa-result type-sfa-result type-msfa-result))))
 
 ;;;;;;;;;;;;;;;;;
 (define (print-timing-row name results type-a-result type-sa-result type-sfa-result type-msfa-result)
@@ -472,7 +486,7 @@
   ;(print-se-msfa-conc-type-perc)
   (print-se-percs)
   (print-se-obs)
-  ;(print-se-timing)
+  (print-se-timing)
 
   ; Escape
   (print-escape)
@@ -486,7 +500,7 @@
 
   (print-conc-a-type-msfa-purity-class)
   (print-type-a-type-msfa-purity-class)
-  ;(print-purity-timing)
+  (print-purity-timing)
 
   (print-timing)
   )
