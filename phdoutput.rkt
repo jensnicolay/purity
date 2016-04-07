@@ -459,7 +459,7 @@
   (for ((r test-result))
        (let* ((benchmark-name (car r))
               (type-results (caddr r))
-              (type-a-result (hash-ref type-results 'msfa))
+              (type-a-result (hash-ref type-results 'a))
               (type-sa-result (hash-ref type-results 'sa))
               (type-sfa-result (hash-ref type-results 'sfa))
               (type-msfa-result (hash-ref type-results 'msfa))
