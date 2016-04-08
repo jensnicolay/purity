@@ -217,16 +217,16 @@
          (type-fresh-ref-obj-count2d (hash-ref type-results 'fresh-ref-obj-count2d))
          (type-unfresh-ref-obj-count2d (hash-ref type-results 'unfresh-ref-obj-count2d))
          (type-freshness-time (hash-ref type-results 'freshness-time))
-         (type-fresh-esc-ref-obj-count2d (hash-ref type-results 'fresh-esc-ref-obj-count2d))
-         (type-unfresh-esc-ref-obj-count2d (hash-ref type-results 'unfresh-esc-ref-obj-count2d))
-         (type-freshness-esc-time (hash-ref type-results 'freshness-esc-time))
+ ;        (type-fresh-esc-ref-obj-count2d (hash-ref type-results 'fresh-esc-ref-obj-count2d))
+ ;        (type-unfresh-esc-ref-obj-count2d (hash-ref type-results 'unfresh-esc-ref-obj-count2d))
+ ;        (type-freshness-esc-time (hash-ref type-results 'freshness-esc-time))
          )
-     (printf "\\code{~a} & ~a & ~a & ~a & ~a\\\\\n"
+     (printf "\\code{~a} & ~a & ~a \\\\\n"
             (~a name #:min-width 14)
             (~a type-fresh-ref-obj-count2d)
             (~time type-freshness-time)
-            (~a type-fresh-esc-ref-obj-count2d)
-            (~time type-freshness-esc-time)
+;            (~a type-fresh-esc-ref-obj-count2d)
+;            (~time type-freshness-esc-time)
             )))
 
 (define (print-type-fresh)
@@ -239,27 +239,29 @@
 
 
 ;;;;;;;;;;;;;;;;;
-(define (print-conc-type-esc-fresh-row name conc-results type-results)
+(define (print-conc-type-fresh-row name conc-results type-results)
   (let* (
-         (conc-fresh-esc-ref-obj-count2df (hash-ref conc-results 'fresh-esc-ref-obj-count2df))
-         (conc-unfresh-esc-ref-obj-count2df (hash-ref conc-results 'unfresh-esc-ref-obj-count2df))
-         (type-fresh-esc-ref-obj-count2df (hash-ref type-results 'fresh-esc-ref-obj-count2df))
-         (type-unfresh-esc-ref-obj-count2df (hash-ref type-results 'unfresh-esc-ref-obj-count2df))
+         (conc-fresh-ref-obj-count2df (hash-ref conc-results 'fresh-ref-obj-count2df))
+         (conc-unfresh-ref-obj-count2df (hash-ref conc-results 'unfresh-ref-obj-count2df))
+         (type-fresh-ref-obj-count2df (hash-ref type-results 'fresh-ref-obj-count2df))
+         (type-unfresh-ref-obj-count2df (hash-ref type-results 'unfresh-ref-obj-count2df))
+         (type-freshness-time (hash-ref type-results 'freshness-time))
          )
-     (printf "\\code{~a} & ~a & ~a\\\\\n"
+     (printf "\\code{~a} & ~a (~a) & ~a\\\\\n"
             (~a name #:min-width 14)
-            (~perc conc-fresh-esc-ref-obj-count2df (+ conc-fresh-esc-ref-obj-count2df conc-unfresh-esc-ref-obj-count2df))
-            (~perc type-fresh-esc-ref-obj-count2df (+ type-fresh-esc-ref-obj-count2df type-unfresh-esc-ref-obj-count2df))
+            (~perc type-fresh-ref-obj-count2df (+ type-fresh-ref-obj-count2df type-unfresh-ref-obj-count2df))
+            (~perc conc-fresh-ref-obj-count2df (+ conc-fresh-ref-obj-count2df conc-unfresh-ref-obj-count2df))
+            (~time type-freshness-time)
             )))
 
-(define (print-conc-type-esc-fresh)
-  (printf "conc-type-esc-fresh\n")
+(define (print-conc-type-fresh)
+  (printf "conc-type-fresh\n")
   (for ((r test-result))
        (let* ((benchmark-name (car r))
               (conc-results (cadr r))
               (type-results (caddr r))
               )
-         (print-conc-type-esc-fresh-row benchmark-name conc-results type-results))))
+         (print-conc-type-fresh-row benchmark-name conc-results type-results))))
 
 
 ;;;;;;;;;;;;;;;;;
@@ -492,8 +494,8 @@
   (print-escape)
 
   ; Fresh
-  (print-type-fresh)
-  (print-conc-type-esc-fresh)
+  ;(print-type-fresh)
+  (print-conc-type-fresh)
 
   ; Purity
   ;(print-purity)
