@@ -25,7 +25,7 @@
   (if (and (zero? x) (zero? y))
       (~a "0\\%" #:min-width 7)
       (~a
-       (format "~a\\%" (round (* (exact->inexact (/ x y)) 100)))  #:min-width 5)))
+       (format "~a\\%" (inexact->exact (round (* (exact->inexact (/ x y)) 100))))  #:min-width 5)))
 
 (define (~perc2 x y)
   (~a
@@ -153,6 +153,44 @@
 
 
 ;;;;;;;;;;
+
+(define (print-se-percs-row name conc-result a-type-result sa-type-result sfa-type-result msfa-type-result)
+  (define conc-eff-ctx-count (hash-ref conc-result 'eff-fctx-count))
+  (define conc-eff-ctx-obs-count (hash-ref conc-result 'eff-fctx-obs-count))
+  (define a-type-eff-ctx-count (hash-ref a-type-result 'eff-fctx-count))
+  (define a-type-eff-ctx-obs-count (hash-ref a-type-result 'eff-fctx-obs-count))
+  (define sa-type-eff-ctx-count (hash-ref sa-type-result 'eff-fctx-count))
+  (define sa-type-eff-ctx-obs-count (hash-ref sa-type-result 'eff-fctx-obs-count))
+  (define sfa-type-eff-ctx-count (hash-ref sfa-type-result 'eff-fctx-count))
+  (define sfa-type-eff-ctx-obs-count (hash-ref sfa-type-result 'eff-fctx-obs-count))
+  (define msfa-type-eff-ctx-count (hash-ref msfa-type-result 'eff-fctx-count))
+  (define msfa-type-eff-ctx-obs-count (hash-ref msfa-type-result 'eff-fctx-obs-count))
+  (printf "\\code{~a} & ~a & ~a & ~a & ~a & (~a)\\\\\n"
+          (~a name #:min-width 14)
+          (~perc a-type-eff-ctx-obs-count a-type-eff-ctx-count)
+          (~perc sa-type-eff-ctx-obs-count sa-type-eff-ctx-count)
+          (~perc sfa-type-eff-ctx-obs-count sfa-type-eff-ctx-count)
+          (~perc msfa-type-eff-ctx-obs-count msfa-type-eff-ctx-count)
+          (~perc conc-eff-ctx-obs-count conc-eff-ctx-count)
+          ))
+
+(define (print-se-percs)
+  (printf "se-percs\n")
+  (for ((r test-result))
+       (let* ((benchmark-name (car r))
+              (conc-results (cadr r))
+              (type-results (caddr r))
+              (conc-result (hash-ref conc-results 'a))
+              (a-type-result (hash-ref type-results 'a))
+              (sa-type-result (hash-ref type-results 'sa))
+              (sfa-type-result (hash-ref type-results 'sfa))
+              (msfa-type-result (hash-ref type-results 'msfa))
+              )
+         (print-se-percs-row benchmark-name conc-result a-type-result sa-type-result sfa-type-result msfa-type-result))))
+
+
+
+
 (define (print-se-obs-row name conc-result a-type-result sa-type-result sfa-type-result msfa-type-result)
   (define conc-eff-ctx-obs-count (hash-ref conc-result 'observable-count))
   (define a-type-eff-ctx-obs-count (hash-ref a-type-result 'observable-count))
@@ -195,7 +233,7 @@
   (let-values (((xx-sa yy-sa) (count-lses-⊑ conc-lam-effs sa-type-lam-effs type-⊑ type-α)))
   (let-values (((xx-sfa yy-sfa) (count-lses-⊑ conc-lam-effs sfa-type-lam-effs type-⊑ type-α)))
   (let-values (((xx-msfa yy-msfa) (count-lses-⊑ conc-lam-effs msfa-type-lam-effs type-⊑ type-α)))
-    (printf "\\code{~a} & ~a/~a (~a)& ~a/~a (~a) & ~a/~a (~a) & ~a/~a (~a)\\\\\n"
+    (printf "\\code{~a} & $\\frac{~a}{~a}$ & ~a & $\\frac{~a}{~a}$ & ~a  & $\\frac{~a}{~a}$ & ~a  & $\\frac{~a}{~a}$ & ~a\\rowsep\n"
             (~a name #:min-width 14)
             (~a xx-a #:min-width 4)
             (~a yy-a #:min-width 4)
@@ -228,29 +266,7 @@
 
 
 ;;;;;;;;;;;;;;;;;
-(define (print-type-fresh-row name type-results)
-  (let* (
-         (type-fresh-ref-obj-count2d (hash-ref type-results 'fresh-ref-obj-count2d))
-         (type-unfresh-ref-obj-count2d (hash-ref type-results 'unfresh-ref-obj-count2d))
-         (type-freshness-time (hash-ref type-results 'freshness-time))
-         )
-     (printf "\\code{~a} & ~a & ~a \\\\\n"
-            (~a name #:min-width 14)
-            (~a type-fresh-ref-obj-count2d)
-            (~time type-freshness-time)
-            )))
-
-(define (print-type-fresh)
-  (printf "type-fresh\n")
-  (for ((r test-result))
-       (let* ((benchmark-name (car r))
-              (type-results (caddr r))
-              )
-         (print-type-fresh-row benchmark-name type-results))))
-
-
-;;;;;;;;;;;;;;;;;
-(define (print-conc-type-fresh-row name conc-results type-results)
+(define (print-fresh-fp-row name conc-results type-results)
   (let* (
          (conc-fresh-ref-obj-count2df (hash-ref conc-results 'fresh-ref-obj-count2df))
          (conc-unfresh-ref-obj-count2df (hash-ref conc-results 'unfresh-ref-obj-count2df))
@@ -267,17 +283,53 @@
             (~a yy)
             (~perc xx yy)
             (~time type-freshness-time)
-            (~perc conc-fresh-ref-obj-count2df (+ conc-fresh-ref-obj-count2df conc-unfresh-ref-obj-count2df))
+            (~perc-r-0 conc-fresh-ref-obj-count2df (+ conc-fresh-ref-obj-count2df conc-unfresh-ref-obj-count2df))
             ))))
 
-(define (print-conc-type-fresh)
-  (printf "conc-type-fresh\n")
+(define (print-fresh-fp)
+  (printf "fresh-fp\n")
   (for ((r test-result))
        (let* ((benchmark-name (car r))
               (conc-results (cadr r))
               (type-results (caddr r))
               )
-         (print-conc-type-fresh-row benchmark-name conc-results type-results))))
+         (print-fresh-fp-row benchmark-name conc-results type-results))))
+
+
+(define (print-type-fresh-row name type-results)
+  (let* (
+         (type-freshness-time (hash-ref type-results 'freshness-time))
+         (type-fresh-profile (hash-ref type-results 'freshness-profile))
+         (ref-count (length (hash-keys type-fresh-profile)))
+         (fresh-ref-count (for/sum (((ref freshness) type-fresh-profile))
+                                   (if (equal? freshness type-⊥)
+                                       1
+                                       0)))
+
+
+         (type-fresh-ref-obj-count2d (hash-ref type-results 'fresh-ref-obj-count2d))
+         (type-unfresh-ref-obj-count2d (hash-ref type-results 'unfresh-ref-obj-count2d))
+         (type-ref-obj-count2d (+ type-fresh-ref-obj-count2d type-unfresh-ref-obj-count2d))
+         
+         )
+     (printf "\\code{~a} & ~a/~a & ~a & ~a\\\\\n"
+            (~a name #:min-width 14)
+            ;(~a fresh-ref-count #:min-width 4)
+            ;(~a ref-count #:min-width 4)
+            ;(~perc-r-0 fresh-ref-count ref-count)
+            (~a type-fresh-ref-obj-count2d #:min-width 4)
+            (~a type-ref-obj-count2d #:min-width 4)
+            (~perc-r-0 type-fresh-ref-obj-count2d type-ref-obj-count2d)
+            (~time type-freshness-time)
+            )))
+
+(define (print-type-fresh)
+  (printf "type-fresh\n")
+  (for ((r test-result))
+       (let* ((benchmark-name (car r))
+              (type-results (caddr r))
+              )
+         (print-type-fresh-row benchmark-name type-results))))
 
 
 
@@ -503,17 +555,14 @@
   ;(print-se-a-type-result)
   ;(print-se-a-conc-type-perc)
   ;(print-se-msfa-conc-type-perc)
-  ;(print-se-percs)
   (print-se-fp)
-  (print-se-obs)
   (print-se-timing)
 
   ; Escape
   (print-escape)
 
   ; Fresh
-  ;(print-type-fresh)
-  (print-conc-type-fresh)
+  (print-type-fresh)
 
   ; Purity
   ;(print-purity)
@@ -523,6 +572,10 @@
   (print-purity-timing)
 
   (print-timing)
+
+  ; Appendix
+  (print-se-obs)
+  (print-se-percs)
   )
 
 
