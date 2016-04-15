@@ -131,11 +131,6 @@
     (escape-result M time)))
 
 
-(define (print-escape-info M)
-  (for ((λ M))
-    (printf "~a\n" λ)))
-
-
 (struct freshness-result (fresh? time state->Fs))
 (define (freshness-analysis sys escapes?)
   (define lattice (system-lattice sys))
@@ -709,6 +704,63 @@
 
 (define (lambdas ast) (filter «lam»? (nodes ast)))
 
+(define (fresh-profile sys fr)
+  (define graph (system-graph sys))
+  (define initial (system-initial sys))
+  (define parent (make-parent (ev-e initial)))
+  (define (handle e ref->freshness Fκ)
+    (if («id»? e)
+        (handle-ref e ref->freshness Fκ)
+        ref->freshness))
+  (define (handle-ref x ref->freshness Fκ)
+    (let ((decl (get-declaration x x parent))
+          (key  (string-append (~a x) (~a («id»-l x)))))
+      (hash-set ref->freshness key (type-⊔ (hash-ref ref->freshness key type-⊥) (hash-ref Fκ decl type-⊥)))))
+  (define ref->freshness
+    (for/fold ((ref->freshness (hash))) (((s ts) graph))
+      (define κ (state-κ s))
+      (define Fκ (hash-ref (hash-ref (freshness-result-state->Fs fr) s) κ))
+      (match s
+        ((ev (? ae? ae) _ _ _ κ)
+         (handle ae ref->freshness Fκ))
+        ((ev («set!» _ x ae) ρ _ ι κ)
+         (handle-ref x ref->freshness Fκ))
+        ((ev («cons» _ e1 e2) _ _ ι κ)
+         (handle e1 (handle e2 ref->freshness Fκ) Fκ))
+        ((ev («make-vector» _ _ ae) _ _ ι κ)
+         (handle ae ref->freshness Fκ))
+        ((ev («car» _ x) _ _ ι κ)
+         (handle-ref x ref->freshness Fκ))
+        ((ev («cdr» _ x) _ _ ι κ)
+         (handle-ref x ref->freshness Fκ))
+        ((ev («vector-ref» _ x1 x2) _ _ ι κ)
+         (handle x1 (handle x2 ref->freshness Fκ) Fκ))
+        ((ev («set-car!» _ e1 e2) _ _ ι κ)
+         (handle e1 (handle e2 ref->freshness Fκ) Fκ))
+        ((ev («set-cdr!» _ e1 e2) _ _ ι κ)
+         (handle e1 (handle e2 ref->freshness Fκ) Fκ))
+        ((ev («vector-set!» _ e1 e2 e3) _ _ ι κ)
+         (handle e1 (handle e2 (handle e3 ref->freshness Fκ) Fκ) Fκ))
+        ((ev («let» _ x e0 e1) _ _ ι κ) ; only on ae, and only for this impl (because of ae fastpath in CESK)
+         (handle e0 (handle e1 ref->freshness Fκ) Fκ))
+        ((ev («letrec» _ x e0 e1) _ _ ι κ) ; only on ae, and only for this impl (because of ae fastpath in CESK)
+         (handle e0 (handle e1 ref->freshness Fκ) Fκ))
+        ((ev («app» _ e es) _ _ ι κ)
+         (for/fold ((ref->freshness (handle e ref->freshness Fκ))) ((e es))
+           (handle e ref->freshness Fκ)))
+        ((ev («if» _ e0 e1 e2) _ _ _ _)
+         (handle e0 (handle e1 (handle e2 ref->freshness Fκ) Fκ) Fκ))
+        (_ ref->freshness)
+        )))
+  ref->freshness)
+
+(define (fresh-fp conc-ref->freshness abst-ref->freshness)
+  (for/fold (((xx 0) (yy 0))) (((ref conc-freshness) conc-ref->freshness))
+    (let ((abst-freshness (hash-ref abst-ref->freshness ref)))
+      (if (and (equal? conc-freshness ⊥) (not (equal? abst-freshness ⊥)))
+          (values (add1 xx) (add1 yy))
+          (values xx (add1 yy))))))
+
 (define (purity-benchmark e mach expected)
   (newline)  
   (printf "eval... ")
@@ -798,7 +850,8 @@
                          (set! fresh-ref-obj-count2df (add1 fresh-ref-obj-count2df))
                          (set! unfresh-ref-obj-count2df (add1 unfresh-ref-obj-count2df)))
                        ))))
-  
+
+  (define freshness-profile #f);(fresh-profile sys fr))
 
   (printf "freshness analysis with esc... ")
   (define fr-esc (freshness-analysis sys (lambda (lam) (set-member? esc-lams lam))))
@@ -840,12 +893,11 @@
     (define eff-ctx-obs-count 0) 
     (define eff-fctx-count 0) ; filtered on ca
     (define eff-fctx-obs-count 0) ; filtered on called lams
-    (define mutated-addresses (set)); global (not filtered)
-
+    
     ; number of different side-effect (grouped in sets)
     (define eff-set (set))
-    (define lam->effs (hash)) ;filtered
-    (define lam->obs-effs (hash)) ;filtered
+    (define lam->effs (hash))
+    (define lam->obs-effs (hash))
     
     (for (((s ts) graph))
          (let ((ctx->side-effects (hash-ref state->ctx->side-effects s)))
@@ -858,22 +910,15 @@
                    
                    (for ((eff E))
                         
-                        (match eff
-                          ((wv a x)
-                           (set! mutated-addresses (set-add mutated-addresses a)))
-                          ((wp a n x)
-                           (set! mutated-addresses (set-add mutated-addresses a)))
-                          ((rv a x)
-                           (set! mutated-addresses (set-add mutated-addresses a)))
-                          ((rp a n x)
-                           (set! mutated-addresses (set-add mutated-addresses a))))
-                        
                         (for ((τ (stack-contexts (state-κ s) Ξ)))
-                             (let ((observable-E (hash-ref ctx->side-effects τ (set))))
+                             (let ((observable-E (hash-ref ctx->side-effects τ (set)))
+                                   (lam (ctx-λ τ)))
                                (set! eff-ctx-count (add1 eff-ctx-count))
+                               (set! lam->effs (hash-set lam->effs lam (set-add (hash-ref lam->effs lam (set)) eff)))
                                (when (set-member? observable-E eff)
+                                 (set! lam->obs-effs (hash-set lam->obs-effs lam (set-add (hash-ref lam->obs-effs lam (set)) eff)))
                                  (set! eff-ctx-obs-count (add1 eff-ctx-obs-count)))
-                               (when (set-member? called-lams (ctx-λ τ))
+                               (when (set-member? called-lams lam)
                                  (set! eff-fctx-count (add1 eff-fctx-count))
                                  (when (set-member? observable-E eff)
                                    (set! eff-fctx-obs-count (add1 eff-fctx-obs-count))))))
@@ -943,7 +988,7 @@
         'exit 'ok 'msg result-value 'flow-time flow-time 'state-count state-count 'edge-count edge-count 'lam-count lam-count 'called-count called-count 'called-lams called-lams
         'a a-results 'sa sa-results 'sfa sfa-results 'msfa msfa-results
         'call-store-time call-store-time
-        'freshness-time freshness-time 'freshness-esc-time freshness-esc-time
+        'freshness-time freshness-time 'freshness-esc-time freshness-esc-time 'freshness-profile freshness-profile 
         'fresh-ref-obj-count2d fresh-ref-obj-count2d 'unfresh-ref-obj-count2d unfresh-ref-obj-count2d 'fresh-esc-ref-obj-count2d fresh-esc-ref-obj-count2d 'unfresh-esc-ref-obj-count2d unfresh-esc-ref-obj-count2d 
         'fresh-ref-obj-count2df fresh-ref-obj-count2df 'unfresh-ref-obj-count2df unfresh-ref-obj-count2df 'fresh-esc-ref-obj-count2df fresh-esc-ref-obj-count2df 'unfresh-esc-ref-obj-count2df unfresh-esc-ref-obj-count2df 
         'escape-time escape-time 'esc-lams esc-lams
@@ -963,6 +1008,54 @@
   (for/and (((lam ses1) lses1))
            (let ((ses2 (hash-ref lses2 lam (set))))
              (real-ses-⊑ ses1 ses2 α ⊑))))
+
+(define (eff-α eff α)
+  (match eff
+    ((wv _ x) (wv #f x))
+    ((wp _ "car" x) (wp #f "car" x))
+    ((wp _ "cdr" x) (wp #f "cdr" x))
+    ((wp _ n x) (wp #f (α n) x))
+    ((rv _ x) (rv #f x))
+    ((rp _ "car" x) (rp #f "car" x))
+    ((rp _ "cdr" x) (rp #f "cdr" x))
+    ((rp _ n x) (rp #f (α n) x))))
+
+(define (eff-⊑ eff1 eff2 ⊑)
+  (match eff1
+    ((wv _ x1)
+     (match eff2
+       ((wv _ x2) (equal? x1 x2))
+       (_ #f)))
+    ((wp _ "car" x1)
+     (match eff2
+       ((wp _ "car" x2) (equal? x1 x2))
+       (_ #f)))
+    ((wp _ "cdr" x1)
+     (match eff2
+       ((wp _ "cdr" x2) (equal? x1 x2))
+       (_ #f)))
+    ((wp _ n1 x1)
+     (match eff2
+       ((wp _ n2 x2)
+        (and (equal? x1 x2) (⊑ n1 n2)))
+       (_ #f)))
+    ((rv _ x1)
+     (match eff2
+       ((rv _ x2) (equal? x1 x2))
+       (_ #f)))
+    ((rp _ "car" x1)
+     (match eff2
+       ((rp _ "car" x2) (equal? x1 x2))
+       (_ #f)))
+    ((rp _ "cdr" x1)
+     (match eff2
+       ((rp _ "cdr" x2) (equal? x1 x2))
+       (_ #f)))
+    ((rp _ n1 x1)
+     (match eff2
+       ((rp _ n2 x2)
+        (and (equal? x1 x2) (⊑ n1 n2)))
+       (_ #f)))))
 
 (define (real-ses-⊑ ses1 ses2 α ⊑)
 
@@ -1011,6 +1104,22 @@
                           ;(printf "~a IN\n~a\n" se1 ses2))
                         ok
                         )))
+
+;;;;
+
+(define (count-lses-⊑ lses1 lses2 ⊑ α) ; conc abst
+  (for/fold ((xx 0) (yy 0)) (((lam ses1) lses1)) ; xx number of eff in 2 that subsume eff in 1, yy number of eff in 2
+    (let ((ses2 (hash-ref lses2 lam (set))))
+      (let ((xxx (for/fold ((xx xx)) ((se1 (list->set (set-map ses1 (lambda (se) (eff-α se α))))))
+                   (let ((sub2 (for/or ((se2 ses2))
+                                       ;(printf "eff-⊑ ~a ~a = ~a\n" se1 se2 (eff-⊑ se1 se2 ⊑))
+                                       (eff-⊑ se1 se2 ⊑))))
+                     (if sub2 ; there is a subsuming in 2
+                         (add1 xx)
+                         xx)))))
+        (values xxx (+ yy (set-count ses2)))))))
+
+;;;;;
 
 (define (perform-purity-test tests)
 
@@ -1151,6 +1260,16 @@
        (define type-esc-lams (hash-ref type-results 'esc-lams))
        (unless (subset? conc-esc-lams type-esc-lams)
          (error "esc-lams"))
+
+       ; SOUNDNESS fresh ; dnw purity-19
+       ;(define conc-fr-profile (hash-ref conc-results 'freshness-profile))
+       ;(define type-fr-profile (hash-ref type-results 'freshness-profile))
+       ;(define (fresh-subsumes? fr1 fr2)
+       ;  (for/and (((ref2 ψ2) fr2))
+       ;    (let ((ψ1 (hash-ref fr1 ref2 (set))))
+       ;      (type-⊑ ψ2 ψ1))))
+       ;(unless (fresh-subsumes? type-fr-profile conc-fr-profile)
+       ;  (error "type-fresh"))
 
        (list (substring (symbol->string name) 5) conc-results type-results)
        ))

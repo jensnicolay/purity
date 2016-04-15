@@ -21,6 +21,12 @@
       (~a
        (format "~a\\%" (/ (round (* (exact->inexact (/ x y)) 10000)) 100)) #:min-width 7)))
 
+(define (~perc-r-0 x y)
+  (if (and (zero? x) (zero? y))
+      (~a "0\\%" #:min-width 7)
+      (~a
+       (format "~a\\%" (round (* (exact->inexact (/ x y)) 100)))  #:min-width 5)))
+
 (define (~perc2 x y)
   (~a
    (format "~a/~a" x y) #:min-width 7))
@@ -210,6 +216,51 @@
               (msfa-type-result (hash-ref type-results 'msfa))
               )
          (print-se-obs-row benchmark-name conc-result a-type-result sa-type-result sfa-type-result msfa-type-result))))
+
+
+
+(define (print-se-fp-row name conc-result a-type-result sa-type-result sfa-type-result msfa-type-result)
+  (define conc-lam-effs (hash-ref conc-result 'lam->obs-effs))
+  (define a-type-lam-effs (hash-ref a-type-result 'lam->obs-effs))
+  (define sa-type-lam-effs (hash-ref sa-type-result 'lam->obs-effs))
+  (define sfa-type-lam-effs (hash-ref sfa-type-result 'lam->obs-effs))
+  (define msfa-type-lam-effs (hash-ref msfa-type-result 'lam->obs-effs))
+  ;(printf "~a \n~a\n\n" conc-lam-effs msfa-type-lam-effs)
+  (let-values (((xx-a yy-a) (count-lses-⊑ conc-lam-effs a-type-lam-effs type-⊑ type-α)))
+  (let-values (((xx-sa yy-sa) (count-lses-⊑ conc-lam-effs sa-type-lam-effs type-⊑ type-α)))
+  (let-values (((xx-sfa yy-sfa) (count-lses-⊑ conc-lam-effs sfa-type-lam-effs type-⊑ type-α)))
+  (let-values (((xx-msfa yy-msfa) (count-lses-⊑ conc-lam-effs msfa-type-lam-effs type-⊑ type-α)))
+    (printf "\\code{~a} & ~a/~a (~a)& ~a/~a (~a) & ~a/~a (~a) & ~a/~a (~a)\\\\\n"
+            (~a name #:min-width 14)
+            (~a xx-a #:min-width 4)
+            (~a yy-a #:min-width 4)
+            (~perc-r-0 xx-a yy-a)
+            (~a xx-sa #:min-width 4)
+            (~a yy-sa #:min-width 4)
+            (~perc-r-0 xx-sa yy-sa)
+            (~a xx-sfa #:min-width 4)
+            (~a yy-sfa #:min-width 4)
+            (~perc-r-0 xx-sfa yy-sfa)
+            (~a xx-msfa #:min-width 4)
+            (~a yy-msfa #:min-width 4)
+            (~perc-r-0 xx-msfa yy-msfa)
+            ))))))
+
+(define (print-se-fp)
+  (printf "se-fp\n")
+  (for ((r test-result))
+       (let* ((benchmark-name (car r))
+              (conc-results (cadr r))
+              (type-results (caddr r))
+              (conc-result (hash-ref conc-results 'a))
+              (a-type-result (hash-ref type-results 'a))
+              (sa-type-result (hash-ref type-results 'sa))
+              (sfa-type-result (hash-ref type-results 'sfa))
+              (msfa-type-result (hash-ref type-results 'msfa))
+              )
+         (print-se-fp-row benchmark-name conc-result a-type-result sa-type-result sfa-type-result msfa-type-result))))
+
+
 
 ;;;;;;;;;;;;;;;;;
 (define (print-type-fresh-row name type-results)
@@ -486,7 +537,8 @@
   ;(print-se-a-type-result)
   ;(print-se-a-conc-type-perc)
   ;(print-se-msfa-conc-type-perc)
-  (print-se-percs)
+  ;(print-se-percs)
+  (print-se-fp)
   (print-se-obs)
   (print-se-timing)
 
