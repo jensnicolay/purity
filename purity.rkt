@@ -755,11 +755,13 @@
   ref->freshness)
 
 (define (fresh-fp conc-ref->freshness abst-ref->freshness)
-  (for/fold (((xx 0) (yy 0))) (((ref conc-freshness) conc-ref->freshness))
+  (for/fold ((xx 0) (yy 0)) (((ref conc-freshness) conc-ref->freshness))
     (let ((abst-freshness (hash-ref abst-ref->freshness ref)))
-      (if (and (equal? conc-freshness ⊥) (not (equal? abst-freshness ⊥)))
+      (if (and (equal? conc-freshness type-⊥) (not (equal? abst-freshness type-⊥)))
           (values (add1 xx) (add1 yy))
-          (values xx (add1 yy))))))
+          (if (and (not (equal? conc-freshness type-⊥)) (equal? abst-freshness type-⊥))
+              (error "fresh-fp subs")
+              (values xx (add1 yy)))))))
 
 (define (purity-benchmark e mach expected)
   (newline)  
@@ -842,39 +844,16 @@
   (for (((s Fs) (freshness-result-state->Fs fr)))
        (for (((κ Fκ) Fs))
             (for (((x freshness) Fκ))
-                 (if (equal? freshness ⊥)
+                 (if (equal? freshness type-⊥)
                    (set! fresh-ref-obj-count2d (add1 fresh-ref-obj-count2d))
                    (set! unfresh-ref-obj-count2d (add1 unfresh-ref-obj-count2d)))
                    (when (or (not κ) (set-member? called-lams (ctx-λ κ)))
-                     (if (equal? freshness ⊥)
+                     (if (equal? freshness type-⊥)
                          (set! fresh-ref-obj-count2df (add1 fresh-ref-obj-count2df))
                          (set! unfresh-ref-obj-count2df (add1 unfresh-ref-obj-count2df)))
                        ))))
 
-  (define freshness-profile #f);(fresh-profile sys fr))
-
-  (printf "freshness analysis with esc... ")
-  (define fr-esc (freshness-analysis sys (lambda (lam) (set-member? esc-lams lam))))
-  (define freshness-esc-time (freshness-result-time fr-esc))
-  (printf "~a ms\n" freshness-esc-time)
-  (define fresh?-esc (freshness-result-fresh? fr-esc))
-
-  (define fresh-esc-ref-obj-count2d 0)
-  (define unfresh-esc-ref-obj-count2d 0)
-  (define fresh-esc-ref-obj-count2df 0)
-  (define unfresh-esc-ref-obj-count2df 0)
-  (for (((s Fs) (freshness-result-state->Fs fr-esc)))
-       (for (((κ Fκ) Fs))
-            (for (((x freshness) Fκ))
-                 (if (equal? freshness type-⊥)
-                   (set! fresh-esc-ref-obj-count2d (add1 fresh-esc-ref-obj-count2d))
-                   (set! unfresh-esc-ref-obj-count2d (add1 unfresh-esc-ref-obj-count2d)))
-                   (when (or (not κ) (set-member? called-lams (ctx-λ κ)))
-                     (if (equal? freshness type-⊥)
-                         (set! fresh-esc-ref-obj-count2df (add1 fresh-esc-ref-obj-count2df))
-                         (set! unfresh-esc-ref-obj-count2df (add1 unfresh-esc-ref-obj-count2df)))
-                       ))))
-
+  (define freshness-profile (fresh-profile sys fr))
 
   (printf "call-store analysis... ")
   (define csr (call-store-analysis sys))
@@ -981,16 +960,16 @@
   (define sfa-results (handle-side-effect-result sfa-ser))
 
   (printf "msfa-side-effect analysis... ")
-  (define msfa-ser (msfa-side-effect-analysis sys ctx->addrs fresh?-esc esc-lams))
+  (define msfa-ser (msfa-side-effect-analysis sys ctx->addrs fresh? esc-lams))
   (define msfa-results (handle-side-effect-result msfa-ser))
 
   (hash 'node-count node-count 'covered-count covered-count 'set!-count set!-count 'set-car!-count set-car!-count 'set-cdr!-count set-cdr!-count 'vector-set!-count vector-set!-count 'cons-count cons-count 'make-vector-count make-vector-count
         'exit 'ok 'msg result-value 'flow-time flow-time 'state-count state-count 'edge-count edge-count 'lam-count lam-count 'called-count called-count 'called-lams called-lams
         'a a-results 'sa sa-results 'sfa sfa-results 'msfa msfa-results
         'call-store-time call-store-time
-        'freshness-time freshness-time 'freshness-esc-time freshness-esc-time 'freshness-profile freshness-profile 
-        'fresh-ref-obj-count2d fresh-ref-obj-count2d 'unfresh-ref-obj-count2d unfresh-ref-obj-count2d 'fresh-esc-ref-obj-count2d fresh-esc-ref-obj-count2d 'unfresh-esc-ref-obj-count2d unfresh-esc-ref-obj-count2d 
-        'fresh-ref-obj-count2df fresh-ref-obj-count2df 'unfresh-ref-obj-count2df unfresh-ref-obj-count2df 'fresh-esc-ref-obj-count2df fresh-esc-ref-obj-count2df 'unfresh-esc-ref-obj-count2df unfresh-esc-ref-obj-count2df 
+        'freshness-time freshness-time 'freshness-profile freshness-profile 
+        'fresh-ref-obj-count2d fresh-ref-obj-count2d 'unfresh-ref-obj-count2d unfresh-ref-obj-count2d 
+        'fresh-ref-obj-count2df fresh-ref-obj-count2df 'unfresh-ref-obj-count2df unfresh-ref-obj-count2df
         'escape-time escape-time 'esc-lams esc-lams
         ))
 
@@ -1108,16 +1087,16 @@
 ;;;;
 
 (define (count-lses-⊑ lses1 lses2 ⊑ α) ; conc abst
-  (for/fold ((xx 0) (yy 0)) (((lam ses1) lses1)) ; xx number of eff in 2 that subsume eff in 1, yy number of eff in 2
-    (let ((ses2 (hash-ref lses2 lam (set))))
-      (let ((xxx (for/fold ((xx xx)) ((se1 (list->set (set-map ses1 (lambda (se) (eff-α se α))))))
-                   (let ((sub2 (for/or ((se2 ses2))
-                                       ;(printf "eff-⊑ ~a ~a = ~a\n" se1 se2 (eff-⊑ se1 se2 ⊑))
-                                       (eff-⊑ se1 se2 ⊑))))
-                     (if sub2 ; there is a subsuming in 2
-                         (add1 xx)
-                         xx)))))
-        (values xxx (+ yy (set-count ses2)))))))
+  (for/fold ((xx 0) (yy 0)) (((lam ses1) lses1)) ; xx number of eff in 2 that do not subsume eff in 1, yy number of eff in 2
+    (let ((ses2 (hash-ref lses2 lam (set)))
+          (ases1 (list->set (set-map ses1 (lambda (se) (eff-α se α))))))
+      (let ((subs2 (for/fold ((subs2 (set))) ((ase1 ases1))
+                     (for/fold ((subs2 subs2)) ((se2 ses2))
+                       (if (eff-⊑ ase1 se2 ⊑)
+                           (set-add subs2 se2)
+                           subs2)))))
+        (let ((ses2-count (set-count ses2)))
+          (values (+ xx (- ses2-count (set-count subs2))) (+ yy ses2-count)))))))
 
 ;;;;;
 

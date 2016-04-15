@@ -8023,3 +8023,580 @@ timing
 \code{scm2java      } & 268'' & 167'' & 170'' & 178''\\
 ^^^ EXPERIMENT: NO GC FOR CALLER-STORE
 
+
+====20160415 threw out fresh-esc, added fp checking for fresh and se; !non-timing
+
+> (server-purity-test)
+
+
+test-fib
+
+eval... 14 ms ok
+state/edges 735/734 value 21
+escape analysis... 1 ms
+freshness analysis without esc... 7 ms
+call-store analysis... 7 ms
+a-side-effect analysis... 11 ms
+purity analysis... 8 ms
+sa-side-effect analysis... 22 ms
+purity analysis... 7 ms
+sfa-side-effect analysis... 19 ms
+purity analysis... 9 ms
+msfa-side-effect analysis... 40 ms
+purity analysis... 6 ms
+
+eval... 2 ms ok
+state/edges 20/30 value #<set: NUM>
+escape analysis... 0 ms
+freshness analysis without esc... 0 ms
+call-store analysis... 0 ms
+a-side-effect analysis... 1 ms
+purity analysis... 1 ms
+sa-side-effect analysis... 1 ms
+purity analysis... 0 ms
+sfa-side-effect analysis... 0 ms
+purity analysis... 0 ms
+msfa-side-effect analysis... 1 ms
+purity analysis... 1 ms
+
+
+test-purity65
+
+eval... 0 ms ok
+state/edges 20/19 value #(struct:addr 59)
+escape analysis... 0 ms
+freshness analysis without esc... 0 ms
+call-store analysis... 0 ms
+a-side-effect analysis... 1 ms
+purity analysis... 0 ms
+sa-side-effect analysis... 0 ms
+purity analysis... 0 ms
+sfa-side-effect analysis... 0 ms
+purity analysis... 0 ms
+msfa-side-effect analysis... 0 ms
+purity analysis... 0 ms
+
+eval... 1 ms ok
+state/edges 20/27 value #<set: SYM #(struct:addr (cons 1 2))>
+escape analysis... 0 ms
+freshness analysis without esc... 1 ms
+call-store analysis... 0 ms
+a-side-effect analysis... 0 ms
+purity analysis... 0 ms
+sa-side-effect analysis... 0 ms
+purity analysis... 1 ms
+sfa-side-effect analysis... 0 ms
+purity analysis... 0 ms
+msfa-side-effect analysis... 0 ms
+purity analysis... 0 ms
+
+
+test-purity73
+
+eval... 4 ms ok
+state/edges 253/252 value done
+escape analysis... 0 ms
+freshness analysis without esc... 4 ms
+call-store analysis... 2 ms
+a-side-effect analysis... 6 ms
+purity analysis... 3 ms
+sa-side-effect analysis... 9 ms
+purity analysis... 4 ms
+sfa-side-effect analysis... 9 ms
+purity analysis... 4 ms
+msfa-side-effect analysis... 30 ms
+purity analysis... 4 ms
+
+eval... 2 ms ok
+state/edges 29/34 value #<set: SYM>
+escape analysis... 0 ms
+freshness analysis without esc... 0 ms
+call-store analysis... 0 ms
+a-side-effect analysis... 1 ms
+purity analysis... 1 ms
+sa-side-effect analysis... 1 ms
+purity analysis... 1 ms
+sfa-side-effect analysis... 0 ms
+purity analysis... 1 ms
+msfa-side-effect analysis... 1 ms
+purity analysis... 1 ms
+
+
+test-purity75
+
+eval... 3 ms ok
+state/edges 111/110 value #(struct:addr 102)
+escape analysis... 0 ms
+freshness analysis without esc... 1 ms
+call-store analysis... 1 ms
+a-side-effect analysis... 1 ms
+purity analysis... 1 ms
+sa-side-effect analysis... 2 ms
+purity analysis... 1 ms
+sfa-side-effect analysis... 3 ms
+purity analysis... 1 ms
+msfa-side-effect analysis... 3 ms
+purity analysis... 1 ms
+
+eval... 2 ms ok
+state/edges 42/52 value #<set: #(struct:addr (cons m m)) SYM>
+escape analysis... 0 ms
+freshness analysis without esc... 1 ms
+call-store analysis... 0 ms
+a-side-effect analysis... 1 ms
+purity analysis... 2 ms
+sa-side-effect analysis... 2 ms
+purity analysis... 2 ms
+sfa-side-effect analysis... 1 ms
+purity analysis... 1 ms
+msfa-side-effect analysis... 1 ms
+purity analysis... 1 ms
+
+
+test-treeadd
+
+eval... 53 ms ok
+state/edges 2571/2570 value 15
+escape analysis... 3 ms
+freshness analysis without esc... 36 ms
+call-store analysis... 48 ms
+a-side-effect analysis... 44 ms
+purity analysis... 98 ms
+sa-side-effect analysis... 68 ms
+purity analysis... 93 ms
+sfa-side-effect analysis... 72 ms
+purity analysis... 93 ms
+msfa-side-effect analysis... 100 ms
+purity analysis... 100 ms
+
+eval... 28 ms ok
+state/edges 216/310 value #<set: NUM>
+escape analysis... 0 ms
+freshness analysis without esc... 16 ms
+call-store analysis... 4 ms
+a-side-effect analysis... 6 ms
+purity analysis... 71 ms
+sa-side-effect analysis... 8 ms
+purity analysis... 31 ms
+sfa-side-effect analysis... 7 ms
+purity analysis... 38 ms
+msfa-side-effect analysis... 6 ms
+purity analysis... 32 ms
+
+
+test-nqueens
+
+eval... 58 ms ok
+state/edges 2704/2703 value 2
+escape analysis... 2 ms
+freshness analysis without esc... 33 ms
+call-store analysis... 41 ms
+a-side-effect analysis... 68 ms
+purity analysis... 86 ms
+sa-side-effect analysis... 113 ms
+purity analysis... 84 ms
+sfa-side-effect analysis... 179 ms
+purity analysis... 79 ms
+msfa-side-effect analysis... 301 ms
+purity analysis... 81 ms
+
+eval... 26 ms ok
+state/edges 133/189 value #<set: NUM>
+escape analysis... 1 ms
+freshness analysis without esc... 12 ms
+call-store analysis... 2 ms
+a-side-effect analysis... 5 ms
+purity analysis... 39 ms
+sa-side-effect analysis... 6 ms
+purity analysis... 29 ms
+sfa-side-effect analysis... 7 ms
+purity analysis... 29 ms
+msfa-side-effect analysis... 8 ms
+purity analysis... 30 ms
+
+
+test-dderiv
+
+eval... 64 ms ok
+state/edges 2871/2870 value #t
+escape analysis... 3 ms
+freshness analysis without esc... 38 ms
+call-store analysis... 122 ms
+a-side-effect analysis... 78 ms
+purity analysis... 215 ms
+sa-side-effect analysis... 114 ms
+purity analysis... 217 ms
+sfa-side-effect analysis... 119 ms
+purity analysis... 211 ms
+msfa-side-effect analysis... 238 ms
+purity analysis... 214 ms
+
+eval... 529 ms ok
+state/edges 353/1402 value #<set: BOOL>
+escape analysis... 2 ms
+freshness analysis without esc... 128 ms
+call-store analysis... 61 ms
+a-side-effect analysis... 56 ms
+purity analysis... 949 ms
+sa-side-effect analysis... 54 ms
+purity analysis... 506 ms
+sfa-side-effect analysis... 65 ms
+purity analysis... 508 ms
+msfa-side-effect analysis... 64 ms
+purity analysis... 555 ms
+
+
+test-destruc
+
+eval... 61 ms ok
+state/edges 2292/2291 value #(struct:addr 131)
+escape analysis... 2 ms
+freshness analysis without esc... 42 ms
+call-store analysis... 58 ms
+a-side-effect analysis... 97 ms
+purity analysis... 132 ms
+sa-side-effect analysis... 123 ms
+purity analysis... 129 ms
+sfa-side-effect analysis... 213 ms
+purity analysis... 125 ms
+msfa-side-effect analysis... 632 ms
+purity analysis... 130 ms
+
+eval... 89 ms ok
+state/edges 238/337 value #<set: () #(struct:addr (cons #(struct:«quo» 100 ()) _a19))>
+escape analysis... 0 ms
+freshness analysis without esc... 44 ms
+call-store analysis... 6 ms
+a-side-effect analysis... 12 ms
+purity analysis... 129 ms
+sa-side-effect analysis... 21 ms
+purity analysis... 97 ms
+sfa-side-effect analysis... 19 ms
+purity analysis... 100 ms
+msfa-side-effect analysis... 36 ms
+purity analysis... 95 ms
+
+
+test-grid
+
+eval... 54 ms ok
+state/edges 2019/2018 value #t
+escape analysis... 1 ms
+freshness analysis without esc... 32 ms
+call-store analysis... 21 ms
+a-side-effect analysis... 49 ms
+purity analysis... 60 ms
+sa-side-effect analysis... 86 ms
+purity analysis... 60 ms
+sfa-side-effect analysis... 92 ms
+purity analysis... 67 ms
+msfa-side-effect analysis... 163 ms
+purity analysis... 60 ms
+
+eval... 58 ms ok
+state/edges 237/424 value #<set: BOOL>
+escape analysis... 0 ms
+freshness analysis without esc... 21 ms
+call-store analysis... 2 ms
+a-side-effect analysis... 15 ms
+purity analysis... 121 ms
+sa-side-effect analysis... 24 ms
+purity analysis... 96 ms
+sfa-side-effect analysis... 18 ms
+purity analysis... 93 ms
+msfa-side-effect analysis... 16 ms
+purity analysis... 126 ms
+
+
+test-matrix
+
+eval... 381 ms ok
+state/edges 9401/9400 value #(struct:addr 4533)
+escape analysis... 11 ms
+freshness analysis without esc... 276 ms
+call-store analysis... 292 ms
+a-side-effect analysis... 621 ms
+purity analysis... 885 ms
+sa-side-effect analysis... 793 ms
+purity analysis... 924 ms
+sfa-side-effect analysis... 802 ms
+purity analysis... 918 ms
+msfa-side-effect analysis... 2818 ms
+purity analysis... 834 ms
+
+eval... 58 ms ok
+state/edges 188/239 value #<set: #(struct:addr (cons _p79 xx2))>
+escape analysis... 1 ms
+freshness analysis without esc... 44 ms
+call-store analysis... 7 ms
+a-side-effect analysis... 8 ms
+purity analysis... 61 ms
+sa-side-effect analysis... 14 ms
+purity analysis... 81 ms
+sfa-side-effect analysis... 12 ms
+purity analysis... 84 ms
+msfa-side-effect analysis... 20 ms
+purity analysis... 81 ms
+
+
+test-fannkuch
+
+eval... 328 ms ok
+state/edges 8969/8968 value 4
+escape analysis... 11 ms
+freshness analysis without esc... 250 ms
+call-store analysis... 544 ms
+a-side-effect analysis... 797 ms
+purity analysis... 1254 ms
+sa-side-effect analysis... 1078 ms
+purity analysis... 1256 ms
+sfa-side-effect analysis... 1008 ms
+purity analysis... 1209 ms
+msfa-side-effect analysis... 6743 ms
+purity analysis... 1249 ms
+
+eval... 103 ms ok
+state/edges 215/350 value #<set: BOOL NUM>
+escape analysis... 1 ms
+freshness analysis without esc... 98 ms
+call-store analysis... 12 ms
+a-side-effect analysis... 14 ms
+purity analysis... 196 ms
+sa-side-effect analysis... 19 ms
+purity analysis... 160 ms
+sfa-side-effect analysis... 19 ms
+purity analysis... 156 ms
+msfa-side-effect analysis... 35 ms
+purity analysis... 194 ms
+
+
+test-mceval
+
+eval... 850 ms ok
+state/edges 9223/9222 value 2
+escape analysis... 12 ms
+freshness analysis without esc... 954 ms
+call-store analysis... 7111 ms
+a-side-effect analysis... 2249 ms
+purity analysis... 2267 ms
+sa-side-effect analysis... 2561 ms
+purity analysis... 2199 ms
+sfa-side-effect analysis... 2658 ms
+purity analysis... 2313 ms
+msfa-side-effect analysis... 7738 ms
+purity analysis... 2172 ms
+
+eval... 24400 ms ok
+state/edges 1200/11572 value #<set: #(struct:addr (cons _body92 _p217)) #(struct:addr (- n 2)) #(struct:addr 
+escape analysis... 28 ms
+freshness analysis without esc... 3634 ms
+call-store analysis... 10906 ms
+a-side-effect analysis... 13148 ms
+purity analysis... 138740 ms
+sa-side-effect analysis... 12868 ms
+purity analysis... 145032 ms
+sfa-side-effect analysis... 12744 ms
+purity analysis... 148528 ms
+msfa-side-effect analysis... 14529 ms
+purity analysis... 136539 ms
+
+
+test-scm2java
+
+eval... 822 ms ok
+state/edges 10610/10609 value public class BOut extends RuntimeEnvironment {n public static void main (String[
+escape analysis... 21 ms
+freshness analysis without esc... 796 ms
+call-store analysis... 5240 ms
+a-side-effect analysis... 2231 ms
+purity analysis... 2272 ms
+sa-side-effect analysis... 2464 ms
+purity analysis... 2241 ms
+sfa-side-effect analysis... 2462 ms
+purity analysis... 2250 ms
+msfa-side-effect analysis... 2828 ms
+purity analysis... 2285 ms
+
+eval... 28531 ms ok
+state/edges 1335/11892 value #<set: STR>
+escape analysis... 14 ms
+freshness analysis without esc... 4291 ms
+call-store analysis... 1744 ms
+a-side-effect analysis... 8829 ms
+purity analysis... 102292 ms
+sa-side-effect analysis... 8465 ms
+purity analysis... 167537 ms
+sfa-side-effect analysis... 8661 ms
+purity analysis... 167160 ms
+msfa-side-effect analysis... 13783 ms
+purity analysis... 166382 ms
+Done.
+> (main)
+benchmarks
+\code{fib           } & 42     & 1   & 0   & 0   & 0   & 0   & 0   & 0  \\
+\code{purity65      } & 29     & 1   & 0   & 1   & 1   & 0   & 0   & 0  \\
+\code{purity73      } & 60     & 2   & 2   & 0   & 0   & 0   & 0   & 0  \\
+\code{purity75      } & 80     & 2   & 0   & 2   & 1   & 1   & 0   & 0  \\
+\code{treeadd       } & 392    & 8   & 6   & 5   & 2   & 2   & 0   & 0  \\
+\code{nqueens       } & 247    & 6   & 0   & 4   & 0   & 0   & 0   & 0  \\
+\code{dderiv        } & 616    & 20  & 1   & 29  & 0   & 2   & 0   & 0  \\
+\code{destruc       } & 420    & 11  & 0   & 3   & 4   & 3   & 0   & 0  \\
+\code{grid          } & 382    & 5   & 3   & 3   & 0   & 0   & 1   & 2  \\
+\code{matrix        } & 385    & 11  & 3   & 3   & 0   & 0   & 4   & 4  \\
+\code{fannkuch      } & 465    & 16  & 3   & 0   & 0   & 0   & 2   & 7  \\
+\code{mceval        } & 1687   & 87  & 0   & 28  & 3   & 1   & 0   & 0  \\
+\code{scm2java      } & 1972   & 64  & 6   & 66  & 0   & 0   & 0   & 0  \\
+flow-conc
+\code{fib           } & 735     & 734     & 100.0\% & \eps \\
+\code{purity65      } & 20      & 19      & 100.0\% & \eps \\
+\code{purity73      } & 253     & 252     & 100.0\% & \eps \\
+\code{purity75      } & 111     & 110     & 100.0\% & \eps \\
+\code{treeadd       } & 2571    & 2570    & 100.0\% & \eps \\
+\code{nqueens       } & 2704    & 2703    & 100.0\% & \eps \\
+\code{dderiv        } & 2871    & 2870    & 63.15\% & \eps \\
+\code{destruc       } & 2292    & 2291    & 95.95\% & \eps \\
+\code{grid          } & 2019    & 2018    & 89.53\% & \eps \\
+\code{matrix        } & 9401    & 9400    & 97.92\% & \eps \\
+\code{fannkuch      } & 8969    & 8968    & 99.78\% & \eps \\
+\code{mceval        } & 9223    & 9222    & 83.17\% & \eps \\
+\code{scm2java      } & 10610   & 10609   & 91.43\% & \eps \\
+flow-type
+\code{fib           } & 20      & 30      & 100.0\% & \eps \\
+\code{purity65      } & 20      & 27      & 100.0\% & \eps \\
+\code{purity73      } & 29      & 34      & 100.0\% & \eps \\
+\code{purity75      } & 42      & 52      & 100.0\% & \eps \\
+\code{treeadd       } & 216     & 310     & 100.0\% & \eps \\
+\code{nqueens       } & 133     & 189     & 100.0\% & \eps \\
+\code{dderiv        } & 353     & 1402    & 90.42\% & \eps \\
+\code{destruc       } & 238     & 337     & 100.0\% & \eps \\
+\code{grid          } & 237     & 424     & 93.46\% & \eps \\
+\code{matrix        } & 188     & 239     & 97.92\% & \eps \\
+\code{fannkuch      } & 215     & 350     & 100.0\% & \eps \\
+\code{mceval        } & 1200    & 11572   & 97.45\% & 24'' \\
+\code{scm2java      } & 1335    & 11892   & 95.79\% & 29'' \\
+se-fp
+\code{fib           } & 8   /14   (57.0\%)& 0   /6    (0.0\%) & 0   /6    (0.0\%) & 0   /6    (0.0\%)\\
+\code{purity65      } & 4   /5    (80.0\%)& 1   /2    (50.0\%) & 0   /1    (0.0\%) & 0   /1    (0.0\%)\\
+\code{purity73      } & 8   /22   (36.0\%)& 3   /17   (18.0\%) & 3   /17   (18.0\%) & 0   /14   (0.0\%)\\
+\code{purity75      } & 18  /27   (67.0\%)& 3   /12   (25.0\%) & 0   /9    (0.0\%) & 0   /9    (0.0\%)\\
+\code{treeadd       } & 73  /116  (63.0\%)& 5   /48   (10.0\%) & 2   /45   (4.0\%) & 2   /45   (4.0\%)\\
+\code{nqueens       } & 36  /125  (29.0\%)& 0   /89   (0.0\%) & 0   /89   (0.0\%) & 0   /89   (0.0\%)\\
+\code{dderiv        } & 456 /881  (52.0\%)& 271 /696  (39.0\%) & 271 /696  (39.0\%) & 271 /696  (39.0\%)\\
+\code{destruc       } & 39  /214  (18.0\%)& 19  /194  (10.0\%) & 19  /194  (10.0\%) & 19  /194  (10.0\%)\\
+\code{grid          } & 75  /241  (31.0\%)& 24  /190  (13.0\%) & 24  /190  (13.0\%) & 18  /184  (10.0\%)\\
+\code{matrix        } & 11  /151  (7.0\%)& 5   /145  (3.0\%) & 5   /145  (3.0\%) & 2   /142  (1.0\%)\\
+\code{fannkuch      } & 22  /260  (8.0\%)& 1   /239  (0.0\%) & 1   /239  (0.0\%) & 0   /238  (0.0\%)\\
+\code{mceval        } & 12608/31257 (40.0\%)& 11978/30627 (39.0\%) & 11978/30627 (39.0\%) & 11961/30610 (39.0\%)\\
+\code{scm2java      } & 6131/21124 (29.0\%)& 5715/20708 (28.0\%) & 5715/20708 (28.0\%) & 5715/20708 (28.0\%)\\
+se-obs
+\code{fib           } & 14   & 6    & 6    & 6    \\
+\code{purity65      } & 5    & 2    & 1    & 1    \\
+\code{purity73      } & 22   & 17   & 17   & 14   \\
+\code{purity75      } & 27   & 12   & 9    & 9    \\
+\code{treeadd       } & 116  & 48   & 45   & 45   \\
+\code{nqueens       } & 125  & 89   & 89   & 89   \\
+\code{dderiv        } & 1154 & 901  & 901  & 901  \\
+\code{destruc       } & 214  & 194  & 194  & 194  \\
+\code{grid          } & 241  & 190  & 190  & 184  \\
+\code{matrix        } & 151  & 145  & 145  & 142  \\
+\code{fannkuch      } & 260  & 239  & 239  & 238  \\
+\code{mceval        } & 32752 & 32108 & 32108 & 32091 \\
+\code{scm2java      } & 21129 & 20713 & 20713 & 20713 \\
+se-timing
+\code{fib           } & \eps  & \eps  & \eps  & \eps \\
+\code{purity65      } & \eps  & \eps  & \eps  & \eps \\
+\code{purity73      } & \eps  & \eps  & \eps  & \eps \\
+\code{purity75      } & \eps  & \eps  & \eps  & \eps \\
+\code{treeadd       } & \eps  & \eps  & \eps  & \eps \\
+\code{nqueens       } & \eps  & \eps  & \eps  & \eps \\
+\code{dderiv        } & \eps  & \eps  & \eps  & \eps \\
+\code{destruc       } & \eps  & \eps  & \eps  & \eps \\
+\code{grid          } & \eps  & \eps  & \eps  & \eps \\
+\code{matrix        } & \eps  & \eps  & \eps  & \eps \\
+\code{fannkuch      } & \eps  & \eps  & \eps  & \eps \\
+\code{mceval        } & 13''  & 13''  & 13''  & 15'' \\
+\code{scm2java      } & 9''   & 8''   & 9''   & 14'' \\
+escape
+\code{fib           } & 1    & 1    (1   ) & 0    (0   ) & \eps \\
+\code{purity65      } & 1    & 1    (1   ) & 0    (0   ) & \eps \\
+\code{purity73      } & 2    & 2    (2   ) & 0    (0   ) & \eps \\
+\code{purity75      } & 2    & 2    (2   ) & 1    (1   ) & \eps \\
+\code{treeadd       } & 8    & 8    (8   ) & 0    (0   ) & \eps \\
+\code{nqueens       } & 6    & 6    (6   ) & 0    (0   ) & \eps \\
+\code{dderiv        } & 20   & 14   (10  ) & 6    (6   ) & \eps \\
+\code{destruc       } & 11   & 11   (11  ) & 0    (0   ) & \eps \\
+\code{grid          } & 5    & 5    (5   ) & 0    (0   ) & \eps \\
+\code{matrix        } & 11   & 10   (10  ) & 0    (0   ) & \eps \\
+\code{fannkuch      } & 16   & 16   (16  ) & 1    (1   ) & \eps \\
+\code{mceval        } & 87   & 85   (72  ) & 2    (2   ) & \eps \\
+\code{scm2java      } & 64   & 61   (60  ) & 8    (8   ) & \eps \\
+conc-type-fresh
+\code{fib           } & 0/16 (0.0\%  ) & \eps  & 41.04\%\\
+\code{purity65      } & 0/6 (0.0\%  ) & \eps  & 54.78\%\\
+\code{purity73      } & 0/19 (0.0\%  ) & \eps  & 30.2\% \\
+\code{purity75      } & 0/27 (0.0\%  ) & \eps  & 43.06\%\\
+\code{treeadd       } & 0/124 (0.0\%  ) & \eps  & 31.26\%\\
+\code{nqueens       } & 0/91 (0.0\%  ) & \eps  & 30.85\%\\
+\code{dderiv        } & 0/115 (0.0\%  ) & \eps  & 15.36\%\\
+\code{destruc       } & 0/139 (0.0\%  ) & \eps  & 17.08\%\\
+\code{grid          } & 0/111 (0.0\%  ) & \eps  & 34.63\%\\
+\code{matrix        } & 0/117 (0.0\%  ) & \eps  & 17.4\% \\
+\code{fannkuch      } & 0/166 (0.0\%  ) & \eps  & 14.41\%\\
+\code{mceval        } & 0/465 (0.0\%  ) & 4''   & 3.08\% \\
+\code{scm2java      } & 0/598 (0.0\%  ) & 4''   & 5.9\%  \\
+conc-a-type-msfa-purity-class
+\code{fib           } & 1    & 1    & 0    & 0    & 1    & 0    & 0   \\
+\code{purity65      } & 1    & 1    & 0    & 0    & 1    & 0    & 0   \\
+\code{purity73      } & 2    & 1    & 0    & 1    & 1    & 0    & 1   \\
+\code{purity75      } & 2    & 2    & 0    & 0    & 2    & 0    & 0   \\
+\code{treeadd       } & 8    & 8    & 0    & 0    & 7    & 0    & 1   \\
+\code{nqueens       } & 6    & 6    & 0    & 0    & 6    & 0    & 0   \\
+\code{dderiv        } & 10   & 9    & 0    & 1    & 3    & 6    & 1   \\
+\code{destruc       } & 11   & 3    & 1    & 7    & 3    & 1    & 7   \\
+\code{grid          } & 5    & 2    & 1    & 2    & 2    & 1    & 2   \\
+\code{matrix        } & 10   & 4    & 0    & 6    & 3    & 1    & 6   \\
+\code{fannkuch      } & 16   & 5    & 2    & 9    & 5    & 2    & 9   \\
+\code{mceval        } & 72   & 60   & 2    & 10   & 10   & 49   & 13  \\
+\code{scm2java      } & 60   & 58   & 0    & 2    & 46   & 3    & 11  \\
+type-a-type-msfa-purity-class
+\code{fib           } & 1    & 1    & 0    & 0    & 1    & 0    & 0   \\
+\code{purity65      } & 1    & 0    & 0    & 1    & 1    & 0    & 0   \\
+\code{purity73      } & 2    & 0    & 0    & 2    & 1    & 0    & 1   \\
+\code{purity75      } & 2    & 0    & 0    & 2    & 2    & 0    & 0   \\
+\code{treeadd       } & 8    & 3    & 0    & 5    & 7    & 0    & 1   \\
+\code{nqueens       } & 6    & 6    & 0    & 0    & 6    & 0    & 0   \\
+\code{dderiv        } & 10   & 3    & 6    & 1    & 3    & 6    & 1   \\
+\code{destruc       } & 11   & 3    & 1    & 7    & 3    & 1    & 7   \\
+\code{grid          } & 5    & 1    & 1    & 3    & 2    & 1    & 2   \\
+\code{matrix        } & 10   & 2    & 0    & 8    & 3    & 1    & 6   \\
+\code{fannkuch      } & 16   & 5    & 2    & 9    & 5    & 2    & 9   \\
+\code{mceval        } & 72   & 10   & 49   & 13   & 10   & 49   & 13  \\
+\code{scm2java      } & 60   & 46   & 3    & 11   & 46   & 3    & 11  \\
+purity-timing
+\code{fib           } & \eps  & \eps  & \eps  & \eps \\
+\code{purity65      } & \eps  & \eps  & \eps  & \eps \\
+\code{purity73      } & \eps  & \eps  & \eps  & \eps \\
+\code{purity75      } & \eps  & \eps  & \eps  & \eps \\
+\code{treeadd       } & \eps  & \eps  & \eps  & \eps \\
+\code{nqueens       } & \eps  & \eps  & \eps  & \eps \\
+\code{dderiv        } & \eps  & \eps  & \eps  & \eps \\
+\code{destruc       } & \eps  & \eps  & \eps  & \eps \\
+\code{grid          } & \eps  & \eps  & \eps  & \eps \\
+\code{matrix        } & \eps  & \eps  & \eps  & \eps \\
+\code{fannkuch      } & \eps  & \eps  & \eps  & \eps \\
+\code{mceval        } & 139'' & 145'' & 149'' & 137''\\
+\code{scm2java      } & 102'' & 168'' & 167'' & 166''\\
+timing
+\code{fib           } & \eps  & \eps  & \eps  & \eps \\
+\code{purity65      } & \eps  & \eps  & \eps  & \eps \\
+\code{purity73      } & \eps  & \eps  & \eps  & \eps \\
+\code{purity75      } & \eps  & \eps  & \eps  & \eps \\
+\code{treeadd       } & \eps  & \eps  & \eps  & \eps \\
+\code{nqueens       } & \eps  & \eps  & \eps  & \eps \\
+\code{dderiv        } & 2''   & 1''   & 1''   & 1''  \\
+\code{destruc       } & \eps  & \eps  & \eps  & \eps \\
+\code{grid          } & \eps  & \eps  & \eps  & \eps \\
+\code{matrix        } & \eps  & \eps  & \eps  & \eps \\
+\code{fannkuch      } & \eps  & \eps  & \eps  & \eps \\
+\code{mceval        } & 187'' & 193'' & 200'' & 190''\\
+\code{scm2java      } & 141'' & 206'' & 210'' & 215''\\
